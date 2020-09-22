@@ -1,0 +1,2 @@
+# CCPABrowserTool
+CCPA Browser Tool
