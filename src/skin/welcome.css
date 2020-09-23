@@ -1,0 +1,15 @@
+body {
+    box-sizing: border-box;
+  
+    background: #fefefe;
+    color: #333;
+    font-family: helvetica, arial, sans-serif;
+    font-size: 12px;
+  
+    margin: 0;
+    padding: 7px 12px;
+  
+    min-width: 430px; /* Chrome */
+    max-width: 100%;  /* FF android */
+    min-height: 270px;
+  }
