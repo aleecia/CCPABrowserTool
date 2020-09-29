@@ -1,10 +1,10 @@
 {
-  "name": "Hello Extensions",
-  "description" : "Base Level Extension",
+  "name": "CCPA Browser Tool",
+  "description" : "Protect your rights under CCPA",
   "version": "1.0",
   "permissions": ["activeTab", "storage"],
   "browser_action": {
-    "default_popup": "skin/welcome.html",
+    "default_popup": "skin/main.html",
     "default_icon": {
       "16": "skin/images/get_started16.png",
       "32": "skin/images/get_started32.png",
@@ -12,12 +12,21 @@
       "128": "skin/images/get_started128.png"
     }
   },
+  "background": {
+    "scripts": ["js/background.js"],
+    "persistent": false
+  },
   "icons": {
     "16": "skin/images/get_started16.png",
     "32": "skin/images/get_started32.png",
     "48": "skin/images/get_started48.png",
     "128": "skin/images/get_started128.png"
   },
+  "options_ui": {
+    "page": "/skin/dashboard.html",
+    "open_in_tab": true
+  },
+  "content_security_policy": "script-src 'self' https://stackpath.bootstrapcdn.com https://cdnjs.cloudflare.com; object-src 'self'",
   "manifest_version": 2,
   "commands": {
     "_execute_browser_action": {
@@ -25,7 +34,7 @@
         "default": "Ctrl+Shift+F",
         "mac": "MacCtrl+Shift+F"
       },
-      "description": "Opens welcome.html"
+      "description": "Opens tool"
     }
   }
 }

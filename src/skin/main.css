@@ -1,0 +1,17 @@
+body {
+    box-sizing: border-box;
+    background: #fefefe;
+    color: #333;
+    font-family: helvetica, arial, sans-serif;
+    font-size: 16px;
+    margin: 0;
+    padding: 8px;
+    min-width: 260px;
+    max-width: 100%;
+    min-height: 200px;
+}
+
+.nav .nav-link {
+    padding: 0;
+    margin: 4px 8px;
+}
