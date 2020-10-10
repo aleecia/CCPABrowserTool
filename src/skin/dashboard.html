@@ -52,7 +52,7 @@
 
                 </div>
                 <div class="fixed-bottom">
-                    <p class="ml-3">Ⓒ Carnegie Mellon University Project - Team 1</p>
+                    <p class="ml-3">Ⓒ CMU Project - Team 1</p>
                 </div>
             </nav>
 
@@ -64,8 +64,106 @@
                             <h1 class="h2 text-dark">Introduction</h1>
                         </div>
                         <div>
-                            <p class="lead">This is introduction.</p>
+                            <p class="lead">
+                                [add an icon of our product here]<br>
+                                Do you know that companies and organizations are collecting your personal information when you visited their websites? 
+                                Besides collecting data, they usually sell or share your data for profit without your consent. </p>
+                                <p class="lead mb-4">
+                                <b>Want to GARUD your personal data?</b>Use our tool to help you exercising your given privacy rights under law.
+                                </p>
                         </div>
+                        <div class="accordion" id="accordion_intro">
+                            <div class="card">
+                              <div class="card-header" id="headingOne">
+                                <h2 class="lead mb-0">
+                                  <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                    Why should you care?
+                                  </button>
+                                </h2>
+                              </div>
+                          
+                              <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion_intro">
+                                <div class="card-body">
+                                    Your data is precious. If your data is sold to malicious attackers, they utilize your data to picture your interests, your routines, or even more sensitive information about you. 
+                                    With this information, the adversary can trick you and cause significant financial lost.<br> 
+                                    Visit this <a href="https://pdf.ic3.gov/2019_IC3Report.pdf " target="_blank">FBI cybercrime report</a>
+                                    if you want to have more understanding about potential vulnerabilities of data leakage.
+                                </div>
+                              </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header" id="headingTwo">
+                                  <h2 class="lead mb-0">
+                                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                      What protect your privacy rights?
+                                    </button>
+                                  </h2>
+                                </div>
+                                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion_intro">
+                                  <div class="card-body">
+                                    For California residents, CCPA 
+                                    (short for <a href="https://leginfo.legislature.ca.gov/faces/billTextClient.xhtml?bill_id=201720180AB375" target="_blank">California Consumer Privacy Act</a>)  
+                                    secures consumers’ rights to ask company do not sell or share their personal information to other organizations. Moreover, 
+                                    under the protection of CCPA, consumers can also request for or delete their collected information from organizations’ data storage.
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="card">
+                                <div class="card-header" id="headingThree">
+                                  <h2 class="mb-0">
+                                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                      How our tool works?
+                                    </button>
+                                  </h2>
+                                </div>
+                                <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion_intro">
+                                  <div class="card-body">
+                                    <h2><strong>To set your preference for specific website:</strong><br></h2>
+                                    When your browse and open a new webpage, click on this tool’s extension icon on the right top corner to open a popup page. <br>
+                                    Popup page provides three options and allows you to exercise 3 different rights under CCPA. <br>
+                                        <ul class="list-group list-group-flush">
+                                        <li class="list-group-item"><strong>Do not sell my data:</strong> By checking this option, you can request a business stop selling and sharing your information to other parties.</li>
+                                        <li class="list-group-item"><strong>Request for my data: </strong>By checking this option, you can request the business to disclose to you what personal information is collected from you. The business may reply you with one or all of listed below: <br>
+                                            <ul>
+                                            <li>The categories of personal information collected</li>
+                                            <li>Specific information collected</li>
+                                            <li>The categories of information sources</li>
+                                            <li>The purpose for information collection</li>
+                                            <li>The categories of third parties the information shared with</li>
+                                            <li>The categories of information the business will share and sell to other parties.</li>
+                                            </ul>
+                                        <li class="list-group-item"><strong>Delete all my data:</strong> By checking this option, you can request the business to delete information collected from you. However, this request may encounter exceptions described in FAQ.</li>
+                            
+                                        </ul>
+                                        Click send request, and our tool will deliver your requests to corresponding organizations.<br>
+                                <br>
+                                <h2><strong>To set your default preference:</strong></h2>
+                                
+                                Visit General tab in the dashboard to change your general setting. <br>
+                                By checking and setting the options in general, requests will be sent automatically when you visit a new website.<br>  
+                                Whitelist:…
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header" id="headingFour">
+                                  <h2 class="lead mb-0">
+                                    <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                      FAQ
+                                    </button>
+                                  </h2>
+                                </div>
+                            
+                                <div id="collapseFour" class="collapse" aria-labelledby="headingOne" data-parent="#accordion_intro">
+                                  <div class="card-body">
+                                      <p class="lead">How long will companies have to repond to my request?</p>
+                                      <p class="lead">How long will companies have to delete my data?</p>
+                                      <p class="lead">Why companies deny my request of deletion?</p>
+                                      <p class="lead">Why do I receive no feedback from companies?</p>
+                                  </div>
+                                </div>
+                              </div>
                     </div>
                     <div id="general" class="tab">
                         <div
@@ -112,7 +210,37 @@
                             <h1 class="h2 text-dark">Support</h1>
                         </div>
                         <div>
-                            <p class="lead">This is support.</p>
+                            <div class="row">
+                                <div class="col-md-6 col-md-offset-3" id="form_container">
+                                    <p class="lead">
+                                       Fill the form to report a violation of CCPA or ask unclear question.
+                                    </p>
+                                    <div class="container">
+                                    <form role="form" method="post" id="contact">
+                                        
+                                        <div class="input-group mb-3">
+                                            <div class="input-group-prepend">
+                                              <label class="input-group-text" for="inputGroupSelect01">Subjects</label>
+                                            </div>
+                                            <select class="custom-select" id="inputGroupSelect01">
+                                              <option selected>Choose...</option>
+                                              <option value="s1">Report a violation</option>
+                                              <option value="s2">Ask questions about the tool</option>
+                                              <option value="s3">Deny of Request</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <textarea class="form-control" id="message" rows="6"></textarea>
+                                        </div>
+                            
+                                            <div class="form-group mb-3">
+                                                <button type="submit" class="btn btn-primary pull-right" >Send </button>
+                                            </div>
+                            
+                                    </form>
+                                </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
