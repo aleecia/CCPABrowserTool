@@ -13,7 +13,7 @@ body {
 }
 
 .cover-container {
-  max-width: 42em;
+  max-width: 75em;
 }
 
 /* Custom default button */
@@ -29,4 +29,32 @@ body {
 .btn-secondary:focus {
   background-color: #444;
   border: .05rem solid #222;
+}
+
+/* Guidence */
+.guidence .item {
+  display: none;
+}
+
+#introduction {
+  text-align: left;
+  margin-left: 20%;
+}
+
+.alert {
+  display: none;
+  margin-bottom: 0;
+}
+
+.requirements {
+  text-align: left;
+  margin-bottom: 4px;
+}
+
+.wrong .fa-check {
+  display: none;
+}
+
+.good .fa-times {
+  display: none;
 }

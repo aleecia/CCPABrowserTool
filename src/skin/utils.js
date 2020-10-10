@@ -1,10 +1,9 @@
 'use strict';
 
-// Inputs: key:string.
+const THIRTY_MINUTES_IN_MILLISECONDS = 1800000;
+
+// Inputs: key: string.
 // Returns object from localStorage.
-// The following two functions should only be used when
-// multiple 'sets' & 'gets' may occur in immediately preceding each other
-// browser.storage.local.get & set instead
 const storageGet = function (key) {
     const store = localStorage;
     const json = store.getItem(key);
@@ -14,12 +13,12 @@ const storageGet = function (key) {
     try {
         return JSON.parse(json);
     } catch (e) {
-        log(`Couldn't parse json for ${key}`, e);
+        console.log(`Couldn't parse json for ${key}`, e);
         return undefined;
     }
 };
 
-// Inputs: key:string, value:object.
+// Inputs: key: string, value: object.
 // If value === undefined, removes key from storage.
 // Returns undefined.
 const storageSet = function (key, value) {
@@ -30,9 +29,8 @@ const storageSet = function (key, value) {
     }
     try {
         store.setItem(key, JSON.stringify(value));
-    } catch (ex) {
-        // eslint-disable-next-line no-console
-        console.log(ex);
+    } catch (e) {
+        console.log(`Couldn't set storage value for ${key}`, e)
     }
 };
 
