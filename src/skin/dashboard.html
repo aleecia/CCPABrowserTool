@@ -65,11 +65,10 @@
                         </div>
                         <div>
                             <p class="lead">
-                                [add an icon of our product here]<br>
-                                Do you know that companies and organizations are collecting your personal information when you visited their websites? 
-                                Besides collecting data, they usually sell or share your data for profit without your consent. </p>
+                                Do you know companies and organizations are collecting your personal information when you visited their websites? 
+                                Besides collecting, they usually sell or share your data for profit without your consent. </p>
                                 <p class="lead mb-4">
-                                <b>Want to GARUD your personal data?</b>Use our tool to help you exercising your given privacy rights under law.
+                                <b>Want to GUARD your personal data?</b>Use our tool to help you exercising your given privacy rights under law.
                                 </p>
                         </div>
                         <div class="accordion" id="accordion_intro">
@@ -101,10 +100,10 @@
                                 </div>
                                 <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion_intro">
                                   <div class="card-body">
-                                    For California residents, CCPA 
-                                    (short for <a href="https://leginfo.legislature.ca.gov/faces/billTextClient.xhtml?bill_id=201720180AB375" target="_blank">California Consumer Privacy Act</a>)  
+                                    For California residents,California Consumer Privacy Act
+                                    (<a href="https://leginfo.legislature.ca.gov/faces/billTextClient.xhtml?bill_id=201720180AB375" target="_blank">CCPA</a>)  
                                     secures consumers’ rights to ask company do not sell or share their personal information to other organizations. Moreover, 
-                                    under the protection of CCPA, consumers can also request for or delete their collected information from organizations’ data storage.
+                                    under the protection of CCPA, consumers can also request for data or delete their collected information from organizations’ data storage.
                                   </div>
                                 </div>
                               </div>
@@ -140,8 +139,9 @@
                                 <h2><strong>To set your default preference:</strong></h2>
                                 
                                 Visit General tab in the dashboard to change your general setting. <br>
-                                By checking and setting the options in general, requests will be sent automatically when you visit a new website.<br>  
-                                Whitelist:…
+                                By checking and setting the options in general, requests will be sent automatically when you visit a new website.You can only
+                                set <strong>"Do not sell my data"</strong> preference in the general.<br>
+                                                                
                                   </div>
                                 </div>
                               </div>
@@ -150,17 +150,25 @@
                                 <div class="card-header" id="headingFour">
                                   <h2 class="lead mb-0">
                                     <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-                                      FAQ
+                                      Frequently Asked Questions
                                     </button>
                                   </h2>
                                 </div>
                             
                                 <div id="collapseFour" class="collapse" aria-labelledby="headingOne" data-parent="#accordion_intro">
                                   <div class="card-body">
-                                      <p class="lead">How long will companies have to repond to my request?</p>
-                                      <p class="lead">How long will companies have to delete my data?</p>
-                                      <p class="lead">Why companies deny my request of deletion?</p>
-                                      <p class="lead">Why do I receive no feedback from companies?</p>
+                                      <p class="lead text-light bg-info"><strong>Q.</strong>How will companies respond to my request</p>
+                                      <p><strong>A.</strong>It may vary based on different companies' decisions. Basically, they may: <b>(1)</b>Send your request
+                                      respond to your registered email address. <b>(2)</b> Send a notification to your website dashboard page</p>
+                                      <p class="lead text-light bg-info"><strong>Q.</strong>How long will companies have to delete my data?</p>
+                                      <p><strong>A.</strong>According to CCPA regulations, companies must respond to your request within 45 calendar days. 
+                                        They can extend that deadline by another 45 days (90 days total) if they notify you.</p>
+                                      <p class="lead text-light bg-info"><strong>Q.</strong>Why companies deny my request to delete?</p>
+                                      <p><strong>A.</strong>Reasons why companies deny requests for deletion can be varied.You can report the rejection of deletion
+                                      to our tool through Support Section. We will follow up with companies to ask for specific reasons on your behave.</p>
+                                      <p class="lead text-light bg-info"><strong>Q.</strong>Why do I receive no feedback from companies?</p>
+                                      <p><strong>A.</strong>If a company didn't respond to your requests within given deadline, you can report the situation to our tool
+                                      through Support Section. We will follow up with companies for further information. </p>
                                   </div>
                                 </div>
                               </div>
@@ -192,20 +200,28 @@
                             <div class="row">
                                 <div class="col-md-6 col-md-offset-3" id="form_container">
                                     <p class="lead">
-                                       Fill the form to report a violation of CCPA or ask unclear question.
+                                        Have problem? Click to view: <a class="nav-link" href="#introduction">Frequently Asked Questions</a>
+                                        OR fill the form to report a violation of CCPA or ask unclear question.
                                     </p>
                                     <div class="container">
-                                    <form role="form" method="post" id="contact">
-                                        
+                                    <form role="form" method="post" id="contact"enctype="multipart/form-data" >
+                                      <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                          <label class="input-group-text">Email Address</label>
+                                        </div>
+                                        <input type="text" class="form-control" placeholder="Enter your Email" >
+                                    </div>
                                         <div class="input-group mb-3">
                                             <div class="input-group-prepend">
-                                              <label class="input-group-text" for="inputGroupSelect01">Subjects</label>
+                                              <label class="input-group-text" for="subject">Subjects</label>
                                             </div>
-                                            <select class="custom-select" id="inputGroupSelect01">
+                              
+                                            <select class="custom-select" id="subject">
                                               <option selected>Choose...</option>
-                                              <option value="s1">Report a violation</option>
-                                              <option value="s2">Ask questions about the tool</option>
-                                              <option value="s3">Deny of Request</option>
+                                              <option value="s1">Questions about the tool</option>
+                                              <option value="s2">Report a violation</option>
+                                              <option value="s3">Report denial of request</option>
+                                              <option value="s4">Report lack of respond</option>
                                             </select>
                                         </div>
                                         <div class="form-group mb-3">
