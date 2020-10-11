@@ -2,7 +2,15 @@
   "name": "CCPA Browser Tool",
   "description" : "Protect your rights under CCPA",
   "version": "1.0",
-  "permissions": ["activeTab", "storage"],
+  "permissions": [
+      "activeTab", 
+      "storage",
+      "tabs",
+      "webRequest",
+      "webRequestBlocking",
+      "cookies",
+      "<all_urls>"
+  ],
   "browser_action": {
     "default_popup": "skin/main.html",
     "default_icon": {
@@ -13,8 +21,7 @@
     }
   },
   "background": {
-    "scripts": ["js/background.js"],
-    "persistent": false
+    "scripts": ["js/background.js", "skin/jquery-3.4.1.min.js"]
   },
   "icons": {
     "16": "skin/images/get_started16.png",
