@@ -25,15 +25,17 @@ body {
 
 .status {
     margin: 0;
+    display: none;
 }
 
-.pause {
+#exception {
     transition: all .4s ease;
     -webkit-transition: all .4s ease;
+    cursor: pointer;
 }
 
-.pause:hover {
-    background: #5590ee;
+#exception:hover {
+    background: #629bf7;
     color: #fff;
 }
 

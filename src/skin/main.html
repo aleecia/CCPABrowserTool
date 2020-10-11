@@ -29,10 +29,13 @@
     <main role="main">
         <div class="text-left ml-1">
             <div class="row">
-                Do not sell my information: &nbsp;<label class="text-success status" id="on">ON</label>
+                Do not sell my information: &nbsp;<label class="text-success status" id="on">ON</label><label
+                    class="text-danger status" id="off">OFF</label>
             </div>
-            <div class="row pause">
-                Pause on this site
+            <div class="row" id="exception">
+                Create exception for <a class="text-primary ml-1" href="/skin/dashboard.html#introduction"
+                    target="_blank" id="exception-question"><i class="far fa-question-circle"></i></a>
+                <br />
             </div>
             <div class="form-check">
                 <input class="form-check-input selection" type="checkbox" value="get" id="get">
@@ -59,7 +62,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
     </script>
-
+    <script src="main.js"></script>
 </body>
 
 </html>
