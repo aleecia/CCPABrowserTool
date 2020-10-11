@@ -2,16 +2,41 @@ body {
     box-sizing: border-box;
     background: #fefefe;
     color: #333;
-    font-family: helvetica, arial, sans-serif;
+    font-family: 'Lato', sans-serif;
+    font-weight: 300;
     font-size: 16px;
     margin: 0;
-    padding: 8px;
-    min-width: 260px;
-    max-width: 100%;
-    min-height: 200px;
+    padding: 2px;
+    min-width: 270px;
+    min-height: 240px;
 }
 
 .nav .nav-link {
     padding: 0;
     margin: 4px 8px;
+}
+
+.row {
+    padding: 4px;
+    padding-left: 8px;
+    border-bottom: 1px solid #ddd;
+    margin: 0;
+}
+
+.status {
+    margin: 0;
+}
+
+.pause {
+    transition: all .4s ease;
+    -webkit-transition: all .4s ease;
+}
+
+.pause:hover {
+    background: #5590ee;
+    color: #fff;
+}
+
+.selection {
+    margin-left: -13px;
 }

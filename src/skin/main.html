@@ -8,6 +8,7 @@
     <!-- CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
         integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous" />
+    <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
     <link type="text/css" media="screen" href="main.css" rel="stylesheet" />
 
     <!-- Icons -->
@@ -26,21 +27,29 @@
         </nav>
     </header>
     <main role="main">
-        <div class="text-left ml-3">
-            <div class="custom-control custom-checkbox mb-1">
-                <input type="checkbox" class="custom-control-input" id="customCheck1">
-                <label class="custom-control-label" for="customCheck1">&nbsp;Do not sell my data</label>
+        <div class="text-left ml-1">
+            <div class="row">
+                Do not sell my information: &nbsp;<label class="text-success status" id="on">ON</label>
             </div>
-            <div class="custom-control custom-checkbox mb-1">
-                <input type="checkbox" class="custom-control-input" id="customCheck2">
-                <label class="custom-control-label" for="customCheck2">&nbsp;Request for my data</label>
+            <div class="row pause">
+                Pause on this site
             </div>
-            <div class="custom-control custom-checkbox mb-4">
-                <input type="checkbox" class="custom-control-input" id="customCheck3">
-                <label class="custom-control-label" for="customCheck3">&nbsp;Delete all my data</label>
+            <div class="form-check">
+                <input class="form-check-input selection" type="checkbox" value="get" id="get">
+                <label class="form-check-label ml-1" for="get">
+                    &nbsp;Request for my information
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input selection" type="checkbox" value="delete" id="delete">
+                <label class="form-check-label ml-1" for="delete">
+                    &nbsp;Delete all my information
+                </label>
             </div>
         </div>
-        <button type="button" class="btn btn-outline-primary">Send Request</button>
+        <div class="mt-4">
+            <button type="button" class="btn btn-outline-primary">Send Request</button>
+        </div>
     </main role="main">
     <script src="jquery-3.4.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"

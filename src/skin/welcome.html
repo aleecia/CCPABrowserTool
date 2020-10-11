@@ -38,7 +38,8 @@
         </p>
       </div>
 
-      <!-- Starter guidence -->
+      <!-- Start guidence -->
+
       <div class="guidence">
         <div id="start">
           <button type="button" id="get-start" class="btn btn-lg btn-outline-success">
@@ -76,7 +77,7 @@
           <p class="lead px-5">Hey there! According to this <a
               href="http://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=1798.120."
               target="_blank">CCPA
-              specific section</a>, bussiness shoud not sell personal information <br /> of kids and teenagers under
+              specific section</a>, business should not sell personal information <br /> of kids and teenagers under
             age 16,
             you will by default opt in this right and get protection.
           </p>
@@ -104,13 +105,13 @@
           </p>
           <div>
             <div class="form-check form-check-inline mt-1">
-              <input class="form-check-input" type="radio" name="parentInlineRadioOptions" id="parent-allow-sell"
-                value="parent-allow">
+              <input class="form-check-input" type="radio" name="parent-allow-sell-radio-group" id="parent-allow-sell"
+                value="0">
               <label class="form-check-label" for="parent-allow-sell">Allow selling my child's information</label>
             </div>
             <div class="form-check form-check-inline mt-1">
-              <input class="form-check-input" type="radio" name="parentInlineRadioOptions" id="parent-disallow-sell"
-                value="parent-disallow" checked>
+              <input class="form-check-input" type="radio" name="parent-allow-sell-radio-group" id="parent-disallow-sell"
+                value="1" checked>
               <label class="form-check-label" for="parent-disallow-sell">Do not sell my child's information</label>
             </div>
           </div>
@@ -125,17 +126,19 @@
             </button></a>
         </div>
 
+        <!-- Set default preference -->
+
         <div class="item mt-2" id="item7">
           <p class="lead">
             Let's set your default preference for all the websites you will visit. <br />
             You can also ask the website to send back or delete your information on the extension popup window.
           </p>
           <div class="form-check form-check-inline mt-2">
-            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="allow-sell" value="allow">
+            <input class="form-check-input" type="radio" name="allow-sell-radio-group" id="allow-sell" value="0">
             <label class="form-check-label" for="allow-sell">Allow selling my information</label>
           </div>
           <div class="form-check form-check-inline mt-2">
-            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="disallow-sell" value="disallow"
+            <input class="form-check-input" type="radio" name="allow-sell-radio-group" id="disallow-sell" value="1"
               checked>
             <label class="form-check-label" for="disallow-sell">Do not sell my information</label>
           </div>
@@ -151,11 +154,13 @@
           </div>
         </div>
 
+        <!-- Guide ended -->
+
         <div class="item mt-4" id="end-guide">
           <button type="button" class="btn btn-lg btn-outline-success goback mb-2 mr-5">
             Redo the guide
           </button>
-          <a href="/skin/dashboard.html#general"><button type="button" id="get-start"
+          <a href="/skin/dashboard.html#general"><button type="button" id="finish"
               class="btn btn-lg btn-outline-success mb-2 ml-2">
               &nbsp;&nbsp;Finished&nbsp;&nbsp;
             </button></a>

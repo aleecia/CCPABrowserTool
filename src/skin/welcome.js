@@ -51,6 +51,8 @@ $(document).ready(function () {
             $('#item8').show();
             $('#item7').show();
             $('#allow-sell').attr('disabled', true);
+        } else {
+            $('#item7').show();
         }
         
         $('#end-guide').show();
@@ -116,6 +118,9 @@ $(document).ready(function () {
     });
 
     $('#submit-parent-password').on('click', function () {
+        chrome.storage.sync.set({
+            'parent-password': $('#input-password').val()
+        });
         $('#item5').hide();
         $('#item3').show();
         $('#end-guide').show();
@@ -131,4 +136,19 @@ $(document).ready(function () {
             $('#allow-sell').attr('disabled', true);
         }
     })
+
+    $('#finish').on('click', function () {
+        chrome.storage.sync.set({
+            'do-not-sell-data': $('input[name=allow-sell-radio-group]:checked').val()
+        });
+    });
+
+    $('#parent-finish').on('click', function () {
+        chrome.storage.sync.set({
+            'do-not-sell-data': $('input[name=allow-sell-radio-group]:checked').val()
+        });
+        chrome.storage.sync.set({
+            'parent-mode': 'true'
+        });
+    });
 });
