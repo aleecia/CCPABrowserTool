@@ -179,28 +179,25 @@
                             <h1 class="h2 text-dark">General Settings</h1>
                         </div>
                         <div>
-                            <p class="lead">
-                            <div class="text-left ml-3">
-                                <p class="lead">
-                                    Set your default preference for all website
-                                </p>
-                                <div class="custom-control custom-checkbox mb-1">
-                                    <input type="checkbox" class="custom-control-input" id="customCheck1">
-                                    <label class="custom-control-label" for="customCheck1">&nbsp;Do not sell my
-                                        data</label>
-                                </div>
-                                <div class="custom-control custom-checkbox mb-1">
-                                    <input type="checkbox" class="custom-control-input" id="customCheck2">
-                                    <label class="custom-control-label" for="customCheck2">&nbsp;Request for my
-                                        data</label>
-                                </div>
-                                <div class="custom-control custom-checkbox mb-4">
-                                    <input type="checkbox" class="custom-control-input" id="customCheck3">
-                                    <label class="custom-control-label" for="customCheck3">&nbsp;Delete all my
-                                        data</label>
-                                </div>
-                            </div>
-                            </p>
+                          <p class="lead">
+                            Let's set your default preference for all the websites you will visit. <br />
+                            You can also ask the website to send back or delete your information on the extension popup window.
+                          </p>
+                          <div class="form-check form-check-inline mt-2">
+                            <input class="form-check-input" type="radio" name="allow-sell-radio-group" id="allow-sell" value="0">
+                            <label class="form-check-label" for="allow-sell">Allow selling my information</label>
+                          </div>
+                          <div class="form-check form-check-inline mt-2">
+                            <input class="form-check-input" type="radio" name="allow-sell-radio-group" id="disallow-sell" value="1"
+                              checked>
+                            <label class="form-check-label" for="disallow-sell">Do not sell my information</label>
+                          </div>
+                        </div>
+                        <div class="mt-4">
+                          <p class="lead">
+                            Exception list 
+                          </p>
+
                         </div>
                     </div>
                     <div id="stats" class="tab">
