@@ -1,7 +1,5 @@
 'use strict';
 
-const THIRTY_MINUTES_IN_MILLISECONDS = 1800000;
-
 // TODO: Watch URL change to determine which tab to show
 
 $(document).ready(function () {
@@ -17,13 +15,10 @@ $(document).ready(function () {
     }
 
     function activateTabOnRefresh() {
-        const activeTabID = getStorageCookie('active_tab');
-
-        if (activeTabID == undefined) {
-            switchToTab("#introduction");
-            return;
+        var url = document.location.toString();
+        if (url.match('#')) {
+            switchToTab('#' + url.split('#')[1]);
         }
-        switchToTab(activeTabID);
     }
 
     function switchToTab(tabID) {
@@ -46,7 +41,6 @@ $(document).ready(function () {
     /**
      * Below are scripts that get executed once mounted
      */
-
     activateTabOnRefresh();
 
     /**
