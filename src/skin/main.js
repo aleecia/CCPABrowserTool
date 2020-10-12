@@ -11,8 +11,8 @@ $(document).ready(function () {
     }, function (tabs) {
         var tab = tabs[0];
         var url = new URL(tab.url);
-        var domain = url.hostname;
-        $('#exception').append("<label class='text-info' id='origin'>" + domain + "</label>");
+        var origin = url.origin;
+        $('#exception').append("<label class='text-info' id='origin'>" + origin + "</label>");
     });
 
     $('#exception').click(function () {
@@ -30,10 +30,9 @@ $(document).ready(function () {
                 active: true,
                 currentWindow: true
             }, function (tabs) {
-                var tab = tabs[0];
                 var url = new URL(tab.url);
-                var domain = url.hostname;
-                $('#exception').append("<label class='text-info' id='origin'>" + domain + "</label>");
+                var origin = url.origin;
+                $('#exception').append("<label class='text-info' id='origin'>" + origin + "</label>");
             });
 
         } else {
@@ -50,5 +49,39 @@ $(document).ready(function () {
         $('#exception-question').removeClass('text-light');
         $('#exception-question').addClass('text-primary');
     });
-
 });
+
+
+document.getElementById("sendrequest").addEventListener("click",function(){
+    // get my data
+    var r1 = "u";
+    // delete my data
+    var r2 = "u";
+    if ($("#get").get(0).checked) {
+        r1 = "1";
+    }
+    if ($("#delete").get(0).checked) {
+        r2 = "1";
+    }
+    chrome.storage.sync.get(['do_not_sell_data'], function(result) {
+        // do not sell my data
+        var r3, allowAllToSell;
+        if(result.do_not_sell_data == undefined) {
+            allowAllToSell = false;
+            r3 = "u";
+        } else if(result.do_not_sell_data == "1") {
+            allowAllToSell = false;
+            r3 = "1";
+        } else {
+            allowAllToSell = true;
+            r3 = "0";
+        }
+        chrome.runtime.sendMessage({r3: r3});
+        chrome.runtime.sendMessage({result: result});
+        chrome.runtime.sendMessage({allowAllToSellFlag: allowAllToSell});
+    });
+    chrome.runtime.sendMessage({r1: r1});
+    chrome.runtime.sendMessage({r2: r2});
+});
+
+
