@@ -6,10 +6,10 @@
   "browser_action": {
     "default_popup": "skin/main.html",
     "default_icon": {
-      "16": "skin/images/get_started16.png",
-      "32": "skin/images/get_started32.png",
-      "48": "skin/images/get_started48.png",
-      "128": "skin/images/get_started128.png"
+      "16": "skin/images/icon2.png",
+      "32": "skin/images/icon2.png",
+      "48": "skin/images/icon2.png",
+      "128": "skin/images/icon2.png"
     }
   },
   "background": {
@@ -17,10 +17,10 @@
     "persistent": false
   },
   "icons": {
-    "16": "skin/images/get_started16.png",
-    "32": "skin/images/get_started32.png",
-    "48": "skin/images/get_started48.png",
-    "128": "skin/images/get_started128.png"
+    "16": "skin/images/icon2.png",
+    "32": "skin/images/icon2.png",
+    "48": "skin/images/icon2.png",
+    "128": "skin/images/icon2.png"
   },
   "options_ui": {
     "page": "/skin/dashboard.html",
