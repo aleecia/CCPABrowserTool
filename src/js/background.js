@@ -12,7 +12,6 @@ var currentTabURL = "undefined";
 var originURL = "undefined";
 var exceptionList = new Set();
 
-// exceptionList.add("https://www.google.com");
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.r1) {
@@ -30,7 +29,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.allowAllToSellFlag) {
         allowAllToSellFlag = request.allowAllToSell;
     }
-    console.log("receive message");
 });
 
 function parseOriginURL(url) {
@@ -44,6 +42,16 @@ async function initialize() {
 initialize();
 
 
+function isInExceptionList(url) {
+    if (exceptionList.length === 0) {
+        return false;
+    } else if (exceptionList.has(url)) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 function setupHeaderModListener() {
 
     let hasRequestHeadersModification = true;
@@ -56,7 +64,7 @@ function setupHeaderModListener() {
         );
     }
     chrome.webRequest.onSendHeaders.addListener(details => {
-        console.log(details.requestHeaders);
+        console.log(details);
     },
         { urls: ["<all_urls>"] },
         ['extraHeaders', 'requestHeaders']
@@ -74,20 +82,10 @@ function isThirdPartyURL(url) {
 function getCurrentURL() {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         var activeTab = tabs[0];
-        if (activeTab.url !== undefined && /^https:./.test(activeTab.url)) {
+        if (activeTab !== undefined && activeTab.url !== undefined && /^https:./.test(activeTab.url)) {
             originURL = parseOriginURL(activeTab.url);
         }
     });
-}
-
-function isInExceptionList(url) {
-    if (exceptionList.length === 0) {
-        return false;
-    } else if (exceptionList.has(url)) {
-        return true;
-    } else {
-        return false;
-    }
 }
 
 function modifyRequestHeaderHandler(details) {
@@ -98,44 +96,49 @@ function modifyRequestHeaderHandler(details) {
     getCurrentURL();
     var requestOrigin = parseOriginURL(details.url);
     var isThirdParty = isThirdPartyURL(requestOrigin);
-
     if (isThirdParty == true) {
-        console.log("Third party");
         if (isInExceptionList(requestOrigin) == true || allowAllToSellFlag == true) {
             details.requestHeaders.push({ name: "ccpa", value: "uu0" });
+            // console.log("Third party, in exception list, or allow all to sell, should be uu0");
         } else {
             details.requestHeaders.push({ name: "ccpa", value: "uu1" });
+            console.log("Third party, NOT in exception list, NOT allow all, should be uu1");
         }
     } else {
         var ccpa;
-        console.log("First party !!!!");
         if (isInExceptionList(requestOrigin) == true) {
             if (hasPreference) {
                 ccpa = ccpa_r1 + ccpa_r2 + ccpa_r3;
-                if (ccpa_r3 === "1") {
+                // console.log("First party, in list, has current preference, should be r1 r2 r3");
+                if (ccpa_r3 == "1") {
                     exceptionList.delete(requestOrigin);
+                    // console.log("First party, r3 is 1, remove from list");
                 }
             } else {
                 ccpa = ccpa_r1 + ccpa_r2 + "0";
+                // console.log("First party, in list, NO preference, should be uu0");
             }
         } else {
             if (hasPreference) {
                 ccpa = ccpa_r1 + ccpa_r2 + ccpa_r3;
-                if (ccpa_r3 === "0") {
+                console.log("First party, NOT in exception list, HAS preference, should be user's choice(u11)");
+                if (ccpa_r3 == "0") {
                     exceptionList.add(requestOrigin);
+                    // console.log("First party, r3 is 0, add to list");
                 }
             } else { // "uuu"
                 if (allowAllToSellFlag) {
                     ccpa = ccpa_r1 + ccpa_r2 + "0";
                     exceptionList.add(requestOrigin);
+                    // console.log("First party, NOT in exception list, NO preference, should be uu0");
                 } else {
                     ccpa = ccpa_r1 + ccpa_r2 + "1";
-                    // console.log("Not in exception, not has preference, not allow all to sell");
+                    console.log("First party request, NOT in exception list, NO specific preference and not allow all to sell, should be uu1");
                 }
             }
         }
+        console.log(ccpa);
         details.requestHeaders.push({ name: "ccpa", value: ccpa });
-        console.log(exceptionList);
     }
     return { requestHeaders: details.requestHeaders };
 }

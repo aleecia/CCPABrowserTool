@@ -139,13 +139,13 @@ $(document).ready(function () {
 
     $('#finish').on('click', function () {
         chrome.storage.sync.set({
-            'do-not-sell-data': $('input[name=allow-sell-radio-group]:checked').val()
+            'do_not_sell_data': $('input[name=allow-sell-radio-group]:checked').val()
         });
     });
 
     $('#parent-finish').on('click', function () {
         chrome.storage.sync.set({
-            'do-not-sell-data': $('input[name=allow-sell-radio-group]:checked').val()
+            'do_not_sell_data': $('input[name=allow-sell-radio-group]:checked').val()
         });
         chrome.storage.sync.set({
             'parent-mode': 'true'
