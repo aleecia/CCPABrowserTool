@@ -21,6 +21,7 @@ $(document).ready(function () {
   $('#for-child').on('click', function () {
     $('#item1').hide();
     $('#item5').show();
+    $('#parent-finish').attr('disabled', true);
   });
   /* For-self */
 
@@ -40,6 +41,7 @@ $(document).ready(function () {
     if (age >= 13 && age < 16) {
       $('#item4').show();
       $('#item7').show();
+      $('#allow-sell').attr('disabled', false);
     } else if (age < 13) {
       $('#item4').show();
       $('#item8').show();
@@ -50,6 +52,15 @@ $(document).ready(function () {
     }
 
     $('#end-guide').show();
+  });
+  $('#parent-consent').on('change', function () {
+    console.log('1');
+
+    if ($(this).is(':checked')) {
+      $('#allow-sell').attr('disabled', false);
+    } else {
+      $('#allow-sell').attr('disabled', true);
+    }
   });
   /* For-child */
 
@@ -90,7 +101,7 @@ $(document).ready(function () {
         $(this).addClass("valid").removeClass("invalid");
         $requirements.removeClass("wrong").addClass("good");
         $passwordAlert.removeClass("alert-warning").addClass("alert-success");
-        $('#submit-parent-password').removeClass("disabled");
+        $('#parent-finish').attr('disabled', false);
       } else {
         $(this).addClass("invalid").removeClass("valid");
         $passwordAlert.removeClass("alert-success").addClass("alert-warning");
@@ -109,33 +120,23 @@ $(document).ready(function () {
       }
     });
   });
-  $('#submit-parent-password').on('click', function () {
-    chrome.storage.sync.set({
-      'parent-password': $('#input-password').val()
-    });
-    $('#item5').hide();
-    $('#item3').show();
-    $('#end-guide').show();
-  });
-  $('#parent-consent').on('change', function () {
-    console.log('1');
-
-    if ($(this).is(':checked')) {
-      console.log('2');
-      $('#allow-sell').attr('disabled', false);
-    } else {
-      console.log('3');
-      $('#allow-sell').attr('disabled', true);
-    }
-  });
   $('#finish').on('click', function () {
+    setDefaultPreference($('input[name=allow-sell-radio-group]:checked').val());
+    getDefaultPreference().then(function (data) {
+      var defaultPreference = data["default"];
+      console.log('default: ' + defaultPreference);
+    });
     chrome.storage.sync.set({
       'do_not_sell_data': $('input[name=allow-sell-radio-group]:checked').val()
     });
   });
   $('#parent-finish').on('click', function () {
+    setDefaultPreference($('input[name=parent-allow-sell-radio-group]:checked').val());
     chrome.storage.sync.set({
-      'do_not_sell_data': $('input[name=allow-sell-radio-group]:checked').val()
+      'do_not_sell_data': $('input[name=parent-allow-sell-radio-group]:checked').val()
+    });
+    chrome.storage.sync.set({
+      'parent-password': $('#input-password').val()
     });
     chrome.storage.sync.set({
       'parent-mode': 'true'
