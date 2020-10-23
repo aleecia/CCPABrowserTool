@@ -89,17 +89,15 @@ const setCustomPreference = () => {
 
 
 // checks whether a custom preference (exception) exists for the current opened tab
-// if an exception for the current page exists the promise resolves
-// if no exception (custom preference) exists for the current page the promise enters the catch clause
+// if an exception for the current page exists the promise resolves with the value 1 
+// otherwise it resolves with a value of 0
 // usage example:
     // checkCustomPreference()
-    // .then(data => { // custom preference does exist for the current tab
-    //     var customPreferences = data.preference
+    // .then(data => { // data would be a boolean val indicating whether or not the customPreference exists
+    //     
     //         ...
     // })
-    // .catch(val => { // val can be ignored but it is neccessary to be given as argument.
-    //                 // custom preference does not exist for the current tab
-    // })
+    // 
 
 const checkCustomPreference = () => {
 	return new Promise((resolve, reject) => {
@@ -112,12 +110,12 @@ const checkCustomPreference = () => {
 						(p) => p.domain == tablink
 						)
 					if (filteredPreference.length == 0) {
-						reject(0)
+						resolve(0)
 					} else {
-						resolve(filteredPreference[0])
+						resolve(1)
 					}
 				} else {
-					reject(0)
+					resolve(0)
 				}
 			})
 		})
