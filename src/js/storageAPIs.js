@@ -209,13 +209,19 @@ const deleteCustomPreference = () => {
 
 const getExceptionsList = () => {
 	return new Promise((resolve, reject) => {
-		chrome.storage.sync.get('customPreferences', data => 
-			chrome.runtime.lastError
-			? reject(Error(chrome.runtime.lastError.message))
-			: resolve(data.customPreferences.map(p => p.domain))
-			)
+	  chrome.storage.sync.get('customPreferences', data => {
+		if (chrome.runtime.lastError) {
+		  reject(Error(chrome.runtime.lastError.message))
+		} else {
+			if (data.customPreferences) {
+			  resolve(data.customPreferences.map(p => p.domain))
+			} else {
+			  resolve([])
+			}
+		  }
+		})
 	})
-}
+  }
 
 
 // stores the information for requests sent to first parties
