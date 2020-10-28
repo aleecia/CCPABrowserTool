@@ -1,7 +1,42 @@
 'use strict';
 
 $(document).ready(function () {
-    var allowSell;
+    var allowSell = false;
+    var age;
+    var defaultPreference;
+    var customPreference;
+    var notInExceptionList = true;
+
+    getDefaultPreference()
+        .then(data => {
+            defaultPreference = data.default;
+            console.log('default1', defaultPreference);
+
+            checkCustomPreference()
+                .then(data => {
+                    customPreference = data.preference;
+                    notInExceptionList = false;
+                    console.log('custom1', customPreference);
+                    if (customPreference == 0) {
+                        allowSell = true;
+                    }
+                })
+                .catch(val => {
+                    if (defaultPreference == 0) {
+                        allowSell = true;
+                    }
+
+
+                });
+
+            console.log('default', defaultPreference);
+            console.log('custom', customPreference);
+            console.log('isInExceptionList', isInExceptionList);
+
+
+        });
+
+
     chrome.storage.sync.get(['do_not_sell_data'], function (result) {
         if (result.do_not_sell_data == undefined) {
             allowSell = false;
@@ -11,6 +46,19 @@ $(document).ready(function () {
             allowSell = true;
         }
     });
+
+    getUserDOB()
+        .then(result => {
+            var birthday = moment(result.userDOB);
+            console.log('dob2:', result.userDOB)
+            var today = moment();
+            var age = today.diff(birthday, 'years');
+            console.log('age:', age)
+            if (age < 13) {
+                $('#exception').html('Children under age 13 are by default choosing <br /> do not selling personal information');
+            }
+        })
+
 
     if (allowSell == true) {
         $('#off').show();
@@ -34,6 +82,9 @@ $(document).ready(function () {
     });
 
     $('#exception').click(function () {
+        if (age < 13) {
+            return;
+        }
         var activeStatus = $('.status.active');
         var inactiveStatus = $('.status.inactive');
         activeStatus.hide();
@@ -82,10 +133,16 @@ $(document).ready(function () {
     });
 
     $('#exception').hover(function () {
+        if (age < 13) {
+            return;
+        }
         $('#origin').removeClass('text-info');
         $('#exception-question').removeClass('text-primary');
         $('#exception-question').addClass('text-light');
     }, function () {
+        if (age < 13) {
+            return;
+        }
         $('#origin').addClass('text-info');
         $('#exception-question').removeClass('text-light');
         $('#exception-question').addClass('text-primary');

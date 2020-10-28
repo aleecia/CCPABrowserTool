@@ -28,14 +28,10 @@ $(document).ready(function () {
   $('#submit-birthday').on('click', function () {
     // TODO: Validate birthday
     var birthday = moment($('#birthday').val());
+    console.log('dob:', birthday);
     var today = moment();
     var age = today.diff(birthday, 'years');
-    chrome.storage.sync.set({
-      'birthday': birthday
-    });
-    chrome.storage.sync.set({
-      'age': age
-    });
+    setUserDOB($('#birthday').val());
     $('#item2').hide();
 
     if (age >= 13 && age < 16) {
@@ -54,8 +50,6 @@ $(document).ready(function () {
     $('#end-guide').show();
   });
   $('#parent-consent').on('change', function () {
-    console.log('1');
-
     if ($(this).is(':checked')) {
       $('#allow-sell').attr('disabled', false);
     } else {
@@ -125,13 +119,21 @@ $(document).ready(function () {
     getDefaultPreference().then(function (data) {
       var defaultPreference = data["default"];
       console.log('default: ' + defaultPreference);
-    });
+    }); // TODO: REMOVE
+
     chrome.storage.sync.set({
       'do_not_sell_data': $('input[name=allow-sell-radio-group]:checked').val()
     });
   });
   $('#parent-finish').on('click', function () {
     setDefaultPreference($('input[name=parent-allow-sell-radio-group]:checked').val());
+    setParentPassword($('#input-password').val());
+    console.log('password input', $('#input-password').val());
+    getParentPassword().then(function (result) {
+      var password = result.parentPassword;
+      console.log('parent password', password);
+    }); // TODO: REMOVE
+
     chrome.storage.sync.set({
       'do_not_sell_data': $('input[name=parent-allow-sell-radio-group]:checked').val()
     });

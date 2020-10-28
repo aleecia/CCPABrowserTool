@@ -9,14 +9,12 @@
     //     ...
     // )
     // .catch(error => console.error(error))
-const setUserDOB = (day, month, year) => {
+const setUserDOB = (userDOB) => {
 	var userDOB = {
-		day: day,
-		month: month,
-		year: year,
+		userDOB: userDOB,
 	}
 	return new Promise((resolve, reject) =>
-		chrome.storage.sync.set({ userDOB }, () =>
+		chrome.storage.sync.set(userDOB, () =>
 			chrome.runtime.lastError
 			? reject(Error(chrome.runtime.lastError.message))
 			: resolve()
@@ -27,10 +25,8 @@ const setUserDOB = (day, month, year) => {
 // retrieves the stored DOB of the user
 // usage example:
     // getUserDOB()
-    // .then( date => {
-    //     var day = date.day
-    //     var month = date.month
-    //     var year = date.year
+    // .then( result => {
+    //     var birthday = result.userDOB
     //     ...
     // })
     // .catch(error => console.error(error))
@@ -43,6 +39,84 @@ const getUserDOB = () => {
 			: resolve(result)
 		})
 		)
+}
+
+// stores the users password set for parent mode
+// usage example :
+// setParentPassword("12345")
+// .then(
+//     ...
+// )
+// .catch(error => console.error(error))
+const setParentPassword = (parentPassword) => {
+	var parentPassword = {
+		parentPassword: parentPassword,
+	}
+	return new Promise((resolve, reject) =>
+		chrome.storage.sync.set(parentPassword, () =>
+			chrome.runtime.lastError
+			? reject(Error(chrome.runtime.lastError.message))
+			: resolve()
+		)
+	)
+}
+
+// retrieves the stored parent password of the user
+// usage example:
+	// getParentPassword()
+	// .then( result => {
+	//     var password = result.parentPassword
+	//     ...
+	// })
+	// .catch(error => console.error(error))
+
+const getParentPassword = () => {
+	return new Promise((resolve, reject) =>
+		chrome.storage.sync.get('parentPassword', (result) => {
+			chrome.runtime.lastError
+			? reject(Error(chrome.runtime.lastError.message))
+			: resolve(result)
+		})
+	)
+}
+
+// stores the current status about whether user is in parent mode
+// usage example :
+// setIsParentMode(true)
+// .then(
+//     ...
+// )
+// .catch(error => console.error(error))
+const setIsParentMode = (isParentMode) => {
+	var isParentMode = {
+		isParentMode: isParentMode,
+	}
+	return new Promise((resolve, reject) =>
+		chrome.storage.sync.set({ isParentMode }, () =>
+			chrome.runtime.lastError
+			? reject(Error(chrome.runtime.lastError.message))
+			: resolve()
+		)
+	)
+}
+
+// retrieves if the user is in parent mode
+// usage example:
+	// getIsParentMode()
+	// .then( result => {
+	//     var isParentMode = result.isParentMode
+	//     ...
+	// })
+	// .catch(error => console.error(error))
+
+const getIsParentMode= () => {
+	return new Promise((resolve, reject) =>
+		chrome.storage.sync.get('isParentMode', (result) => {
+			chrome.runtime.lastError
+			? reject(Error(chrome.runtime.lastError.message))
+			: resolve(result)
+		})
+	)
 }
 
 // sets the custom (opposite to default) preference for the webpage opened
