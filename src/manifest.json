@@ -13,20 +13,20 @@
   "browser_action": {
     "default_popup": "skin/main.html",
     "default_icon": {
-      "16": "skin/images/icon2.png",
-      "32": "skin/images/icon2.png",
-      "48": "skin/images/icon2.png",
-      "128": "skin/images/icon2.png"
+      "16": "skin/images/icon.png",
+      "32": "skin/images/icon.png",
+      "48": "skin/images/icon.png",
+      "128": "skin/images/icon.png"
     }
   },
   "background": {
     "scripts": ["js/background.js", "skin/jquery-3.4.1.min.js"]
   },
   "icons": {
-    "16": "skin/images/icon2.png",
-    "32": "skin/images/icon2.png",
-    "48": "skin/images/icon2.png",
-    "128": "skin/images/icon2.png"
+    "16": "skin/images/icon.png",
+    "32": "skin/images/icon.png",
+    "48": "skin/images/icon.png",
+    "128": "skin/images/icon.png"
   },
   "options_ui": {
     "page": "/skin/dashboard.html",

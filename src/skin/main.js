@@ -34,9 +34,6 @@ $(document).ready(function () {
                         console.log('birthday:', birthday)
                         var today = moment();
                         age = today.diff(birthday, 'years');
-                        chrome.cookies.set({
-                            'current_age': age
-                        }, () => {});
                         if (age < 13) {
                             $('#switch_exception').html('Children under age 13 are by default enroll do not sell personal information for');
                         }
