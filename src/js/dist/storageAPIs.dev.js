@@ -54,8 +54,7 @@ var setParentPassword = function setParentPassword(parentPassword) {
 // usage example:
 // getParentPassword()
 // .then( result => {
-//     var password = result.parentPassword
-//     ...
+//     var pw = result.parentPassword
 // })
 // .catch(error => console.error(error))
 
@@ -114,13 +113,9 @@ var getIsParentMode = function getIsParentMode() {
 var setCustomPreference = function setCustomPreference() {
   return new Promise(function (resolve, reject) {
     getDefaultPreference().then(function (defaultPreference) {
-      var defaultPreference = defaultPreference.defaultPreference["default"];
+      var defaultPreference = defaultPreference["default"];
+      console.log('thisdefault', defaultPreference);
       var customPreference = 1;
-
-      if (defaultPreference) {
-        customPreference = 0;
-      }
-
       chrome.tabs.getSelected(null, function (tab) {
         var tablink = tab.url.split('/')[2];
         chrome.storage.sync.get('customPreferences', function (data) {
@@ -149,17 +144,14 @@ var setCustomPreference = function setCustomPreference() {
     });
   });
 }; // checks whether a custom preference (exception) exists for the current opened tab
-// if an exception for the current page exists the promise resolves
-// if no exception (custom preference) exists for the current page the promise enters the catch clause
+// if an exception for the current page exists the promise resolves with the value 1 
+// otherwise it resolves with a value of 0
 // usage example:
 // checkCustomPreference()
-// .then(data => { // custom preference does exist for the current tab
-//     var customPreferences = data.preference
-//         ...
+// .then(data => { // data would be a boolean val indicating whether or not the customPreference exists
+//      ...
 // })
-// .catch(val => { // val can be ignored but it is neccessary to be given as argument.
-//                 // custom preference does not exist for the current tab
-// })
+// 
 
 
 var checkCustomPreference = function checkCustomPreference() {
@@ -175,12 +167,12 @@ var checkCustomPreference = function checkCustomPreference() {
           });
 
           if (filteredPreference.length == 0) {
-            reject(0);
+            resolve(0);
           } else {
-            resolve(filteredPreference[0]);
+            resolve(1);
           }
         } else {
-          reject(0);
+          resolve(0);
         }
       });
     });
@@ -272,9 +264,17 @@ var deleteCustomPreference = function deleteCustomPreference() {
 var getExceptionsList = function getExceptionsList() {
   return new Promise(function (resolve, reject) {
     chrome.storage.sync.get('customPreferences', function (data) {
-      return chrome.runtime.lastError ? reject(Error(chrome.runtime.lastError.message)) : resolve(data.customPreferences.map(function (p) {
-        return p.domain;
-      }));
+      if (chrome.runtime.lastError) {
+        reject(Error(chrome.runtime.lastError.message));
+      } else {
+        if (data.customPreferences) {
+          resolve(data.customPreferences.map(function (p) {
+            return p.domain;
+          }));
+        } else {
+          resolve([]);
+        }
+      }
     });
   });
 }; // stores the information for requests sent to first parties

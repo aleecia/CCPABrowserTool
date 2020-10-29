@@ -28,7 +28,6 @@ $(document).ready(function () {
   $('#submit-birthday').on('click', function () {
     // TODO: Validate birthday
     var birthday = moment($('#birthday').val());
-    console.log('dob:', birthday);
     var today = moment();
     var age = today.diff(birthday, 'years');
     setUserDOB($('#birthday').val());
@@ -128,20 +127,16 @@ $(document).ready(function () {
   $('#parent-finish').on('click', function () {
     setDefaultPreference($('input[name=parent-allow-sell-radio-group]:checked').val());
     setParentPassword($('#input-password').val());
+    setIsParentMode(true);
+    /* TEST CONSOLE
     console.log('password input', $('#input-password').val());
-    getParentPassword().then(function (result) {
-      var password = result.parentPassword;
-      console.log('parent password', password);
-    }); // TODO: REMOVE
+    getParentPassword().then(data => { console.log ('pw', data)});
+    getIsParentMode().then(data => { console.log ('mode', data)});
+    */
+    // TODO: REMOVE
 
     chrome.storage.sync.set({
       'do_not_sell_data': $('input[name=parent-allow-sell-radio-group]:checked').val()
-    });
-    chrome.storage.sync.set({
-      'parent-password': $('#input-password').val()
-    });
-    chrome.storage.sync.set({
-      'parent-mode': 'true'
     });
   });
 });

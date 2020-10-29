@@ -28,13 +28,13 @@ body {
     display: none;
 }
 
-#exception {
+#switch_exception {
     transition: all .4s ease;
     -webkit-transition: all .4s ease;
     cursor: pointer;
 }
 
-#exception:hover {
+#switch_exception:hover {
     background: #629bf7;
     color: #fff;
 }

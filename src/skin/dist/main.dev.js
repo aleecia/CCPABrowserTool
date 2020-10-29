@@ -5,178 +5,199 @@ $(document).ready(function () {
   var age;
   var defaultPreference;
   var customPreference;
-  var notInExceptionList = true;
+  /**
+   * 1. Get default preference, 1 => do not sell my data; 0 => allow selling my data.
+   * 2. Check if the custom flag has been set, 1 => custom set (opposite to default), 0 => no custom set for this site
+   * 3. Get user DOB to determine whether he can change the setting or not.
+   * 4. According to these information, render the tool page.
+   * 5. Handle onClick callbacks.
+   */
+
   getDefaultPreference().then(function (data) {
     defaultPreference = data["default"];
-    console.log('default1', defaultPreference);
     checkCustomPreference().then(function (data) {
-      customPreference = data.preference;
-      notInExceptionList = false;
-      console.log('custom1', customPreference);
+      customPreference = data;
+      /* TEST CONSOLE
+      console.log('default? ', defaultPreference);
+      console.log('custom? ', customPreference);
+      */
 
-      if (customPreference == 0) {
+      if (defaultPreference == 0 && customPreference == 0 || defaultPreference == 1 && customPreference == 1) {
         allowSell = true;
       }
-    })["catch"](function (val) {
-      if (defaultPreference == 0) {
-        allowSell = true;
-      }
+
+      getUserDOB().then(function (data) {
+        var birthday = moment(data.userDOB);
+        console.log('birthday:', birthday);
+        var today = moment();
+        age = today.diff(birthday, 'years');
+        chrome.cookies.set({
+          'current_age': age
+        }, function () {});
+
+        if (age < 13) {
+          $('#switch_exception').html('Children under age 13 are by default enroll do not sell personal information for');
+        }
+
+        if (allowSell == true) {
+          $('#off').show();
+          $('#off').addClass('active');
+          $('#on').addClass('inactive');
+        } else {
+          $('#on').show();
+          $('#on').addClass('active');
+          $('#off').addClass('inactive');
+        }
+
+        if (customPreference == 1) {
+          $('#switch_exception').html('Switch back to default preference');
+          $('#switch_exception').removeClass('default');
+          $('#switch_exception').addClass('exception');
+        } else {
+          chrome.tabs.query({
+            active: true,
+            currentWindow: true
+          }, function (tabs) {
+            var tab = tabs[0];
+            var url = new URL(tab.url);
+            var origin = url.origin;
+            $('#switch_exception').append("<label class='text-info' id='origin'>" + origin + "</label>");
+          });
+        }
+
+        $('#switch_exception').click(function () {
+          if (age < 13) {
+            return;
+          }
+
+          var activeStatus = $('.status.active');
+          var inactiveStatus = $('.status.inactive');
+          activeStatus.hide();
+          inactiveStatus.show();
+          activeStatus.removeClass('active');
+          activeStatus.addClass('inactive');
+          inactiveStatus.removeClass('inactive');
+          inactiveStatus.addClass('active');
+
+          if ($('#switch_exception').hasClass('exception')) {
+            var origin;
+            chrome.tabs.query({
+              active: true,
+              currentWindow: true
+            }, function (tabs) {
+              var tab = tabs[0];
+              var url = new URL(tab.url);
+              origin = url.origin;
+              $('#switch_exception').html("Create exception for <a class='text-primary ml-1'\
+                            href='/skin/dashboard.html#introduction' target='_blank' id='exception-question'> \
+                            <i class='far fa-question-circle'></i></a><br /> \
+                            <label class='text-info' id='origin'>" + origin + "</label>");
+            });
+            deleteCustomPreference().then(function () {
+              /* TEST IF CORRECTLY SET
+              checkCustomPreference()
+                  .then(data => { // custom preference does exist for the current tab
+                      var customPreferences = data;
+                      console.log('after remove custom: ', customPreferences);
+                  }).catch(error => console.error(error));
+                  */
+              $('#switch_exception').removeClass('exception');
+              $('#switch_exception').addClass('default');
+            })["catch"](function (error) {
+              return console.error(error);
+            });
+          } else {
+            setCustomPreference().then(function () {
+              /* TEST IF CORRECTLY SET
+              checkCustomPreference()
+              .then(data => { // custom preference does exist for the current tab
+                  var customPreferences = data;
+                  console.log('after set custom: ', customPreferences);
+              }).catch(error => console.error(error));
+              */
+              $('#switch_exception').removeClass('default');
+              $('#switch_exception').addClass('exception');
+              $('#switch_exception').html('Switch back to default preference');
+            })["catch"](function (error) {
+              return console.error(error);
+            });
+            ;
+          }
+        });
+        $('#switch_exception').hover(function () {
+          if (age < 13) {
+            return;
+          }
+
+          $('#origin').removeClass('text-info');
+          $('#exception-question').removeClass('text-primary');
+          $('#exception-question').addClass('text-light');
+        }, function () {
+          if (age < 13) {
+            return;
+          }
+
+          $('#origin').addClass('text-info');
+          $('#exception-question').removeClass('text-light');
+          $('#exception-question').addClass('text-primary');
+        });
+        $('#sendrequest').on("click", function () {
+          // get my data
+          var r1 = "u"; // delete my data
+
+          var r2 = "u";
+
+          if ($("#get").get(0).checked) {
+            r1 = "1";
+          }
+
+          if ($("#delete").get(0).checked) {
+            r2 = "1";
+          }
+
+          chrome.storage.sync.get(['do_not_sell_data'], function (result) {
+            // do not sell my data
+            var r3, allowAllToSell;
+
+            if (result.do_not_sell_data == undefined) {
+              allowAllToSell = false;
+              r3 = "u";
+            } else if (result.do_not_sell_data == "1") {
+              allowAllToSell = false;
+              r3 = "1";
+            } else {
+              allowAllToSell = true;
+              r3 = "0";
+            }
+
+            chrome.runtime.sendMessage({
+              r3: r3
+            });
+            chrome.runtime.sendMessage({
+              result: result
+            });
+            chrome.runtime.sendMessage({
+              allowAllToSellFlag: allowAllToSell
+            });
+          });
+          chrome.runtime.sendMessage({
+            r1: r1
+          });
+          chrome.runtime.sendMessage({
+            r2: r2
+          });
+        });
+      });
     });
-    console.log('default', defaultPreference);
-    console.log('custom', customPreference);
-    console.log('isInExceptionList', isInExceptionList);
   });
-  chrome.storage.sync.get(['do_not_sell_data'], function (result) {
-    if (result.do_not_sell_data == undefined) {
-      allowSell = false;
-    } else if (result.do_not_sell_data == "1") {
-      allowSell = false;
-    } else {
-      allowSell = true;
-    }
-  });
-  getUserDOB().then(function (result) {
-    var birthday = moment(result.userDOB);
-    console.log('dob2:', result.userDOB);
-    var today = moment();
-    var age = today.diff(birthday, 'years');
-    console.log('age:', age);
-
-    if (age < 13) {
-      $('#exception').html('Children under age 13 are by default choosing <br /> do not selling personal information');
-    }
-  });
-
-  if (allowSell == true) {
-    $('#off').show();
-    $('#off').addClass('active');
-    $('#on').addClass('inactive');
-  } else {
-    $('#on').show();
-    $('#on').addClass('active');
-    $('#off').addClass('inactive');
-  }
-
-  chrome.tabs.query({
-    active: true,
-    currentWindow: true
-  }, function (tabs) {
-    var tab = tabs[0];
-    var url = new URL(tab.url);
-    var origin = url.origin;
-    $('#exception').append("<label class='text-info' id='origin'>" + origin + "</label>");
-  });
-  $('#exception').click(function () {
-    if (age < 13) {
-      return;
-    }
-
-    var activeStatus = $('.status.active');
-    var inactiveStatus = $('.status.inactive');
-    activeStatus.hide();
-    inactiveStatus.show();
-    activeStatus.removeClass('active');
-    activeStatus.addClass('inactive');
-    inactiveStatus.removeClass('inactive');
-    inactiveStatus.addClass('active');
-
-    if ($('#exception').html() == 'Switch back to default preference') {
-      var origin;
-      chrome.tabs.query({
-        active: true,
-        currentWindow: true
-      }, function (tabs) {
-        var tab = tabs[0];
-        var url = new URL(tab.url);
-        origin = url.origin;
-        $('#exception').html("Create exception for <a class='text-primary ml-1'\
-                href='/skin/dashboard.html#introduction' target='_blank' id='exception-question'> \
-                <i class='far fa-question-circle'></i></a><br /> \
-                <label class='text-info' id='origin'>" + origin + "</label>");
-      });
-      setCustomPreference().then()["catch"](function (error) {
-        return console.error(error);
-      });
-      checkCustomPreference().then(function (data) {
-        // custom preference does exist for the current tab
-        var customPreferences = data.preference;
-        console.log('custom1: ', customPreferences);
-      })["catch"](function (val) {
-        console.error('does not exist1' + val);
-      });
-    } else {
-      setCustomPreference();
-      checkCustomPreference().then(function (data) {
-        // custom preference does exist for the current tab
-        var customPreferences = data.preference;
-        console.log('custom2: ', customPreferences);
-      })["catch"](function (val) {
-        console.log('does not exist2' + val);
-      });
-      $('#exception').html('Switch back to default preference');
-    }
-  });
-  $('#exception').hover(function () {
-    if (age < 13) {
-      return;
-    }
-
-    $('#origin').removeClass('text-info');
-    $('#exception-question').removeClass('text-primary');
-    $('#exception-question').addClass('text-light');
-  }, function () {
-    if (age < 13) {
-      return;
-    }
-
-    $('#origin').addClass('text-info');
-    $('#exception-question').removeClass('text-light');
-    $('#exception-question').addClass('text-primary');
-  });
-  $('#sendrequest').on("click", function () {
-    // get my data
-    var r1 = "u"; // delete my data
-
-    var r2 = "u";
-
-    if ($("#get").get(0).checked) {
-      r1 = "1";
-    }
-
-    if ($("#delete").get(0).checked) {
-      r2 = "1";
-    }
-
-    chrome.storage.sync.get(['do_not_sell_data'], function (result) {
-      // do not sell my data
-      var r3, allowAllToSell;
-
-      if (result.do_not_sell_data == undefined) {
-        allowAllToSell = false;
-        r3 = "u";
-      } else if (result.do_not_sell_data == "1") {
-        allowAllToSell = false;
-        r3 = "1";
-      } else {
-        allowAllToSell = true;
-        r3 = "0";
-      }
-
-      chrome.runtime.sendMessage({
-        r3: r3
-      });
-      chrome.runtime.sendMessage({
-        result: result
-      });
-      chrome.runtime.sendMessage({
-        allowAllToSellFlag: allowAllToSell
-      });
-    });
-    chrome.runtime.sendMessage({
-      r1: r1
-    });
-    chrome.runtime.sendMessage({
-      r2: r2
-    });
-  });
+  /*
+             chrome.storage.sync.get(['do_not_sell_data'], function (result) {
+                 if (result.do_not_sell_data == undefined) {
+                     allowSell = false;
+                 } else if (result.do_not_sell_data == "1") {
+                     allowSell = false;
+                 } else {
+                     allowSell = true;
+                 }
+             });*/
 });
