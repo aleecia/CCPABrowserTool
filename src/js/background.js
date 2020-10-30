@@ -1,6 +1,5 @@
 'use strict';
 
-var originURL;
 var ccpa_r1 = "u";
 var ccpa_r2 = "u";
 var ccpa_r3 = "u";
@@ -8,9 +7,7 @@ var hasPreference = false;
 
 var allowAllToSellFlag = false;
 var inExceptionList = false;
-var currentTabURL = "undefined";
 var originURL = "undefined";
-var exceptionList = new Set();
 
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -26,9 +23,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         ccpa_r3 = request.r3;
         hasPreference = true;
     }
-    if (request.allowAllToSellFlag) {
-        allowAllToSellFlag = request.allowAllToSell;
+    if (request.allowAllToSellFlag != undefined || request.allowAllToSellFlag == false) {
+        allowAllToSellFlag = request.allowAllToSellFlag;
     }
+
 });
 
 function parseOriginURL(url) {
@@ -41,33 +39,106 @@ async function initialize() {
 
 initialize();
 
+function storeFirstPartyRequest(r3, r2, r1) {
+    return new Promise((resolve, reject) => {
+        chrome.tabs.getSelected(null, (tab) => {
+            var tablink = new URL(parseOriginURL(tab.url)).hostname;
+            chrome.storage.sync.get('firstPartyRequests', data => {
+                if (chrome.runtime.lastError) {
+                    reject(Error(chrome.runtime.lastError.message))
+                } else {
+                    var firstPartyRequests = data.firstPartyRequests
+                    var now = new Date()
+                    var newRequest = {
+                        "domain": tablink,
+                        "r1": r1,
+                        "r2": r2,
+                        "r3": r3,
+                        "date": {
+                            "day": now.getDate(),
+                            "month": now.getMonth(),
+                            "year": now.getFullYear(),
+                            "time": now.getTime()
+                        }
+                    }
+                    if (firstPartyRequests) {
+                        firstPartyRequests = firstPartyRequests.filter(p => p.domain !== tablink)
+                        firstPartyRequests.push(newRequest)
+                    } else {
+                        firstPartyRequests = [newRequest]
+                    }
+                    chrome.storage.sync.set({ firstPartyRequests }, () =>
+                        chrome.runtime.lastError ?
+                            reject(Error(chrome.runtime.lastError.message)) :
+                            resolve()
+                    )
+                }
+            })
+        })
+    })
+}
 
-function isInExceptionList(url) {
-    // chrome.tabs.getSelected(null, (tab) => {
-    //     chrome.storage.sync.get('customPreferences', (data) => {
-    //         var customPreferences = data.customPreferences;
-    //         var tablink = tab.url.split('/')[2]
-    //         if (customPreferences) {
-    //             var filteredPreference = customPreferences.filter(
-    //                 (p) => p.domain == tablink
-    //             )
-    //             if (filteredPreference.length == 0) {
-    //                 console.log("NOT in");
-    //             } else {
-    //                 console.log("In");
-    //             }
-    //         } else {
-    //             console.log("No preference");
-    //         }
-    //     })
-    // })
-    if (exceptionList.length === 0) {
-        return false;
-    } else if (exceptionList.has(url)) {
-        return true;
-    } else {
-        return false;
-    }
+function storeThirdPartyRequest(r3) {
+    return new Promise((resolve, reject) => {
+        chrome.tabs.getSelected(null, (tab) => {
+            var tablink = new URL(parseOriginURL(tab.url)).hostname;
+            if (chrome.runtime.lastError) {
+                reject(Error(chrome.runtime.lastError.message))
+            } else {
+                chrome.storage.sync.get('thirdPartyRequests', data => {
+                    if (chrome.runtime.lastError) {
+                        return;
+                    }
+                    var thirdPartyRequests = data.thirdPartyRequests
+                    var now = new Date()
+                    var newRequest = {
+                        "domain": tablink,
+                        "r3": r3,
+                        "date": {
+                            "day": now.getDate(),
+                            "month": now.getMonth(),
+                            "year": now.getFullYear()
+                        }
+                    }
+                    if (thirdPartyRequests) {
+                        thirdPartyRequests = thirdPartyRequests.filter(p => p.domain !== tablink)
+                        thirdPartyRequests.push(newRequest)
+                    } else {
+                        thirdPartyRequests = [newRequest]
+                    }
+                    chrome.storage.sync.set({
+						thirdPartyRequests
+					}, () =>
+                        chrome.runtime.lastError ?
+                        reject(Error(chrome.runtime.lastError.message)) :
+                        resolve(thirdPartyRequests)
+                    )
+                })
+            }
+        })
+    })
+}
+
+function isInExceptionListHelper() {
+    chrome.tabs.getSelected(null, (tab) => {
+        var tablink = tab.url.split('/')[2]
+        chrome.storage.sync.get('customPreferences', (data) => {
+            var customPreferences = data.customPreferences
+            if (customPreferences) {
+                var filteredPreference = customPreferences.filter(
+                    (p) => p.domain == tablink
+                )
+                if (filteredPreference.length == 0) {
+                    inExceptionList = false
+                } else {
+                    inExceptionList = true
+                }
+            } else {
+                inExceptionList = false
+            }
+        })
+    })
+    return inExceptionList
 }
 
 function setupHeaderModListener() {
@@ -82,7 +153,7 @@ function setupHeaderModListener() {
         );
     }
     chrome.webRequest.onSendHeaders.addListener(details => {
-        // console.log(details);
+        // console.log(details.requestHeaders);
     },
         { urls: ["<all_urls>"] },
         ['extraHeaders', 'requestHeaders']
@@ -115,53 +186,37 @@ function modifyRequestHeaderHandler(details) {
     getCurrentURL();
     var requestOrigin = parseOriginURL(details.url);
     var isThirdParty = isThirdPartyURL(requestOrigin);
+
     if (isThirdParty == true) {
-        if (isInExceptionList(requestOrigin) == true || allowAllToSellFlag == true) {
+        if (isInExceptionListHelper() == true || allowAllToSellFlag == true) {
             details.requestHeaders.push({ name: "ccpa1", value: "uu0" });
-            // console.log("Third party, in exception list, or allow all to sell, should be uu0");
+            // storeThirdPartyRequest(0).then(data => console.log(data)).catch();
+            console.log("Third party, in list, or allow all to sell, should be uu0");
         } else {
             details.requestHeaders.push({ name: "ccpa1", value: "uu1" });
-            // console.log("Third party, NOT in exception list, NOT allow all, should be uu1");
-            // console.log(details);
+            // storeThirdPartyRequest(1).then().catch();
+            console.log("Third party, NOT in list, NOT allow all, should be uu1");
         }
+
     } else {
         var ccpa;
-        if (isInExceptionList(requestOrigin) == true) {
-            if (hasPreference) {
-                ccpa = ccpa_r1 + ccpa_r2 + ccpa_r3;
-                // console.log("First party, in list, has current preference, should be r1 r2 r3");
-                if (ccpa_r3 == "1") {
-                    exceptionList.delete(requestOrigin);
-                    // console.log("First party, r3 is 1, remove from list");
-                }
-            } else {
-                ccpa = ccpa_r1 + ccpa_r2 + "0";
-                // console.log("First party, in list, NO preference, should be uu0");
-            }
+        if (isInExceptionListHelper() == true) {
+            ccpa = ccpa_r1 + ccpa_r2 + "0";
+            // storeFirstPartyRequest(0, ccpa_r2, ccpa_r1).then().catch();
+
+            console.log("First party, In list, should be rr0");
+
         } else {
-            if (hasPreference) {
-                ccpa = ccpa_r1 + ccpa_r2 + ccpa_r3;
-                // console.log("First party, NOT in exception list, HAS preference, should be user's choice(u11)");
-                if (ccpa_r3 == "0") {
-                    exceptionList.add(requestOrigin);
-                    // console.log("First party, r3 is 0, add to list");
-                }
-            } else { // "uuu"
-                if (allowAllToSellFlag) {
-                    ccpa = ccpa_r1 + ccpa_r2 + "0";
-                    exceptionList.add(requestOrigin);
-                    // console.log("First party, NOT in exception list, NO preference, should be uu0");
-                } else {
-                    ccpa = ccpa_r1 + ccpa_r2 + "1";
-                    // console.log("First party request, NOT in exception list, NO specific preference and not allow all to sell, should be uu1");
-                }
-            }
+            ccpa = ccpa_r1 + ccpa_r2 + "1";
+            // storeFirstPartyRequest(1, ccpa_r2, ccpa_r1).then().catch();
+            console.log("First party, NOT in list, should be rr1");
         }
-        // console.log(ccpa);
+
         details.requestHeaders.push({ name: "ccpa1", value: ccpa });
     }
     return { requestHeaders: details.requestHeaders };
 }
+
 
 chrome.runtime.onInstalled.addListener(function (details) {
     if (details.reason == "install") {
@@ -175,13 +230,3 @@ chrome.runtime.onInstalled.addListener(function (details) {
         console.log("Updated from " + details.previousVersion + " to " + thisVersion + "!");
     }
 });
-
-
-// chrome.tabs.onActivated.addListener(tab => {
-//     chrome.tabs.get(tab.tabId, current_tab_info => {
-//         if(/^https:./.test(current_tab_info.url)) {
-//             currentTabURL = current_tab_info.url;
-//             originURL = parseOriginURL(currentTabURL);
-//         }
-//     });
-// });
