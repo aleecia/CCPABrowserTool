@@ -121,7 +121,7 @@ function storeThirdPartyRequest(r3) {
 
 function isInExceptionListHelper() {
     chrome.tabs.getSelected(null, (tab) => {
-        var tablink = tab.url.split('/')[2]
+        var tablink = new URL(parseOriginURL(tab.url)).origin;
         chrome.storage.sync.get('customPreferences', (data) => {
             var customPreferences = data.customPreferences
             if (customPreferences) {
