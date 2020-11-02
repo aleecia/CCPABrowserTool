@@ -129,10 +129,6 @@ $(document).ready(function () {
                 var defaultPreference = data.default;
                 console.log('default: ' + defaultPreference);
             });
-        // TODO: REMOVE
-        chrome.storage.sync.set({
-            'do_not_sell_data': $('input[name=allow-sell-radio-group]:checked').val()
-        });
     });
 
     $('#parent-finish').on('click', function () {
@@ -144,10 +140,5 @@ $(document).ready(function () {
         getParentPassword().then(data => { console.log ('pw', data)});
         getIsParentMode().then(data => { console.log ('mode', data)});
         */
-
-        // TODO: REMOVE
-        chrome.storage.sync.set({
-            'do_not_sell_data': $('input[name=parent-allow-sell-radio-group]:checked').val()
-        });
     });
 });
