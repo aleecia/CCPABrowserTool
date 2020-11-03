@@ -26,7 +26,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 function parseOriginURL(url) {
-    return url.match(/^[\w-]+:\/{2,}\[?[\w\.:-]+\]?(?::[0-9]*)?/)[0];
+    if(url != null) {
+        return url.match(/^[\w-]+:\/{2,}\[?[\w\.:-]+\]?(?::[0-9]*)?/)[0];
+    }
+    return null;
 }
 
 async function initialize() {
