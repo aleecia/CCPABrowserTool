@@ -10,7 +10,7 @@ const setUserDOB = (userDOB) => {
 		userDOB: userDOB,
 	}
 	return new Promise((resolve, reject) =>
-		chrome.storage.sync.set(userDOB, () =>
+		chrome.storage.local.set(userDOB, () =>
 			chrome.runtime.lastError ?
 			reject(Error(chrome.runtime.lastError.message)) :
 			resolve()
@@ -29,7 +29,7 @@ const setUserDOB = (userDOB) => {
 
 const getUserDOB = () => {
 	return new Promise((resolve, reject) =>
-		chrome.storage.sync.get('userDOB', (result) => {
+		chrome.storage.local.get('userDOB', (result) => {
 			chrome.runtime.lastError ?
 				reject(Error(chrome.runtime.lastError.message)) :
 				resolve(result)
@@ -49,7 +49,7 @@ const setParentPassword = (parentPassword) => {
 		parentPassword: parentPassword,
 	}
 	return new Promise((resolve, reject) =>
-		chrome.storage.sync.set(parentPassword, () =>
+		chrome.storage.local.set(parentPassword, () =>
 			chrome.runtime.lastError ?
 			reject(Error(chrome.runtime.lastError.message)) :
 			resolve()
@@ -66,7 +66,7 @@ const setParentPassword = (parentPassword) => {
 // .catch(error => console.error(error))
 const getParentPassword = () => {
 	return new Promise((resolve, reject) =>
-		chrome.storage.sync.get('parentPassword', (result) => {
+		chrome.storage.local.get('parentPassword', (result) => {
 			chrome.runtime.lastError ?
 				reject(Error(chrome.runtime.lastError.message)) :
 				resolve(result)
@@ -86,7 +86,7 @@ const setIsParentMode = (isParentMode) => {
 		isParentMode: isParentMode,
 	}
 	return new Promise((resolve, reject) =>
-		chrome.storage.sync.set({
+		chrome.storage.local.set({
 				isParentMode
 			}, () =>
 			chrome.runtime.lastError ?
@@ -107,7 +107,7 @@ const setIsParentMode = (isParentMode) => {
 
 const getIsParentMode = () => {
 	return new Promise((resolve, reject) =>
-		chrome.storage.sync.get('isParentMode', (result) => {
+		chrome.storage.local.get('isParentMode', (result) => {
 			chrome.runtime.lastError ?
 				reject(Error(chrome.runtime.lastError.message)) :
 				resolve(result)
@@ -131,7 +131,7 @@ const setCustomPreference = () => {
 			var customPreference = 1;
 			chrome.tabs.getSelected(null, tab => {
 				var tablink = tab.url.split('/')[2]
-				chrome.storage.sync.get('customPreferences', data => {
+				chrome.storage.local.get('customPreferences', data => {
 					var customPreferences = data.customPreferences
 					var newPreference = {
 						"domain": tablink,
@@ -144,7 +144,7 @@ const setCustomPreference = () => {
 					} else {
 						customPreferences = [newPreference]
 					}
-					chrome.storage.sync.set({
+					chrome.storage.local.set({
 							customPreferences
 						}, () =>
 						chrome.runtime.lastError ?
@@ -172,7 +172,7 @@ const checkCustomPreference = () => {
 	return new Promise((resolve, reject) => {
 		chrome.tabs.getSelected(null, (tab) => {
 			var tablink = tab.url.split('/')[2]
-			chrome.storage.sync.get('customPreferences', (data) => {
+			chrome.storage.local.get('customPreferences', (data) => {
 				var customPreferences = data.customPreferences
 				if (customPreferences) {
 					var filteredPreference = customPreferences.filter(
@@ -207,10 +207,10 @@ const setDefaultPreference = (preference) => {
 	}
 	return new Promise((resolve, reject) => {
 		var customPreferences = []
-		chrome.storage.sync.set({
+		chrome.storage.local.set({
 			customPreferences
 		})
-		chrome.storage.sync.set({
+		chrome.storage.local.set({
 				defaultPreference
 			}, () =>
 			chrome.runtime.lastError ?
@@ -230,7 +230,7 @@ const setDefaultPreference = (preference) => {
 // .catch(error => console.error(error))
 const getDefaultPreference = () => {
 	return new Promise((resolve, reject) =>
-		chrome.storage.sync.get('defaultPreference', (result) =>
+		chrome.storage.local.get('defaultPreference', (result) =>
 			chrome.runtime.lastError ?
 			reject(Error(chrome.runtime.lastError.message)) :
 			resolve(result.defaultPreference)
@@ -252,14 +252,14 @@ const deleteCustomPreference = () => {
 	return new Promise((resolve, reject) => {
 		chrome.tabs.getSelected(null, tab => {
 			var tablink = tab.url.split('/')[2]
-			chrome.storage.sync.get('customPreferences', data => {
+			chrome.storage.local.get('customPreferences', data => {
 				var customPreferences = data.customPreferences
 				if (customPreferences) {
 					customPreferences = customPreferences.filter(p => p.domain !== tablink)
 				} else {
 					customPreferences = []
 				}
-				chrome.storage.sync.set({
+				chrome.storage.local.set({
 						customPreferences
 					}, () =>
 					chrome.runtime.lastError ?
@@ -282,7 +282,7 @@ const deleteCustomPreference = () => {
 
 const getExceptionsList = () => {
 	return new Promise((resolve, reject) => {
-		chrome.storage.sync.get('customPreferences', data => {
+		chrome.storage.local.get('customPreferences', data => {
 			if (chrome.runtime.lastError) {
 				reject(Error(chrome.runtime.lastError.message))
 			} else {
@@ -309,7 +309,7 @@ const getExceptionsList = () => {
 
 const requestSentFirstParty = (url, x, y = "u", z = "u") => {
 	return new Promise((resolve, reject) => {
-		chrome.storage.sync.get('firstPartyRequests', data => {
+		chrome.storage.local.get('firstPartyRequests', data => {
 			if (chrome.runtime.lastError) {
 				reject(Error(chrome.runtime.lastError.message))
 			} else {
@@ -332,7 +332,7 @@ const requestSentFirstParty = (url, x, y = "u", z = "u") => {
 				} else {
 					firstPartyRequests = [newRequest]
 				}
-				chrome.storage.sync.set({
+				chrome.storage.local.set({
 						firstPartyRequests
 					}, () =>
 					chrome.runtime.lastError ?
@@ -355,7 +355,7 @@ const requestSentFirstParty = (url, x, y = "u", z = "u") => {
 
 const requestSentThirdParty = (url, x) => {
 	return new Promise((resolve, reject) => {
-		chrome.storage.sync.get('thirdPartyRequests', data => {
+		chrome.storage.local.get('thirdPartyRequests', data => {
 			if (chrome.runtime.lastError) {
 				reject(Error(chrome.runtime.lastError.message))
 			} else {
@@ -375,7 +375,7 @@ const requestSentThirdParty = (url, x) => {
 				} else {
 					thirdPartyRequests = [newRequest]
 				}
-				chrome.storage.sync.set({
+				chrome.storage.local.set({
 						thirdPartyRequests
 					}, () =>
 					chrome.runtime.lastError ?
