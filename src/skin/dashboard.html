@@ -184,14 +184,15 @@
                         <div>
                           <p class="lead">
                             Let's set your default preference for all the websites you will visit. <br />
-                            You can also ask the website to send back or delete your information on the extension popup window.
+                            You can also ask the website to send back or delete your information on the extension popup window. <br />
+                            <small> * Note that when reset default preference, the exception list will be reset to empty</small>
                           </p>
                           <div class="form-check form-check-inline mt-2">
-                            <input class="form-check-input" type="radio" name="allow-sell-radio-group" id="allow-sell" value="0">
+                            <input class="form-check-input radio" type="radio" name="allow-sell-radio-group" id="allow-sell" value="0">
                             <label class="form-check-label" for="allow-sell">Allow selling my information</label>
                           </div>
                           <div class="form-check form-check-inline mt-2">
-                            <input class="form-check-input" type="radio" name="allow-sell-radio-group" id="disallow-sell" value="1"
+                            <input class="form-check-input radio" type="radio" name="allow-sell-radio-group" id="disallow-sell" value="1"
                               checked>
                             <label class="form-check-label" for="disallow-sell">Do not sell my information</label>
                           </div>
@@ -200,7 +201,8 @@
                           <p class="lead">
                             Exception list 
                           </p>
-
+                          <p id="exception_list">
+                          </p>
                         </div>
                     </div>
                     <div id="stats" class="tab">
@@ -270,6 +272,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
     </script>
+    <script src="../js/storageAPIs.js"></script>
     <script src="utils.js"></script>
     <script src="dashboard.js"></script>
 </body>
