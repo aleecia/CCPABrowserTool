@@ -4,12 +4,10 @@ var ccpa_r1 = "u";
 var ccpa_r2 = "u";
 var ccpa_r3 = "u";
 var ccpa1 = "undefined";
-
 var allowAllToSellFlag = false;
-
 var originHostName = "undefined";
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request) => {
     if (request.r1) {
         ccpa_r1 = request.r1;
     }
@@ -19,10 +17,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.r3) {
         ccpa_r3 = request.r3;
     }
-    if (request.allowAllToSellFlag != undefined || request.allowAllToSellFlag == false) {
-        allowAllToSellFlag = request.allowAllToSellFlag;
+    if(request.refresh) {
+        refreshPage();
     }
-
 });
 
 function parseOriginURL(url) {
@@ -32,8 +29,18 @@ function parseOriginURL(url) {
     return null;
 }
 
+function setInitialCCPARule() {
+    getDefaultPreference().then(setAllowAllToSell);
+    if(allowAllToSellFlag == 0) {
+        ccpa1 = "uu0";
+    } else {
+        ccpa1 = "uu1";
+    }
+}
+
 async function initialize() {
     setupHeaderModListener();
+    setInitialCCPARule();
 }
 
 initialize();
@@ -131,7 +138,7 @@ function setupHeaderModListener() {
         );
     }
     chrome.webRequest.onSendHeaders.addListener(details => {
-        // console.log(details.requestHeaders);
+        console.log(details.requestHeaders);
     },
         { urls: ["<all_urls>"] },
         ['extraHeaders', 'requestHeaders']
@@ -157,6 +164,24 @@ function isThirdPartyURL(requestURL) {
     
 }
 
+function getDefaultPreference() {
+	return new Promise((resolve, reject) =>
+		chrome.storage.local.get('defaultPreference', (result) =>
+			chrome.runtime.lastError ?
+			reject(Error(chrome.runtime.lastError.message)) :
+			resolve(result.defaultPreference.default)
+		)
+	)
+}
+
+function setAllowAllToSell(flag) {
+    if(flag == 0) {
+        allowAllToSellFlag = true;
+    } else {
+        allowAllToSellFlag = false;
+    }
+}
+
 function sendRequestToThirdParty(isInExceptionList) {
     return new Promise(resolve => {
         var ccpa;
@@ -169,7 +194,7 @@ function sendRequestToThirdParty(isInExceptionList) {
             console.log("Third party, NOT in list, NOT allow all, should be uu1");
             storeThirdPartyRequest(1).then().catch();
         }
-        return ccpa;
+        return resolve(ccpa);
     })
     
 }
@@ -179,7 +204,7 @@ function sendRequestToFirstParty(isInExceptionList) {
         var ccpa;
         if(isInExceptionList) {
             ccpa = ccpa_r1 + ccpa_r2 + "0";
-            console.log("First party, in list, should be uu0");
+            console.log("First party, in list, should be rr0");
             storeFirstPartyRequest(0, ccpa_r2, ccpa_r1).then().catch();
         } else {
             ccpa = ccpa_r1 + ccpa_r2 + "1";
@@ -191,8 +216,20 @@ function sendRequestToFirstParty(isInExceptionList) {
     
 }
 
+function refreshPage() {
+    chrome.tabs.getSelected(null, function(tab) {
+        console.log(tab);
+        if(tab == null || tab.id == null || tab.id < 0) {
+            return;
+        }
+        var code = 'window.location.reload();';
+        chrome.tabs.executeScript(tab.id, {code: code});
+    });
+}
+
 function sendRequest(hostname) {
     if(hostname != originHostName) {
+        getDefaultPreference().then(setAllowAllToSell);
         return isInExceptionListHelper(hostname).then(sendRequestToThirdParty);
     } else {
         return isInExceptionListHelper(originHostName).then(sendRequestToFirstParty);
