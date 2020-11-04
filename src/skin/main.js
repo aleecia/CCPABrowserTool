@@ -162,34 +162,13 @@ $(document).ready(function () {
                             chrome.runtime.sendMessage({
                                 r2: r2
                             });
-                            if(defaultPreference == 0) {
-                                chrome.runtime.sendMessage({
-                                    allowAllToSellFlag: true
-                                });
-                            }
-                            if(defaultPreference == 1) {
-                                chrome.runtime.sendMessage({
-                                    allowAllToSellFlag: false
-                                });
-                            }
+                            window.close();
+                            chrome.runtime.sendMessage({
+                                'refresh' : true
+                            })
                         });
                     });
 
                 });
         });
-
-    /*
-               chrome.storage.sync.get(['do_not_sell_data'], function (result) {
-                   if (result.do_not_sell_data == undefined) {
-                       allowSell = false;
-                   } else if (result.do_not_sell_data == "1") {
-                       allowSell = false;
-                   } else {
-                       allowSell = true;
-                   }
-               });*/
-
-
-
-
 });

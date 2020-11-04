@@ -34,7 +34,6 @@ $(document).ready(function () {
         $activeTab.addClass('active');
 
         // 3. Store active tab last time - fix refresh -> reset bug
-        setStorageCookie('active_tab', $activeTab.attr('href'), THIRTY_MINUTES_IN_MILLISECONDS);
         $($activeTab.attr('href')).show();
     }
 
@@ -50,4 +49,46 @@ $(document).ready(function () {
         const tabID = $(this).attr('href');
         switchToTab(tabID);
     });
+
+    /**
+     * Determine general settings status
+     */
+    getDefaultPreference()
+        .then(data => {
+            var allowSell = false;
+            var defaultPreference = data.default;
+
+            checkCustomPreference()
+                .then(data => {
+                    var customPreference = data;
+                    /* TEST CONSOLE
+                    console.log('default? ', defaultPreference);
+                    console.log('custom? ', customPreference);
+                    */
+                    if ((defaultPreference == 0 && customPreference == 0) || (defaultPreference == 1 && customPreference == 1)) {
+                        allowSell = true;
+                        $('#disallow-sell').prop("checked", false);
+                        $('#allow-sell').prop("checked", true);
+                    }
+
+                    getExceptionsList()
+                        .then(data => {
+                            console.log(data);
+                            const sortedDomain = Array.from(data).sort();
+                            for (const [index, domain] of sortedDomain.entries()) {
+                                $('#exception_list').append('<p class="mb-2"><a class="remove_from_list" id=' + index + '><i class="fas fa-trash-alt mr-2"></i></a>' +
+                                    domain + '</p>');
+                            }
+
+                            $('a[class="remove_from_list"]').on('click', function () {
+                                console.log(this.id);
+                            })
+
+                        });
+
+                    $('input[type="radio"][name="allow-sell-radio-group"]').change(function () {
+                        setDefaultPreference(this.value);
+                    })
+                });
+        });
 });
