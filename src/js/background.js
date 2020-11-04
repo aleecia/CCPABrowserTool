@@ -29,18 +29,28 @@ function parseOriginURL(url) {
     return null;
 }
 
+
 function setInitialCCPARule() {
-    getDefaultPreference(data => console.log(data)).then(setAllowAllToSell);
-    if(allowAllToSellFlag == 0) {
-        ccpa1 = "uu0";
-    } else {
-        ccpa1 = "uu1";
-    }
+    getDefaultPreference().then( data => {
+        console.log(data);
+        if(!data) {
+            return;
+        } else {
+            var defaultPreference = data.default;
+            if(defaultPreference == 0) {
+                allowAllToSellFlag = true;  
+                ccpa1 = "uu0";
+            } else {
+                allowAllToSellFlag = false;
+                ccpa1 = "uu1";
+            }
+        }
+    });
 }
 
 async function initialize() {
     setupHeaderModListener();
-    setInitialCCPARule();
+    setInitialCCPARule();   
 }
 
 initialize();
@@ -138,7 +148,7 @@ function setupHeaderModListener() {
         );
     }
     chrome.webRequest.onSendHeaders.addListener(details => {
-        // console.log(details.requestHeaders);
+        console.log(details.requestHeaders);
     },
         { urls: ["<all_urls>"] },
         ['extraHeaders', 'requestHeaders']
@@ -174,8 +184,11 @@ function getDefaultPreference() {
 	)
 }
 
-function setAllowAllToSell(flag) {
-    if(flag.default == 0) {
+function setAllowAllToSell(defaultPreference) {
+    if(!defaultPreference) {
+        return;
+    }
+    if(defaultPreference.default == 0) {
         allowAllToSellFlag = true;
     } else {
         allowAllToSellFlag = false;
@@ -228,7 +241,6 @@ function refreshPage() {
 
 function sendRequest(hostname) {
     if(hostname != originHostName) {
-        console.log("sendRequest");
         getDefaultPreference().then(setAllowAllToSell);
         return isInExceptionListHelper(hostname).then(sendRequestToThirdParty);
     } else {
