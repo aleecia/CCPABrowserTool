@@ -30,7 +30,7 @@ function parseOriginURL(url) {
 }
 
 function setInitialCCPARule() {
-    getDefaultPreference().then(setAllowAllToSell);
+    getDefaultPreference(data => console.log(data)).then(setAllowAllToSell);
     if(allowAllToSellFlag == 0) {
         ccpa1 = "uu0";
     } else {
@@ -138,7 +138,7 @@ function setupHeaderModListener() {
         );
     }
     chrome.webRequest.onSendHeaders.addListener(details => {
-        console.log(details.requestHeaders);
+        // console.log(details.requestHeaders);
     },
         { urls: ["<all_urls>"] },
         ['extraHeaders', 'requestHeaders']
@@ -169,13 +169,13 @@ function getDefaultPreference() {
 		chrome.storage.local.get('defaultPreference', (result) =>
 			chrome.runtime.lastError ?
 			reject(Error(chrome.runtime.lastError.message)) :
-			resolve(result.defaultPreference.default)
+			resolve(result.defaultPreference)
 		)
 	)
 }
 
 function setAllowAllToSell(flag) {
-    if(flag == 0) {
+    if(flag.default == 0) {
         allowAllToSellFlag = true;
     } else {
         allowAllToSellFlag = false;
@@ -218,7 +218,6 @@ function sendRequestToFirstParty(isInExceptionList) {
 
 function refreshPage() {
     chrome.tabs.getSelected(null, function(tab) {
-        console.log(tab);
         if(tab == null || tab.id == null || tab.id < 0) {
             return;
         }
@@ -229,6 +228,7 @@ function refreshPage() {
 
 function sendRequest(hostname) {
     if(hostname != originHostName) {
+        console.log("sendRequest");
         getDefaultPreference().then(setAllowAllToSell);
         return isInExceptionListHelper(hostname).then(sendRequestToThirdParty);
     } else {
