@@ -1,0 +1,4 @@
+In order to perform unit tests on the APIs for storage, uncomment the last section in storageAPIs.js
+and run the command npm test in the home directory. 
+Make sure to comment the last section after testing, it mocks the chrome APIs and exports the modules
+for the testing file.

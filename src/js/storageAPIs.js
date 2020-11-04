@@ -125,9 +125,9 @@ const getIsParentMode = () => {
 
 const setCustomPreference = () => {
 	return new Promise((resolve, reject) => {
-		getDefaultPreference().then(defaultPreference => {
+		getDefaultPreference()
+		.then(defaultPreference => {
 			var defaultPreference = defaultPreference.default;
-			console.log('thisdefault', defaultPreference);
 			var customPreference = 1;
 			chrome.tabs.getSelected(null, tab => {
 				var tablink = tab.url.split('/')[2]
@@ -153,6 +153,9 @@ const setCustomPreference = () => {
 					)
 				})
 			})
+		})
+		.catch(error => {
+			reject(Error(error))
 		})
 	})
 }
@@ -209,7 +212,7 @@ const setDefaultPreference = (preference) => {
 		var customPreferences = []
 		chrome.storage.local.set({
 			customPreferences
-		})
+		}, () => {})
 		chrome.storage.local.set({
 				defaultPreference
 			}, () =>
@@ -322,7 +325,7 @@ const requestSentFirstParty = (url, x, y = "u", z = "u") => {
 					"r3": x,
 					"date": {
 						"day": now.getDate(),
-						"month": now.getMonth(),
+						"month": now.getMonth()+1,
 						"year": now.getFullYear(),
 						"time": now.getTime()
 					}
@@ -366,7 +369,7 @@ const requestSentThirdParty = (url, x) => {
 					"r3": x,
 					"date": {
 						"day": now.getDate(),
-						"month": now.getMonth(),
+						"month": now.getMonth()+1,
 						"year": now.getFullYear()
 					}
 				}
@@ -386,3 +389,62 @@ const requestSentThirdParty = (url, x) => {
 		})
 	})
 }
+
+
+// uncomment the following lines for testing:
+
+
+// const chrome = {
+// 	_store : {
+// 		"limit": 160, 
+// 		_initialized: true
+// 	},
+// 	_tab : {
+// 		tab: {
+// 			url : "https://github.com/"
+// 		}
+// 	},
+//     storage: {
+// 		local: {
+// 			get: (a, callback) => callback(chrome._store),
+// 			set: (a, callback) => {
+// 				// console.log('save' + JSON.stringify(a));
+// 				for (let el in a) {
+// 					if (a.hasOwnProperty(el)) {
+// 						chrome._store[el] = a[el];
+// 					}
+// 				}
+// 				callback()
+// 			}
+// 		}
+// 	},
+// 	runtime: {
+// 		lastError : 0
+// 	},
+// 	tabs: {
+// 		getSelected: (id, callback) => {
+// 			if (!(id)) {
+// 				callback(chrome._tab.tab)
+// 			}
+// 		}
+// 	}
+// }
+
+
+// module.exports = {
+// 	chrome,
+// 	setUserDOB,
+// 	getUserDOB,
+// 	setParentPassword,
+// 	getParentPassword,
+// 	setIsParentMode,
+// 	getIsParentMode,
+// 	setCustomPreference,
+// 	checkCustomPreference,
+// 	setDefaultPreference,
+// 	getDefaultPreference,
+// 	deleteCustomPreference,
+// 	getExceptionsList,
+// 	requestSentFirstParty,
+// 	requestSentThirdParty
+// }

@@ -1,0 +1,24 @@
+{
+  "name": "ccpabrowsertool",
+  "version": "1.0.0",
+  "description": "CCPA Browser Tool",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "jasmine": "^3.6.3",
+    "sinon-chrome": "^3.0.1"
+  },
+  "scripts": {
+    "test": "jasmine"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sheisunique/CCPABrowserTool.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sheisunique/CCPABrowserTool/issues"
+  },
+  "homepage": "https://github.com/sheisunique/CCPABrowserTool#readme"
+}
