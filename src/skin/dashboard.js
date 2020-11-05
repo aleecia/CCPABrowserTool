@@ -73,7 +73,6 @@ $(document).ready(function () {
 
                     getExceptionsList()
                         .then(data => {
-                            console.log(data);
                             const sortedDomain = Array.from(data).sort();
                             for (const [index, domain] of sortedDomain.entries()) {
                                 $('#exception_list').append('<p class="mb-2"><a class="remove_from_list" id=' + index + '><i class="fas fa-trash-alt mr-2"></i></a>' +
@@ -81,7 +80,7 @@ $(document).ready(function () {
                             }
 
                             $('a[class="remove_from_list"]').on('click', function () {
-                                console.log(this.id);
+                                // console.log(this.id);
                             })
 
                         });
