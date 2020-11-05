@@ -220,3 +220,35 @@ describe('getIsParentMode', function() {
         })
     })
 })
+
+describe('addURLtoCustomList', function() {
+    it('add the url (provided as argument) to the exception list', function(done) {
+        var setSpy = spyOn(storageAPIs.chrome.storage.local, 'set').and.callThrough()
+        storageAPIs.setDefaultPreference(1)
+        .then(
+            storageAPIs.addURLtoCustomList("x.y.z")
+        )
+        .then( () => {
+            expect(setSpy).toHaveBeenCalled()
+            done()
+        })
+        .catch(error => {
+            console.log(error)
+        })
+    })
+})
+
+describe('removeURLfromCustomList', function() {
+    it('removes the url (provided as argument) from the exception list', function(done) {
+        var setSpy = spyOn(storageAPIs.chrome.storage.local, 'set').and.callThrough()
+
+        storageAPIs.removeURLfromCustomList("x.y.z")
+        .then( () => {
+            expect(setSpy).toHaveBeenCalled()
+            done()
+        })
+        .catch(error => {
+            console.log(error)
+        })
+    })
+})
