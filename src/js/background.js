@@ -32,6 +32,7 @@ function parseOriginURL(url) {
 
 function setInitialCCPARule() {
     getDefaultPreference().then( data => {
+        console.log(data);
         if(!data) {
             return;
         } else {
