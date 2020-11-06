@@ -30,7 +30,7 @@ $(document).ready(function () {
 
                     getUserDOB().then(data => {
                         var birthday = moment(data.userDOB);
-                        console.log('birthday:', birthday)
+                        // console.log('birthday:', birthday)
                         var today = moment();
                         age = today.diff(birthday, 'years');
                         if (age < 13) {

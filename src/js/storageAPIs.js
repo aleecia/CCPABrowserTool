@@ -129,6 +129,9 @@ const setCustomPreference = () => {
 		.then(defaultPreference => {
 			var defaultPreference = defaultPreference.default;
 			var customPreference = 1;
+			if (defaultPreference) {
+				customPreference = 0;
+			}
 			chrome.tabs.getSelected(null, tab => {
 				var tablink = tab.url.split('/')[2]
 				chrome.storage.local.get('customPreferences', data => {
@@ -144,9 +147,7 @@ const setCustomPreference = () => {
 					} else {
 						customPreferences = [newPreference]
 					}
-					chrome.storage.local.set({
-							customPreferences
-						}, () =>
+					chrome.storage.local.set({customPreferences}, () =>
 						chrome.runtime.lastError ?
 						reject(Error(chrome.runtime.lastError.message)) :
 						resolve()
@@ -156,6 +157,75 @@ const setCustomPreference = () => {
 		})
 		.catch(error => {
 			reject(Error(error))
+		})
+	})
+}
+
+// adds the url (provided as argument) to the exception list
+// usage:
+// 	addURLtoCustomList("www.youtube.com")
+// 	.then(
+// 		 ... next steps here
+// 	)
+// 	.catch(error => console.log(error))
+
+const addURLtoCustomList = (url) => {
+	return new Promise((resolve, reject) => {
+		getDefaultPreference()
+		.then(defaultPreference => {
+			var defaultPreference = defaultPreference.default;
+			var customPreference = 1;
+			if (defaultPreference) {
+				customPreference = 0;
+			}
+			var newPreference = {
+				"domain" : url,
+				"preference" : customPreference
+			}
+			chrome.storage.local.get('customPreferences', data => {
+				var customPreferences = data.customPreferences
+				if (customPreferences) {
+					customPreferences = customPreferences.filter(p => p.domain !== url)
+					customPreferences.push(newPreference)
+				} else {
+					customPreferences = [newPreference]
+				}
+				chrome.storage.local.set({customPreferences}, () => 
+					chrome.runtime.lastError ?
+					reject(Error(chrome.runtime.lastError.message)) :
+					resolve()
+				)
+			})
+
+		})
+		.catch(error => {
+			reject(Error(error))
+		})
+	})
+}
+
+// removes the url (provided as argument) from the exception list
+// usage:
+// 	removeURLfromCustomList("www.youtube.com")
+// 	.then(
+// 		 ... next steps here
+// 	)
+// 	.catch(error => console.log(error))
+
+const removeURLfromCustomList = (url) => {
+	return new Promise((resolve, reject) => {
+		chrome.storage.local.get('customPreferences', data => {
+			var customPreferences = data.customPreferences;
+			if (customPreferences) {
+				customPreferences = customPreferences.filter(p => p.domain !== url)
+			} else {
+				customPreferences = []
+			}
+			chrome.storage.local.set({customPreferences}, () => 
+				chrome.runtime.lastError ?
+				reject(Error(chrome.runtime.lastError.message)) :
+				resolve()
+			)
 		})
 	})
 }
@@ -432,6 +502,8 @@ const requestSentThirdParty = (url, x) => {
 
 // module.exports = {
 // 	chrome,
+// 	removeURLfromCustomList,
+// 	addURLtoCustomList,
 // 	setUserDOB,
 // 	getUserDOB,
 // 	setParentPassword,

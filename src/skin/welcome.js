@@ -127,7 +127,7 @@ $(document).ready(function () {
         getDefaultPreference()
             .then(data => {
                 var defaultPreference = data.default;
-                console.log('default: ' + defaultPreference);
+                // console.log('default: ' + defaultPreference);
             });
     });
 
