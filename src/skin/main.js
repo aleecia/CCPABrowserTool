@@ -16,15 +16,14 @@ $(document).ready(function () {
 
     getDefaultPreference()
         .then(data => {
+            if(!data) {
+                return;
+            }
             defaultPreference = data.default;
 
             checkCustomPreference()
                 .then(data => {
                     customPreference = data;
-                    /* TEST CONSOLE
-                    console.log('default? ', defaultPreference);
-                    console.log('custom? ', customPreference);
-                    */
                     if ((defaultPreference == 0 && customPreference == 0) || (defaultPreference == 1 && customPreference == 1)) {
                         allowSell = true;
                     }
@@ -98,13 +97,6 @@ $(document).ready(function () {
                                 deleteCustomPreference().then(
 
                                     () => {
-                                        /* TEST IF CORRECTLY SET
-                                        checkCustomPreference()
-                                            .then(data => { // custom preference does exist for the current tab
-                                                var customPreferences = data;
-                                                console.log('after remove custom: ', customPreferences);
-                                            }).catch(error => console.error(error));
-                                            */
                                         $('#switch_exception').removeClass('exception');
                                         $('#switch_exception').addClass('default');
                                     }
@@ -113,14 +105,6 @@ $(document).ready(function () {
                             } else {
                                 setCustomPreference().then(
                                     () => {
-                                        /* TEST IF CORRECTLY SET
-                                    checkCustomPreference()
-                                        .then(data => { // custom preference does exist for the current tab
-                                            var customPreferences = data;
-                                            console.log('after set custom: ', customPreferences);
-                                        }).catch(error => console.error(error));
-
-                                    */
                                         $('#switch_exception').removeClass('default');
                                         $('#switch_exception').addClass('exception');
                                         $('#switch_exception').html('Switch back to default preference');
