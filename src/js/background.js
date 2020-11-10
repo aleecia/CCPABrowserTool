@@ -56,7 +56,6 @@ chrome.runtime.onInstalled.addListener(function (details) {
 function initialize() {
     setupHeaderModListener();
     setInitialCCPARule();
-    // thirdPartyListInit().then().catch();
 }
 
 
@@ -97,7 +96,6 @@ function setupHeaderModListener() {
 
     chrome.webRequest.onSendHeaders.addListener(details => {
         console.log(details.requestHeaders);
-        // getThirdPartyList().then(data => console.log(data)).catch();
     },
         { urls: ["<all_urls>"] },
         ['extraHeaders', 'requestHeaders']
