@@ -86,9 +86,8 @@ const setIsParentMode = (isParentMode) => {
 		isParentMode: isParentMode,
 	}
 	return new Promise((resolve, reject) =>
-		chrome.storage.local.set({
-				isParentMode
-			}, () =>
+		chrome.storage.local.set(
+			isParentMode, () =>
 			chrome.runtime.lastError ?
 			reject(Error(chrome.runtime.lastError.message)) :
 			resolve()
@@ -126,38 +125,40 @@ const getIsParentMode = () => {
 const setCustomPreference = () => {
 	return new Promise((resolve, reject) => {
 		getDefaultPreference()
-		.then(defaultPreference => {
-			var defaultPreference = defaultPreference.default;
-			var customPreference = 1;
-			if (defaultPreference) {
-				customPreference = 0;
-			}
-			chrome.tabs.getSelected(null, tab => {
-				var tablink = tab.url.split('/')[2]
-				chrome.storage.local.get('customPreferences', data => {
-					var customPreferences = data.customPreferences
-					var newPreference = {
-						"domain": tablink,
-						"preference": customPreference
-					}
+			.then(defaultPreference => {
+				var defaultPreference = defaultPreference.default;
+				var customPreference = 1;
+				if (defaultPreference) {
+					customPreference = 0;
+				}
+				chrome.tabs.getSelected(null, tab => {
+					var tablink = tab.url.split('/')[2]
+					chrome.storage.local.get('customPreferences', data => {
+						var customPreferences = data.customPreferences
+						var newPreference = {
+							"domain": tablink,
+							"preference": customPreference
+						}
 
-					if (customPreferences) {
-						customPreferences = customPreferences.filter(p => p.domain !== tablink)
-						customPreferences.push(newPreference)
-					} else {
-						customPreferences = [newPreference]
-					}
-					chrome.storage.local.set({customPreferences}, () =>
-						chrome.runtime.lastError ?
-						reject(Error(chrome.runtime.lastError.message)) :
-						resolve()
-					)
+						if (customPreferences) {
+							customPreferences = customPreferences.filter(p => p.domain !== tablink)
+							customPreferences.push(newPreference)
+						} else {
+							customPreferences = [newPreference]
+						}
+						chrome.storage.local.set({
+								customPreferences
+							}, () =>
+							chrome.runtime.lastError ?
+							reject(Error(chrome.runtime.lastError.message)) :
+							resolve()
+						)
+					})
 				})
 			})
-		})
-		.catch(error => {
-			reject(Error(error))
-		})
+			.catch(error => {
+				reject(Error(error))
+			})
 	})
 }
 
@@ -172,35 +173,37 @@ const setCustomPreference = () => {
 const addURLtoCustomList = (url) => {
 	return new Promise((resolve, reject) => {
 		getDefaultPreference()
-		.then(defaultPreference => {
-			var defaultPreference = defaultPreference.default;
-			var customPreference = 1;
-			if (defaultPreference) {
-				customPreference = 0;
-			}
-			var newPreference = {
-				"domain" : url,
-				"preference" : customPreference
-			}
-			chrome.storage.local.get('customPreferences', data => {
-				var customPreferences = data.customPreferences
-				if (customPreferences) {
-					customPreferences = customPreferences.filter(p => p.domain !== url)
-					customPreferences.push(newPreference)
-				} else {
-					customPreferences = [newPreference]
+			.then(defaultPreference => {
+				var defaultPreference = defaultPreference.default;
+				var customPreference = 1;
+				if (defaultPreference) {
+					customPreference = 0;
 				}
-				chrome.storage.local.set({customPreferences}, () => 
-					chrome.runtime.lastError ?
-					reject(Error(chrome.runtime.lastError.message)) :
-					resolve()
-				)
-			})
+				var newPreference = {
+					"domain": url,
+					"preference": customPreference
+				}
+				chrome.storage.local.get('customPreferences', data => {
+					var customPreferences = data.customPreferences
+					if (customPreferences) {
+						customPreferences = customPreferences.filter(p => p.domain !== url)
+						customPreferences.push(newPreference)
+					} else {
+						customPreferences = [newPreference]
+					}
+					chrome.storage.local.set({
+							customPreferences
+						}, () =>
+						chrome.runtime.lastError ?
+						reject(Error(chrome.runtime.lastError.message)) :
+						resolve()
+					)
+				})
 
-		})
-		.catch(error => {
-			reject(Error(error))
-		})
+			})
+			.catch(error => {
+				reject(Error(error))
+			})
 	})
 }
 
@@ -221,7 +224,9 @@ const removeURLfromCustomList = (url) => {
 			} else {
 				customPreferences = []
 			}
-			chrome.storage.local.set({customPreferences}, () => 
+			chrome.storage.local.set({
+					customPreferences
+				}, () =>
 				chrome.runtime.lastError ?
 				reject(Error(chrome.runtime.lastError.message)) :
 				resolve()
@@ -395,7 +400,7 @@ const requestSentFirstParty = (url, x, y = "u", z = "u") => {
 					"r3": x,
 					"date": {
 						"day": now.getDate(),
-						"month": now.getMonth()+1,
+						"month": now.getMonth() + 1,
 						"year": now.getFullYear(),
 						"time": now.getTime()
 					}
@@ -439,7 +444,7 @@ const requestSentThirdParty = (url, x) => {
 					"r3": x,
 					"date": {
 						"day": now.getDate(),
-						"month": now.getMonth()+1,
+						"month": now.getMonth() + 1,
 						"year": now.getFullYear()
 					}
 				}

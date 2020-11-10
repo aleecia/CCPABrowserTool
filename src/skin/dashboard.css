@@ -47,3 +47,11 @@ body {
 #tab-content .tab {
   display: none;
 }
+
+/*
+ * font color
+ */
+
+.warning-text {
+  color: red;
+}

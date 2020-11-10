@@ -124,11 +124,8 @@ $(document).ready(function () {
 
     $('#finish').on('click', function () {
         setDefaultPreference($('input[name=allow-sell-radio-group]:checked').val());
-        getDefaultPreference()
-            .then(data => {
-                var defaultPreference = data.default;
-                // console.log('default: ' + defaultPreference);
-            });
+        setIsParentMode(false);
+        setParentPassword(null);
     });
 
     $('#parent-finish').on('click', function () {
