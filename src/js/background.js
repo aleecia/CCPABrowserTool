@@ -56,6 +56,7 @@ chrome.runtime.onInstalled.addListener(function (details) {
 function initialize() {
     setupHeaderModListener();
     setInitialCCPARule();
+    // thirdPartyListInit().then().catch();
 }
 
 
@@ -96,6 +97,7 @@ function setupHeaderModListener() {
 
     chrome.webRequest.onSendHeaders.addListener(details => {
         console.log(details.requestHeaders);
+        // getThirdPartyList().then(data => console.log(data)).catch();
     },
         { urls: ["<all_urls>"] },
         ['extraHeaders', 'requestHeaders']
@@ -186,6 +188,8 @@ function getCCPARule(hostname) {
     if (hostname != originHostName) {
         // for third party request, get user's default preference first
         getDefaultPreference().then(setAllowAllToSell);
+        // store third party's request url to storage
+        addToThirdPartyList(hostname).then().catch();
         // then construct ccpa rule based on user's default or customized preference
         return isInExceptionListHelper(hostname).then(constructThirdPartyCCPARule);
     } else {
@@ -194,6 +198,37 @@ function getCCPARule(hostname) {
     }
 }
 
+/**
+ * Store all third party's hostname to storage
+ * @param  hostname current third party's hostname
+ */
+function addToThirdPartyList(hostname) {
+    return new Promise((resolve, reject) => {
+		chrome.storage.local.get("thirdPartyList", data => {
+            var thirdPartyList = data.thirdPartyList
+            if(thirdPartyList) {
+                thirdPartyList = thirdPartyList.filter(p => p !== hostname)
+                thirdPartyList.push(hostname)
+            } else {
+                thirdPartyList = [hostname]
+            }
+            chrome.storage.local.set({ thirdPartyList }, () => 
+                chrome.runtime.lastError ?
+                reject(Error(chrome.runtime.lastError.message)) :
+                resolve()
+            )
+        })
+	})
+}
+
+
+function getThirdPartyList() {
+    return new Promise((resolve, reject) => {
+        chrome.storage.local.get("thirdPartyList", data => {
+            resolve(data);
+        })
+    })
+}
 
 /**
  * Check whether user has customized preference for current hostname
