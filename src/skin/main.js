@@ -89,7 +89,7 @@ $(document).ready(function () {
                                     origin = url.origin;
 
                                     $('#switch_exception').html("Create exception for <a class='text-primary ml-1'\
-                            href='/skin/dashboard.html#introduction' target='_blank' id='exception-question'> \
+                            href='/skin/dashboard.html#information' target='_blank' id='exception-question'> \
                             <i class='far fa-question-circle'></i></a><br /> \
                             <label class='text-info' id='origin'>" + origin + "</label>");
                                 });

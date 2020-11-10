@@ -9,7 +9,7 @@ $(document).ready(function () {
             return $(this).attr('href');
         }).get();
         if (!tabID || !validTabIDSet.includes(tabID)) {
-            return '#introduction';
+            return '#information';
         }
         return tabID;
     }
