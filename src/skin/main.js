@@ -52,7 +52,7 @@ $(document).ready(function () {
                             $('#switch-exception').html('Children under age 13 are by default enroll do not sell personal information for');
                         }
 
-
+                        /*
                         $('#sendrequest').on("click", function () {
                             // get my data
                             var r1 = "u";
@@ -75,6 +75,7 @@ $(document).ready(function () {
                                 'refresh': true
                             })
                         });
+                        */
                     });
 
                 });
