@@ -58,7 +58,7 @@ $(document).ready(function () {
             const isParentMode = data.isParentMode;
             console.log('isParentMode', isParentMode);
             if (isParentMode == true) {
-                $('#settings').hide();
+                $('#settings-content').hide();
                 $('#wrong-password').hide();
 
                 $('#parent-password-submit').on('click', function () {
@@ -69,7 +69,7 @@ $(document).ready(function () {
 
                             if (input_pw == pw) {
                                 $('#parent-unlock').hide();
-                                $('#settings').show();
+                                $('#settings-content').show();
                                 generalSetting();
                             } else {
                                 $('#wrong-password').show();
