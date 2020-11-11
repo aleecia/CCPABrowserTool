@@ -16,10 +16,25 @@ $(document).ready(function () {
 
     getDefaultPreference()
         .then(data => {
-            if(!data) {
+            if (!data) {
+                // TODO: ADD SOMETHING ELSE
                 return;
             }
             defaultPreference = data.default;
+            if (defaultPreference == 0) {
+                $('#default-setting').html('Allow selling my information');
+            }
+            var origin;
+
+            chrome.tabs.query({
+                active: true,
+                currentWindow: true
+            }, function (tabs) {
+                var tab = tabs[0];
+                var url = new URL(tab.url);
+                origin = url.origin;
+                $('.current-website').html('&bull;&nbsp; ' + origin);
+            });
 
             checkCustomPreference()
                 .then(data => {
@@ -34,100 +49,9 @@ $(document).ready(function () {
                         var today = moment();
                         age = today.diff(birthday, 'years');
                         if (age < 13) {
-                            $('#switch_exception').html('Children under age 13 are by default enroll do not sell personal information for');
+                            $('#switch-exception').html('Children under age 13 are by default enroll do not sell personal information for');
                         }
 
-                        if (allowSell == true) {
-                            $('#off').show();
-                            $('#off').addClass('active');
-                            $('#on').addClass('inactive');
-
-                        } else {
-                            $('#on').show();
-                            $('#on').addClass('active');
-                            $('#off').addClass('inactive');
-                        }
-
-                        if (customPreference == 1) {
-                            $('#switch_exception').html('Switch back to default preference');
-                            $('#switch_exception').removeClass('default');
-                            $('#switch_exception').addClass('exception');
-                        } else {
-                            chrome.tabs.query({
-                                active: true,
-                                currentWindow: true
-                            }, function (tabs) {
-                                var tab = tabs[0];
-                                var url = new URL(tab.url);
-                                var origin = url.origin;
-                                $('#switch_exception').append("<label class='text-info' id='origin'>" + origin + "</label>");
-                            });
-                        }
-
-                        $('#switch_exception').click(function () {
-                            if (age < 13) {
-                                return;
-                            }
-                            var activeStatus = $('.status.active');
-                            var inactiveStatus = $('.status.inactive');
-                            activeStatus.hide();
-                            inactiveStatus.show();
-                            activeStatus.removeClass('active');
-                            activeStatus.addClass('inactive');
-                            inactiveStatus.removeClass('inactive');
-                            inactiveStatus.addClass('active');
-
-                            if ($('#switch_exception').hasClass('exception')) {
-                                var origin;
-
-                                chrome.tabs.query({
-                                    active: true,
-                                    currentWindow: true
-                                }, function (tabs) {
-                                    var tab = tabs[0];
-                                    var url = new URL(tab.url);
-                                    origin = url.origin;
-
-                                    $('#switch_exception').html("Create exception for <a class='text-primary ml-1'\
-                            href='/skin/dashboard.html#information' target='_blank' id='exception-question'> \
-                            <i class='far fa-question-circle'></i></a><br /> \
-                            <label class='text-info' id='origin'>" + origin + "</label>");
-                                });
-
-                                deleteCustomPreference().then(
-
-                                    () => {
-                                        $('#switch_exception').removeClass('exception');
-                                        $('#switch_exception').addClass('default');
-                                    }
-
-                                ).catch(error => console.error(error));
-                            } else {
-                                setCustomPreference().then(
-                                    () => {
-                                        $('#switch_exception').removeClass('default');
-                                        $('#switch_exception').addClass('exception');
-                                        $('#switch_exception').html('Switch back to default preference');
-
-                                    }).catch(error => console.error(error));;
-                            }
-                        });
-
-                        $('#switch_exception').hover(function () {
-                            if (age < 13) {
-                                return;
-                            }
-                            $('#origin').removeClass('text-info');
-                            $('#exception-question').removeClass('text-primary');
-                            $('#exception-question').addClass('text-light');
-                        }, function () {
-                            if (age < 13) {
-                                return;
-                            }
-                            $('#origin').addClass('text-info');
-                            $('#exception-question').removeClass('text-light');
-                            $('#exception-question').addClass('text-primary');
-                        });
 
                         $('#sendrequest').on("click", function () {
                             // get my data
@@ -148,7 +72,7 @@ $(document).ready(function () {
                             });
                             window.close();
                             chrome.runtime.sendMessage({
-                                'refresh' : true
+                                'refresh': true
                             })
                         });
                     });
