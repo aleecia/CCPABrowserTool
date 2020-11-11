@@ -39,6 +39,22 @@ $(document).ready(function () {
             checkCustomPreference()
                 .then(data => {
                     customPreference = data;
+                    if (customPreference == 1) {
+                        $('#ex-for-current-website').prop("checked", true);
+                        console.log('custom for current website');
+                    } else {
+                        $('#ex-for-current-website').prop("checked", false);
+                        console.log('not custom for current website');
+                    }
+
+                    $('#ex-for-current-website').on('click', function () {
+                        if ($(this).is(':checked')) {
+                            setCustomPreference().catch(error => console.error(error));
+                        } else {
+                            deleteCustomPreference().catch(error => console.error(error));
+                        }
+                    })
+
                     if ((defaultPreference == 0 && customPreference == 0) || (defaultPreference == 1 && customPreference == 1)) {
                         allowSell = true;
                     }
