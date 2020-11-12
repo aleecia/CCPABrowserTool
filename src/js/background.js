@@ -58,15 +58,14 @@ function setupHeaderModListener() {
 /**
  * Response Handler: Check if CCPA header in the response
  */ 
-    var reply = 0;
     chrome.webRequest.onHeadersReceived.addListener(details =>{
         var header = details.responseHeaders
         for(var i=0;i<header.length;i++){
-            console.log("response",header)
+            console.log("response",details)
             if(header[i].name == "ccpa1"){
                 
-                console.log("ccpa header received",reply)
-                if (reply== 0){
+                console.log("ccpa header received")
+                if (details.url=='http://www.ccpabrowsertool.com/'){
                 chrome.tabs.create({
                     url: chrome.runtime.getURL('./skin/response.html'),
                     active: false
@@ -80,7 +79,6 @@ function setupHeaderModListener() {
                 }
                 
                 );}
-                reply++;
                 break
             }
         }
