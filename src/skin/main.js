@@ -68,30 +68,35 @@ $(document).ready(function () {
                             $('#switch-exception').html('Children under age 13 are by default enroll do not sell personal information for');
                         }
 
-                        /*
-                        $('#sendrequest').on("click", function () {
-                            // get my data
-                            var r1 = "u";
-                            // delete my data
-                            var r2 = "u";
-                            if ($("#get").get(0).checked) {
-                                r1 = "1";
-                            }
-                            if ($("#delete").get(0).checked) {
-                                r2 = "1";
-                            }
+                        $('#get-for-current-website').on("click", function () {
                             chrome.runtime.sendMessage({
-                                r1: r1
+                                firstParty_get: true
                             });
-                            chrome.runtime.sendMessage({
-                                r2: r2
-                            });
-                            window.close();
-                            chrome.runtime.sendMessage({
-                                'refresh': true
-                            })
                         });
-                        */
+                        $('#delete-for-current-website').on("click", function () {
+                            chrome.runtime.sendMessage({
+                                firstParty_delete: true
+                            });
+                        });
+                        $('#get-for-third-parties').on("click", function () {
+                            chrome.runtime.sendMessage({
+                                thirdParty_get: true
+                            });
+                        });
+                        $('#delete-for-third-parties').on("click", function () {
+                            chrome.runtime.sendMessage({
+                                thirdParty_delete: true
+                            });
+                        });
+
+                        chrome.runtime.onMessage.addListener((request) => {
+                            if(request.getMessage) {
+                                window.close();
+                                chrome.runtime.sendMessage({
+                                    refresh: true
+                                });
+                            }
+                        })
                     });
 
                 });
