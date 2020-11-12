@@ -30,9 +30,10 @@
     "128": "skin/images/icon.png"
   },
   "options_ui": {
-    "page": "/skin/dashboard.html",
+    "page": "/skin/dashboard.html", 
     "open_in_tab": true
   },
+  "web_accessible_resources": ["/skin/response.html"],
   "content_security_policy": "script-src 'self' https://stackpath.bootstrapcdn.com https://cdnjs.cloudflare.com; object-src 'self'",
   "manifest_version": 2,
   "commands": {

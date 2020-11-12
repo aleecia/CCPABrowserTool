@@ -104,20 +104,45 @@ function generalSetting() {
 
                     getExceptionsList()
                         .then(data => {
+                            if(allowSell){
+                                $("#list_explain").append('<p>When your default setting allow to sell your information, exception list contains the websites you do not want them to sell data</p>')
+                                
+                            }
+                            else{
+                                $("#list_explain").append('<p>When your default setting ask not to sell your information, exception list contains the websites you allow to sell your data</p>')
+                                
+                            }
+                            
                             const sortedDomain = Array.from(data).sort();
                             for (const [index, domain] of sortedDomain.entries()) {
                                 $('#exception_list').append('<p class="mb-2"><a class="remove_from_list" id=' + index + '><i class="fas fa-trash-alt mr-2"></i></a>' +
                                     domain + '</p>');
                             }
 
+                            $("#submiturl").on("click",function(){
+                                var value = $("#input_url").val()
+                                addURLtoCustomList(value)
+                                .then(()=>{
+                                    location.reload()
+                                })
+                            })
+
                             $('a[class="remove_from_list"]').on('click', function () {
-                                // console.log(this.id);
+                               
+                               var index = $(this).attr("id")
+                               var domain = sortedDomain[index]
+                               removeURLfromCustomList(domain)
+                                .then(()=>{
+                                    location.reload()
+                                }
+                                )
                             })
 
                         });
-
-                    $('input[type="radio"][name="allow-sell-radio-group"]').change(function () {
-                        setDefaultPreference(this.value);
+                    $("#save").on('click',function(){
+                        var sell = document.querySelector('input[name="allow-sell-radio-group"]:checked').value;
+                        setDefaultPreference(sell);
+                        location.reload()
                     })
                 });
         });

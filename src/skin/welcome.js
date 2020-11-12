@@ -134,12 +134,15 @@ $(document).ready(function () {
         setDefaultPreference($('input[name=allow-sell-radio-group]:checked').val());
         setIsParentMode(false);
         setParentPassword(null);
+        alert("Voila! Your data privacy setting have been saved")
     });
 
     $('#parent-finish').on('click', function () {
         setDefaultPreference($('input[name=parent-allow-sell-radio-group]:checked').val());
+        
         setParentPassword($('#input-password').val());
         setIsParentMode(true);
+        alert("Voila! Your data privacy setting have been saved")
         /* TEST CONSOLE
         console.log('password input', $('#input-password').val());
         getParentPassword().then(data => { console.log ('pw', data)});
