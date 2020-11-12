@@ -379,39 +379,44 @@ const getExceptionsList = () => {
 // if the request is sent automatically then only the url and r3 preference is neccessary
 // if the request is sent by a push and values of r1 and r2 are not unset they may be given as arguments too
 // usage example:
-//   requestSentFirstParty("google.com", 1)
+//   addRecord("google.com", 0, 1)
 //   .then(
 //     ... next steps here
 //   )
 //   .catch(error => console.error(error))
 
-const requestSentFirstParty = (url, x, y = "u", z = "u") => {
+const addRecord = (url, thirdParty, x, y = "u", z = "u") => {
 	return new Promise((resolve, reject) => {
-		chrome.storage.local.get('firstPartyRequests', data => {
+		chrome.storage.local.get('history', data => {
 			if (chrome.runtime.lastError) {
 				reject(Error(chrome.runtime.lastError.message))
 			} else {
-				var firstPartyRequests = data.firstPartyRequests
+				var history = data.history
 				var now = new Date()
 				var newRequest = {
 					"domain": url,
 					"r1": z,
 					"r2": y,
 					"r3": x,
+					"thirdParty": thirdParty,
 					"date": {
 						"day": now.getDate(),
 						"month": now.getMonth() + 1,
 						"year": now.getFullYear(),
-						"time": now.getTime()
+						"time": {
+							"seconds": now.getSeconds(),
+							"minutes": now.getMinutes(),
+							"hour": now.getHours()
+						}
 					}
 				}
-				if (firstPartyRequests) {
-					firstPartyRequests.push(newRequest)
+				if (history) {
+					history.push(newRequest)
 				} else {
-					firstPartyRequests = [newRequest]
+					history = [newRequest]
 				}
 				chrome.storage.local.set({
-						firstPartyRequests
+						history
 					}, () =>
 					chrome.runtime.lastError ?
 					reject(Error(chrome.runtime.lastError.message)) :
@@ -422,51 +427,114 @@ const requestSentFirstParty = (url, x, y = "u", z = "u") => {
 	})
 }
 
-// stores the information for requests sent to third parties
-// only the url and the preference sent is required as arguments
+// retrieves all records of all requests sent
 // usage example:
-//       requestSentThirdParty("ads.google.com", 1)
-//       .then(
-//         .... next steps here
-//       )
-//       .catch(error => console.error(error))
+// 	getAllRecords()
+// 	.then(data => 
+// 		...	
+// 	)
+// 	.catch(error => console.log(erorr))
 
-const requestSentThirdParty = (url, x) => {
+const getAllRecords = () => {
 	return new Promise((resolve, reject) => {
-		chrome.storage.local.get('thirdPartyRequests', data => {
+		chrome.storage.local.get('history', data => {
 			if (chrome.runtime.lastError) {
 				reject(Error(chrome.runtime.lastError.message))
 			} else {
-				var thirdPartyRequests = data.thirdPartyRequests
-				var now = new Date()
-				var newRequest = {
-					"domain": url,
-					"r3": x,
-					"date": {
-						"day": now.getDate(),
-						"month": now.getMonth() + 1,
-						"year": now.getFullYear()
-					}
+				var history = data.history
+				if (history) {
+					resolve(history)
 				}
-				if (thirdPartyRequests) {
-					thirdPartyRequests.push(newRequest)
-				} else {
-					thirdPartyRequests = [newRequest]
+				resolve([])
+			}
+		})
+	})
+}
+
+// retrieves all first party records 
+// usage example:
+// 	getFirstPartyRecords()
+// 	.then(data =>
+// 		...	
+// 	)
+// 	.catch(error => console.log(error))
+
+const getFirstPartyRecords = () => {
+	return new Promise((resolve, reject) => {
+		chrome.storage.local.get('history', data => {
+			if (chrome.runtime.lastError) {
+				reject(Error(chrome.runtime.lastError.message))
+			} else {
+				var history = data.history
+				if (history) {
+					history = history.filter(p => (p.thirdParty == 0))
+					resolve(history)
 				}
-				chrome.storage.local.set({
-						thirdPartyRequests
-					}, () =>
-					chrome.runtime.lastError ?
-					reject(Error(chrome.runtime.lastError.message)) :
-					resolve()
-				)
+				resolve([])
+			}
+		})
+	})
+}
+
+// retrieves all third party records 
+// usage example:
+// 	getThirdPartyRecords()
+// 	.then(data =>
+// 		...	
+// 	)
+// 	.catch(error => console.log(error))
+
+const getThirdPartyRecords = () => {
+	return new Promise((resolve, reject) => {
+		chrome.storage.local.get('history', data => {
+			if (chrome.runtime.lastError) {
+				reject(Error(chrome.runtime.lastError.message))
+			} else {
+				var history = data.history
+				if (history) {
+					history = history.filter(p => (p.thirdParty == 1))
+					resolve(history)
+				}
+				resolve([])
 			}
 		})
 	})
 }
 
 
-// uncomment the following lines for testing:
+// gets the last sent first party request to the url 
+// provided as argument
+// usage example:
+// 		getLastRequest("google.com")
+//		.then(data => 
+//			... next steps here
+//		)
+//		.catch(
+//			error
+//		 )
+
+const getLastRequest = (url) => {
+	return new Promise((resolve, reject) => {
+		chrome.storage.local.get('history', data => {
+			if (chrome.runtime.lastError) {
+				reject(Error(chrome.runtime.lastError.message))
+			} else {
+				var history = data.history
+				if (history) {
+					history = history.filter(p => (p.domain === url && p.thirdParty == 0 ))
+					if (history) {
+						resolve(history[history.length-1])
+					} 
+				} 
+				reject({})
+			}
+		})
+	})
+}
+
+
+
+// // uncomment the following lines for testing:
 
 // const chrome = {
 // 	_store : {
@@ -521,6 +589,5 @@ const requestSentThirdParty = (url, x) => {
 // 	getDefaultPreference,
 // 	deleteCustomPreference,
 // 	getExceptionsList,
-// 	requestSentFirstParty,
-// 	requestSentThirdParty
+// 	addRecord
 // }

@@ -130,11 +130,11 @@ describe('getExceptionsList', function() {
     })
 })
 
-describe('requestSentFirstParty', function() {
+describe('addRecord', function() {
     it('adds the request sent to the history log', function(done) {
         var setSpy = spyOn(storageAPIs.chrome.storage.local, 'set').and.callThrough()
         
-        storageAPIs.requestSentFirstParty()
+        storageAPIs.addRecord()
         .then( () => {
             expect(setSpy).toHaveBeenCalled()
             done()
@@ -145,20 +145,6 @@ describe('requestSentFirstParty', function() {
     })
 })
 
-describe('requestSentThirdParty', function() {
-    it('adds the request sent to the history log', function(done) {
-        var setSpy = spyOn(storageAPIs.chrome.storage.local, 'set').and.callThrough()
-        
-        storageAPIs.requestSentThirdParty()
-        .then( () => {
-            expect(setSpy).toHaveBeenCalled()
-            done()
-        })
-        .catch(error => {
-            // console.log(error)
-        })
-    })
-})
 
 describe('setParentPassword', function() {
     it('adds the request sent to the history log', function(done) {
