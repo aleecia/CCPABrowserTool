@@ -119,6 +119,14 @@ function generalSetting() {
                                     domain + '</p>');
                             }
 
+                            $("#submiturl").on("click",function(){
+                                var value = $("#input_url").val()
+                                addURLtoCustomList(value)
+                                .then(()=>{
+                                    location.reload()
+                                })
+                            })
+
                             $('a[class="remove_from_list"]').on('click', function () {
                                
                                var index = $(this).attr("id")
