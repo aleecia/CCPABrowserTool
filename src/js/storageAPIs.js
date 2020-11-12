@@ -114,6 +114,24 @@ const getIsParentMode = () => {
 	)
 }
 
+// Reset third party list
+// usage example :
+// resetThirdPartyList()
+// .then(
+//     ...
+// )
+// .catch(error => console.error(error))
+const resetThirdPartyList = () => {
+	var thirdPartyList = []
+	return new Promise((resolve, reject) =>
+		chrome.storage.local.set({thirdPartyList}, () =>
+			chrome.runtime.lastError ?
+			reject(Error(chrome.runtime.lastError.message)) :
+			resolve()
+		)
+	)
+}
+
 // sets the custom (opposite to default) preference for the webpage opened
 // usage example:
 // setCustomPreference()

@@ -92,7 +92,31 @@ $(document).ready(function () {
                             })
                         });
                         */
+
+                        /*
+
+                        $('#go-select').on('click', function () {
+                            chrome.storage.local.get("thirdPartyList", data => {
+                                const thirdPartyListRes = data.thirdPartyList;
+                                console.log(thirdPartyListRes);
+                                for (const [index, thirdParty] of thirdPartyListRes.entries()) {
+                                    $('#select-content').append(thirdParty + '<br />');
+
+                                }
+
+                                resetThirdPartyList().catch(error => console.error(error));
+                                
+                            });
+
+                            $('#main-page').prop('hidden', true);
+                            $('#go-back').prop('hidden', false);
+                            $('#select-third-party').prop('hidden', false);
+                        });
+                        */
+
+
                     });
+
 
                 });
         });

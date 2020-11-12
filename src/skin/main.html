@@ -27,7 +27,7 @@
         </nav>
     </header>
     <main role="main">
-        <div class="text-left ml-1">
+        <div class="text-left ml-1" id="main-page">
             <div class="row">
                 Your default setting on Data Guard for all websites: <br />
                 <span class="text-success" id="default-setting">
@@ -55,7 +55,7 @@
                     </div>
                     <div class="mb-1">
                         <p class="inline-block">&bull;&nbsp; Some third parties on current website</p>
-                        <button id="filter" type="button" class="ml-4 btn btn-sm btn-outline-primary">Select</button>
+                        <button id="go-select" type="button" class="ml-4 btn btn-sm btn-outline-primary">Select</button>
                     </div>
                 </div>
             </div>
@@ -94,6 +94,21 @@
 
             <small>Last request for getting information was sent: 2020/11/10 10:00</small>
         </div>
+        <!-- 
+        <div id="select-third-party" hidden="true">
+            <div class="row">
+                <p id="select-content">
+                </p>
+            </div>
+            <div id="save-section">
+
+                <button type="button" class="mt-3 btn btn-md btn-outline-primary" id="select-save"> Save </button>
+                <br />
+                <small class="text-success" id="select-success-msg" hidden="true">Successfully saved!</small>
+            </div>
+
+        </div>
+        -->
     </main role="main">
     <script src="moment.min.js"></script>
     <script src="jquery-3.4.1.min.js"></script>
