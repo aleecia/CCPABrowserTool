@@ -39,10 +39,12 @@ $(document).ready(function () {
                 origin = url.origin;
                 $('.current-website').html('&bull;&nbsp; ' + origin);
 
+                /*
                 getLastRequest(origin)
                     .then(data => {
                         console.log('history', data);
                     })
+                    */
                 // $('#most-recent-history')
             });
 
