@@ -2,214 +2,214 @@
 <html lang="en">
 
 <head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
-	<!-- CSS -->
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-		integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous" />
-	<link type="text/css" media="screen" href="welcome.css" rel="stylesheet" />
+    <!-- CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous" />
+    <link type="text/css" media="screen" href="welcome.css" rel="stylesheet" />
 
-	<!-- Icons -->
-	<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
-		integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+        integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
 
-	<title>CCPA Tool - Welcome</title>
+    <title>CCPA Tool - Welcome</title>
 </head>
 
 <body class="text-center">
-	<div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
-		<header class="h-25"></header>
-		<main role="main">
-			<img src="images/welcome.png" class="img-responsive w-50 mb-5" alt="Welcome to our tool!" />
-			<div id="intro">
-				<p class="lead">
-					People who live in California are protected by a relatively new law,
-					the <a href="https://oag.ca.gov/privacy/ccp" target="_blank">California Consumer Privacy Act
-						(CCPA).</a>
-					<br />
-					Our browser extension can help protect your privacy following
-					the rights defined by CCPA, as briefly shown below. <br />
-				</p>
-				<p class="lead mb-4" id="introduction">
-					1. The right to know about the personal information a business collects about you and how it is used
-					and
-					shared; <br />
-					2. The right to delete personal information collected from you (with some exceptions); <br />
-					3. The right to opt-out of the sale of your personal information; <br />
-				</p>
-			</div>
+    <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+        <header class="h-25"></header>
+        <main role="main">
+            <img src="images/welcome.png" class="img-responsive w-50 mb-5" alt="Welcome to our tool!" />
+            <div id="intro">
+                <p class="lead">
+                    People who live in California are protected by a relatively new law,
+                    the <a href="https://oag.ca.gov/privacy/ccp" target="_blank">California Consumer Privacy Act
+                        (CCPA).</a>
+                    <br />
+                    Our browser extension can help protect your privacy following
+                    the rights defined by CCPA, as briefly shown below. <br />
+                </p>
+                <p class="lead mb-4" id="introduction">
+                    1. The right to know about the personal information a business collects about you and how it is used
+                    and
+                    shared; <br />
+                    2. The right to delete personal information collected from you (with some exceptions); <br />
+                    3. The right to opt-out of the sale of your personal information; <br />
+                </p>
+            </div>
 
-			<!-- Start guidence -->
+            <!-- Start guidence -->
 
-			<div class="guidence">
-				<div id="start">
-					<button type="button" id="get-start" class="btn btn-lg btn-outline-success">
-						Quick Start
-					</button>
-				</div>
-				<div class="item" id="item1">
-					<p class="lead">
-						Q: Do you represent yourself or your child when using this tool?
-					</p>
-					<button type="button" id="for-self" class="btn btn-lg btn-outline-success mr-4">
-						Myself
-					</button>
-					<button type="button" id="for-child" class="btn btn-lg btn-outline-success">
-						My child
-					</button>
-				</div>
+            <div class="guidence">
+                <div id="start">
+                    <button type="button" id="get-start" class="btn btn-lg btn-outline-success">
+                        Quick Start
+                    </button>
+                </div>
+                <div class="item" id="item1">
+                    <p class="lead">
+                        Q: Do you represent yourself or your child when using this tool?
+                    </p>
+                    <button type="button" id="for-self" class="btn btn-lg btn-outline-success mr-4">
+                        Myself
+                    </button>
+                    <button type="button" id="for-child" class="btn btn-lg btn-outline-success">
+                        My child
+                    </button>
+                </div>
 
-				<!-- Represent myself -->
+                <!-- Represent myself -->
 
-				<div class="item" id="item2">
-					<p class="lead">Q: When is your birthday? &nbsp;<a id="question"
-							href="/skin/dashboard.html#information" target="_blank"><i
-								class="far fa-question-circle"></i></a>
-						<br />
-						<small>Why are we asking for birthdate? Check out our <a
-								href="http://www.ccpabrowsertool.com/privacy-policy/#date_of_birth" target="_blank">privacy
-								policy.</a></small>
-					</p>
-					<p class="lead">
-						<input type="date" id="birthday" name="birthday" value="2000-01-01" />
-					</p>
-					<button type="button" class="btn btn-md btn-outline-success goback mt-4 mr-4">
-						Back
-					</button>
-					<button type="button" id="submit-birthday" class="btn btn-md btn-outline-success mt-4">
-						Next
-					</button>
-				</div>
-				<div class="item" id="item4">
-					<p class="lead px-5">Hey there! According to this <a
-							href="http://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=1798.120."
-							target="_blank">CCPA
-							specific section</a>, business should not sell personal information <br /> of kids and
-						teenagers under
-						age 16,
-						you will by default opt in this right and get protection.
-					</p>
-				</div>
+                <div class="item" id="item2">
+                    <p class="lead">Q: When is your birthday? &nbsp;<a id="question"
+                            href="/skin/dashboard.html#information" target="_blank"><i
+                                class="far fa-question-circle"></i></a>
+                        <br />
+                        <small>Why are we asking for birthdate? Check out our <a
+                                href="http://www.ccpabrowsertool.com/privacy-policy/#date_of_birth" target="_blank">privacy
+                                policy.</a></small>
+                    </p>
+                    <p class="lead">
+                        <input type="date" id="birthday" name="birthday" value="2000-01-01" />
+                    </p>
+                    <button type="button" class="btn btn-md btn-outline-success goback mt-4 mr-4">
+                        Back
+                    </button>
+                    <button type="button" id="submit-birthday" class="btn btn-md btn-outline-success mt-4">
+                        Next
+                    </button>
+                </div>
+                <div class="item" id="item4">
+                    <p class="lead px-5">Hey there! According to this <a
+                            href="http://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=1798.120."
+                            target="_blank">CCPA
+                            specific section</a>, business should not sell personal information <br /> of kids and
+                        teenagers under
+                        age 16,
+                        you will by default opt in this right and get protection.
+                    </p>
+                </div>
 
-				<!-- Represent mychild -->
+                <!-- Represent mychild -->
 
-				<div class="item" id="item5">
-					<p class="lead">Parent/child mode is a secure mechanism for you to manage your child's enrollment
-						for CCPA.
-					</p>
-					<p class="lead">Please set protection password here for you to enter parent mode, and set default
-						preference
-						here&nbsp;<a id="question" href="/skin/dashboard.html#information" target="_blank"><i
-								class="far fa-question-circle"></i></a></p>
-					<p class="lead">
-					<div class="mt-3 mx-auto">
-						<input type="password" id="input-password" class="form-control w-25 mb-3 mx-auto"
-							aria-describedby="password-help">
-						<div class="alert alert-warning password-alert" role="alert">
-							<p class="requirements leng"><i class="fas fa-check text-success"></i><i
-									class="fas fa-times text-danger"></i> Your password must have 4-10 chars.</p>
-							<p class="requirements special-char"><i class="fas fa-check text-success"></i><i
-									class="fas fa-times text-danger"></i> Your password must have at least 1 special
-								char.</p>
-						</div>
-					</div>
-					</p>
-					<div>
-						<div class="form-check form-check-inline mt-1">
-							<input class="form-check-input" type="radio" name="parent-allow-sell-radio-group"
-								id="parent-allow-sell" value="0">
-							<label class="form-check-label" for="parent-allow-sell">Allow selling my child's
-								information</label>
-						</div>
-						<div class="form-check form-check-inline mt-1">
-							<input class="form-check-input" type="radio" name="parent-allow-sell-radio-group"
-								id="parent-disallow-sell" value="1" checked>
-							<label class="form-check-label" for="parent-disallow-sell">Do not sell my child's
-								information</label>
-						</div>
-					</div>
-					<br />
+                <div class="item" id="item5">
+                    <p class="lead">Parent/child mode is a secure mechanism for you to manage your child's enrollment
+                        for CCPA.
+                    </p>
+                    <p class="lead">Please set protection password here for you to enter parent mode, and set default
+                        preference
+                        here&nbsp;<a id="question" href="/skin/dashboard.html#information" target="_blank"><i
+                                class="far fa-question-circle"></i></a></p>
+                    <p class="lead">
+                    <div class="mt-3 mx-auto">
+                        <input type="password" id="input-password" class="form-control w-25 mb-3 mx-auto"
+                            aria-describedby="password-help">
+                        <div class="alert alert-warning password-alert" role="alert">
+                            <p class="requirements leng"><i class="fas fa-check text-success"></i><i
+                                    class="fas fa-times text-danger"></i> Your password must have 4-10 chars.</p>
+                            <p class="requirements special-char"><i class="fas fa-check text-success"></i><i
+                                    class="fas fa-times text-danger"></i> Your password must have at least 1 special
+                                char.</p>
+                        </div>
+                    </div>
+                    </p>
+                    <div>
+                        <div class="form-check form-check-inline mt-1">
+                            <input class="form-check-input" type="radio" name="parent-allow-sell-radio-group"
+                                id="parent-allow-sell" value="0">
+                            <label class="form-check-label" for="parent-allow-sell">Allow selling my child's
+                                information</label>
+                        </div>
+                        <div class="form-check form-check-inline mt-1">
+                            <input class="form-check-input" type="radio" name="parent-allow-sell-radio-group"
+                                id="parent-disallow-sell" value="1" checked>
+                            <label class="form-check-label" for="parent-disallow-sell">Do not sell my child's
+                                information</label>
+                        </div>
+                    </div>
+                    <br />
 
-					<button type="button" class="btn btn-lg btn-outline-success goback mt-3 mr-5">
-						Start Over
-					</button>
-					<a href="/skin/dashboard.html#settings"><button type="button" id="parent-finish"
-							class="btn btn-lg btn-outline-success mt-3 ml-2">
-							&nbsp;&nbsp;Finish&nbsp;&nbsp;
-						</button></a>
-				</div>
+                    <button type="button" class="btn btn-lg btn-outline-success goback mt-3 mr-5">
+                        Start Over
+                    </button>
+                    <a href="/skin/dashboard.html#settings"><button type="button" id="parent-finish"
+                            class="btn btn-lg btn-outline-success mt-3 ml-2">
+                            &nbsp;&nbsp;Finish&nbsp;&nbsp;
+                        </button></a>
+                </div>
 
-				<!-- Set default preference -->
+                <!-- Set default preference -->
 
-				<div class="item mt-2" id="item7">
-					<p class="lead">
-						Let's set your default preference for all websites. <br />
-						You can also ask any website, including first party (the domain you are visiting directly) and
-						<br />third
-						parties (other domains that are loaded by the current website) to send back or <br /> delete
-						your
-						information on the pop up window when you click the extension icon <img src="images/icon.png"
-							width="20" height="20" alt="icon"> on the top right of the browser.
-					</p>
-					<div class="form-check form-check-inline mt-2">
-						<input class="form-check-input" type="radio" name="allow-sell-radio-group" id="allow-sell"
-							value="0">
-						<label class="form-check-label" for="allow-sell">Allow selling my information</label>
-					</div>
-					<div class="form-check form-check-inline mt-2">
-						<input class="form-check-input" type="radio" name="allow-sell-radio-group" id="disallow-sell"
-							value="1">
-						<label class="form-check-label" for="disallow-sell">Do not sell my information</label>
-					</div>
-				</div>
+                <div class="item mt-2" id="item7">
+                    <p class="lead">
+                        Let's set your default preference for all websites. <br />
+                        You can also ask any website, including first party (the domain you are visiting directly) and
+                        <br />third
+                        parties (other domains that are loaded by the current website) to send back or <br /> delete
+                        your
+                        information on the pop up window when you click the extension icon <img src="images/icon.png"
+                            width="20" height="20" alt="icon"> on the top right of the browser.
+                    </p>
+                    <div class="form-check form-check-inline mt-2">
+                        <input class="form-check-input" type="radio" name="allow-sell-radio-group" id="allow-sell"
+                            value="0">
+                        <label class="form-check-label" for="allow-sell">Allow selling my information</label>
+                    </div>
+                    <div class="form-check form-check-inline mt-2">
+                        <input class="form-check-input" type="radio" name="allow-sell-radio-group" id="disallow-sell"
+                            value="1">
+                        <label class="form-check-label" for="disallow-sell">Do not sell my information</label>
+                    </div>
+                </div>
 
 
-				<div class="item mt-2" id="item8">
-					<div class="form-check">
-						<input class="form-check-input" type="checkbox" value="" id="parent-consent">
-						<label class="form-check-label" for="parent-consent">
-							I confirm that my parents gave me consent to change this preference
-						</label>
-					</div>
-				</div>
+                <div class="item mt-2" id="item8">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="parent-consent">
+                        <label class="form-check-label" for="parent-consent">
+                            I confirm that my parents gave me consent to change this preference
+                        </label>
+                    </div>
+                </div>
 
-				<!-- Guide ended -->
+                <!-- Guide ended -->
 
-				<div class="item mt-4" id="end-guide">
-					<button type="button" class="btn btn-lg btn-outline-success goback mb-2 mr-5">
-						Start Over
-					</button>
-					<a href="/skin/dashboard.html#settings"><button type="button" id="finish"
-							class="btn btn-lg btn-outline-success mb-2 ml-2" disabled="true">
-							&nbsp;&nbsp;Finish&nbsp;&nbsp;
-						</button></a>
-				</div>
-			</div>
-		</main>
+                <div class="item mt-4" id="end-guide">
+                    <button type="button" class="btn btn-lg btn-outline-success goback mb-2 mr-5">
+                        Start Over
+                    </button>
+                    <a href="/skin/dashboard.html#settings"><button type="button" id="finish"
+                            class="btn btn-lg btn-outline-success mb-2 ml-2" disabled="true">
+                            &nbsp;&nbsp;Finish&nbsp;&nbsp;
+                        </button></a>
+                </div>
+            </div>
+        </main>
 
-		<footer class="mt-auto">
-			<div class="inner">
-				<p><small><a href="https://iapp.org/media/pdf/resource_center/ca_privacy_rights_act_2020_ballot_initiative.pdf"
-							target="_blank">California Privacy Rights Act (CPRA)</a> and <a href="https://gdpr-info.eu/"
-							target="_blank">General Data Protection Regulation (GDPR)</a> are coming soon on this
-						tool!</small>
-					<br />Ⓒ Carnegie Mellon University Project - Team 1
-				</p>
-			</div>
-		</footer>
-	</div>
+        <footer class="mt-auto">
+            <div class="inner">
+                <p><small><a href="https://iapp.org/media/pdf/resource_center/ca_privacy_rights_act_2020_ballot_initiative.pdf"
+                            target="_blank">California Privacy Rights Act (CPRA)</a> and <a href="https://gdpr-info.eu/"
+                            target="_blank">General Data Protection Regulation (GDPR)</a> are coming soon on this
+                        tool!</small>
+                    <br />Ⓒ Carnegie Mellon University Project - Team 1
+                </p>
+            </div>
+        </footer>
+    </div>
 
-	<script src="moment.min.js"></script>
-	<script src="jquery-3.4.1.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-		integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
-	</script>
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-		integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
-	</script>
-	<script src="../js/storageAPIs.js"></script>
-	<script src="welcome.js"></script>
+    <script src="moment.min.js"></script>
+    <script src="jquery-3.4.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
+    </script>
+    <script src="../js/storageAPIs.js"></script>
+    <script src="welcome.js"></script>
 </body>
 
 </html>
