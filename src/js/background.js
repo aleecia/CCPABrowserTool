@@ -100,7 +100,43 @@ function setupHeaderModListener() {
         { urls: ["<all_urls>"] },
         ['extraHeaders', 'requestHeaders']
     );
+
+/**
+ * Response Handler: Check if CCPA header in the response
+ */ 
+    var reply = 0;
+    chrome.webRequest.onHeadersReceived.addListener(details =>{
+        var header = details.responseHeaders
+        for(var i=0;i<header.length;i++){
+            console.log("response",header)
+            if(header[i].name == "ccpa1"){
+                
+                console.log("ccpa header received",reply)
+                if (reply== 0){
+                chrome.tabs.create({
+                    url: chrome.runtime.getURL('./skin/response.html'),
+                    active: false
+                }, function(tab) {
+                    chrome.windows.create({
+                        tabId: tab.id,
+                        type: 'popup',
+                        focused: false
+                        // incognito, top, left, ...
+                    });
+                }
+                
+                );}
+                reply++;
+                break
+            }
+        }
+    },
+    { urls: ["<all_urls>"] }
+    ,["responseHeaders"])   
 }
+
+
+
 
 
 /***************************************************************************************************

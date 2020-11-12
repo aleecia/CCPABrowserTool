@@ -24,18 +24,19 @@
                 <div class="sidebar-sticky">
                     <img src="images/tartan.png" class="img-responsive w-100 h-5 mb-4" alt="Welcome to our tool!">
                     <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#introduction">
-                                <i class="fas fa-clipboard mr-2"></i>
-                                Introduction
-                            </a>
-                        </li>
-                        <li class="nav-item">
+                        <li class="nav-item"> 
+                          <li class="nav-item">
                             <a class="nav-link" href="#general">
                                 <i class="fas fa-sliders-h mr-2"></i>
                                 General
                             </a>
                         </li>
+                            <a class="nav-link" href="#introduction">
+                                <i class="fas fa-clipboard mr-2"></i>
+                                Introduction
+                            </a>
+                        </li>
+                       
                         <li class="nav-item">
                             <a class="nav-link" href="#stats">
                                 <i class="fas fa-chart-line mr-2"></i>
@@ -146,35 +147,6 @@
                                 </div>
                               </div>
                             </div>
-                            <div class="card">
-                                <div class="card-header" id="headingFour">
-                                  <h2 class="lead mb-0">
-                                    <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-                                      Frequently Asked Questions
-                                    </button>
-                                  </h2>
-                                </div>
-                            
-                                <div id="collapseFour" class="collapse" aria-labelledby="headingOne" data-parent="#accordion_intro">
-                                  <div class="card-body">
-                                      <p class="lead text-light bg-info"><strong>Q.</strong>What is an exception list?</p>
-                                      <p><strong>A.</strong>The URLs that get listed in exception list will have different settings from your default preference. Note that once you
-                                      change your default preference to the opposite, the exception list will get reset. </p>
-                                      <p class="lead text-light bg-info"><strong>Q.</strong>How will companies respond to my request</p>
-                                      <p><strong>A.</strong>It may vary based on different companies' decisions. Basically, they may: <b>(1)</b>Send your request
-                                      respond to your registered email address. <b>(2)</b> Send a notification to your website dashboard page</p>
-                                      <p class="lead text-light bg-info"><strong>Q.</strong>How long will companies take to delete my data?</p>
-                                      <p><strong>A.</strong>According to CCPA regulations, companies must respond to your request within 45 calendar days. 
-                                        They can extend that deadline by another 45 days (90 days total) if they notify you.</p>
-                                      <p class="lead text-light bg-info"><strong>Q.</strong>Why companies deny my request to delete?</p>
-                                      <p><strong>A.</strong>Reasons why companies deny requests for deletion can be varied.You can report the rejection of deletion
-                                      to our tool through Support Section. We will follow up with companies to ask for specific reasons on your behave.</p>
-                                      <p class="lead text-light bg-info"><strong>Q.</strong>Why do I receive no feedback from companies?</p>
-                                      <p><strong>A.</strong>If a company didn't respond to your requests within given deadline, you can report the situation to our tool
-                                      through Support Section. We will follow up with companies for further information. </p>
-                                  </div>
-                                </div>
-                              </div>
                     </div>
                     <div id="general" class="tab">
                         <div
@@ -182,10 +154,11 @@
                             <h1 class="h2 text-dark">General Settings</h1>
                         </div>
                         <div>
-                          <p class="lead">
+                          <p class="lead">Set Dafault Preference</p>
+                          <p >
                             Let's set your default preference for all the websites you will visit. <br />
                             You can also ask the website to send back or delete your information on the extension popup window. <br />
-                            <small> * Note that when reset default preference, the exception list will be reset to empty</small>
+                            
                           </p>
                           <div class="form-check form-check-inline mt-2">
                             <input class="form-check-input radio" type="radio" name="allow-sell-radio-group" id="allow-sell" value="0">
@@ -196,11 +169,13 @@
                               checked>
                             <label class="form-check-label" for="disallow-sell">Do not sell my information</label>
                           </div>
+                          <p class="text-danger"> Please note that on changing the current setting, the exception list will reset</p>
                         </div>
                         <div class="mt-4">
                           <p class="lead">
                             Exception list 
                           </p>
+                          <p id="list_explain"></p>
                           <p id="exception_list">
                           </p>
                         </div>
@@ -219,12 +194,12 @@
                             class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-4 pb-4 mb-5 border-bottom">
                             <h1 class="h2 text-dark">Support</h1>
                         </div>
-                        <div>
+                        
                             <div class="row">
-                                <div class="col-md-6 col-md-offset-3" id="form_container">
+                                <div class="col-sm" id="form_container">
                                     <p class="lead">
-                                        Have problem? Click to view: <a class="nav-link" href="#introduction">Frequently Asked Questions</a>
-                                        OR fill the form to report a violation of CCPA or ask unclear question.
+                                        Have problem? Click <strong>Frequently Asked Questions</strong></b>
+                                        or fill the form to report a violation of CCPA or ask unclear question.
                                     </p>
                                     <div class="container">
                                     <form role="form" method="post" id="contact"enctype="multipart/form-data" >
@@ -257,6 +232,93 @@
                             
                                     </form>
                                 </div>
+                                </div>
+                                <div class="col-sm">
+                      
+                                  <div class="accordion" id="accordion_faq">
+                                    <div class="card">
+                                      <div class="card-header" id="headingOne">
+                                        <h2 class="lead mb-0">
+                                          <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                           <strong>Q.</strong>What is an exception list?
+                                          </button>
+                                        </h2>
+                                      </div>
+                                     
+                                      <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion_faq">
+                                        <div class="card-body">
+                                            <p><strong>A.</strong>The URLs that get listed in exception list will have different settings from your default preference. Note that once you
+                                            change your default preference to the opposite, the exception list will get reset. </p>
+                                          </div>
+                                      </div>
+                                    </div>
+                                        <div class="card">
+                                          <div class="card-header" id="Q2">
+                                            <h2 class="lead mb-0">
+                                              <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#A2" aria-expanded="false" aria-controls="A2">
+                                                <strong>Q.</strong>How will companies respond to my request
+                                              </button>
+                                            </h2>
+                                          </div>
+                                         
+                                          <div id="A2" class="collapse" aria-labelledby="Q2" data-parent="#accordion_faq">
+                                            <div class="card-body">
+                                              <p><strong>A.</strong>It may vary based on different companies' decisions. Basically, they may: <b>(1)</b>Send your request
+                                                respond to your registered email address. <b>(2)</b> Send a notification to your website dashboard page</p>
+                                              </div>
+                                            </div>
+                                          </div>
+                                            <div class="card">
+                                              <div class="card-header" id="Q3">
+                                                <h2 class="lead mb-0">
+                                                  <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#A3" aria-expanded="false" aria-controls="A3">
+                                                    <strong>Q.</strong>How long will companies take to delete my data?
+                                                  </button>
+                                                </h2>
+                                              </div>
+                                             
+                                              <div id="A3" class="collapse" aria-labelledby="Q3" data-parent="#accordion_faq">
+                                                <div class="card-body">
+                                                  <p><strong>A.</strong>According to CCPA regulations, companies must respond to your request within 45 calendar days. 
+                                              They can extend that deadline by another 45 days (90 days total) if they notify you.</p>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                                <div class="card">
+                                                  <div class="card-header" id="Q4">
+                                                    <h2 class="lead mb-0">
+                                                      <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#A4" aria-expanded="false" aria-controls="A4">
+                                                        <strong>Q.</strong>Why companies deny my request to delete
+                                                      </button>
+                                                    </h2>
+                                                  </div>
+                                                 
+                                                  <div id="A4" class="collapse" aria-labelledby="Q4" data-parent="#accordion_faq">
+                                                    <div class="card-body">
+                                                      <p><strong>A.</strong>Reasons why companies deny requests for deletion can be varied.You can report the rejection of deletion
+                                                        to our tool through Support Section. We will follow up with companies to ask for specific reasons on your behave.</p>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                    <div class="card">
+                                                      <div class="card-header" id="Q5">
+                                                        <h2 class="lead mb-0">
+                                                          <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#A5" aria-expanded="false" aria-controls="A5">
+                                                            <strong>Q.</strong>Why do I receive no feedback from companies?
+                                                          </button>
+                                                        </h2>
+                                                      </div>
+                                                     
+                                                      <div id="A5" class="collapse" aria-labelledby="Q5" data-parent="#accordion_faq">
+                                                        <div class="card-body">
+                                            <p><strong>A.</strong>If a company didn't respond to your requests within given deadline, you can report the situation to our tool
+                                            through Support Section. We will follow up with companies for further information. </p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div>
+                                  <div>
                                 </div>
                             </div>
                         </div>
