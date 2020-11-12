@@ -122,6 +122,14 @@ $(document).ready(function () {
         });
     });
 
+    $('#allow-sell').on('click', function () {
+        $('#finish').attr('disabled', false);
+    })
+
+    $('#disallow-sell').on('click', function () {
+        $('#finish').attr('disabled', false);
+    })
+
     $('#finish').on('click', function () {
         setDefaultPreference($('input[name=allow-sell-radio-group]:checked').val());
         setIsParentMode(false);

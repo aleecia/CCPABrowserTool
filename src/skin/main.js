@@ -18,11 +18,15 @@ $(document).ready(function () {
         .then(data => {
             if (!data) {
                 // TODO: ADD SOMETHING ELSE
-                return;
+                defaultPreference = 2;
+                $('#exception-section').prop('hidden', true);
+            } else {
+                defaultPreference = data.default;
             }
-            defaultPreference = data.default;
             if (defaultPreference == 0) {
                 $('#default-setting').html('Allow selling my information');
+            } else if (defaultPreference == 1) {
+                $('#default-setting').html('Do not sell my information');
             }
             var origin;
 
@@ -34,6 +38,12 @@ $(document).ready(function () {
                 var url = new URL(tab.url);
                 origin = url.origin;
                 $('.current-website').html('&bull;&nbsp; ' + origin);
+
+                getLastRequest(origin)
+                    .then(data => {
+                        console.log('history', data);
+                    })
+                // $('#most-recent-history')
             });
 
             checkCustomPreference()
@@ -68,6 +78,8 @@ $(document).ready(function () {
                             $('#switch-exception').html('Children under age 13 are by default enroll do not sell personal information for');
                         }
 
+
+
                         $('#get-for-current-website').on("click", function () {
                             chrome.runtime.sendMessage({
                                 firstParty_get: true
@@ -88,7 +100,7 @@ $(document).ready(function () {
                                 thirdParty_delete: true
                             });
                         });
-                        
+
 
                         /*
 
@@ -114,7 +126,7 @@ $(document).ready(function () {
 
 
                         chrome.runtime.onMessage.addListener((request) => {
-                            if(request.getMessage) {
+                            if (request.getMessage) {
                                 window.close();
                                 chrome.runtime.sendMessage({
                                     refresh: true
