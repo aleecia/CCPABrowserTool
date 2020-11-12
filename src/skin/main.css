@@ -7,8 +7,8 @@ body {
     font-size: 16px;
     margin: 0;
     padding: 2px;
-    min-width: 270px;
-    min-height: 250px;
+    min-width: 420px;
+    min-height: 380px;
 }
 
 .nav .nav-link {
@@ -28,17 +28,15 @@ body {
     display: none;
 }
 
-#switch_exception {
-    transition: all .4s ease;
-    -webkit-transition: all .4s ease;
-    cursor: pointer;
-}
-
-#switch_exception:hover {
-    background: #629bf7;
-    color: #fff;
-}
-
 .selection {
     margin-left: -13px;
+}
+
+.inline-block {
+    display: inline-block;
+    margin-bottom: 0;
+}
+
+.send-request-row {
+    margin-bottom: 8px;
 }

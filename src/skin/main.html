@@ -21,40 +21,95 @@
 <body class="text-center">
     <header>
         <nav class="nav">
-            <a id="question" class="nav-link ml-auto text-primary" href="/skin/dashboard.html" target="_blank"><i
-                    class="far fa-question-circle"></i></a>
-            <a id="options" class="nav-link" href="/skin/dashboard.html" target="_blank">Settings</a>
+            <a id="question" class="nav-link ml-auto text-primary" href="/skin/dashboard.html#information"
+                target="_blank"><i class="far fa-question-circle"></i></a>
+            <a id="options" class="nav-link" href="/skin/dashboard.html#settings" target="_blank">Settings</a>
         </nav>
     </header>
     <main role="main">
-        <div class="text-left ml-1">
+        <div class="text-left ml-1" id="main-page">
             <div class="row">
-                Do not sell my information: &nbsp;<label class="text-success status" id="on">ON</label><label
-                    class="text-danger status" id="off">OFF</label>
+                Your default setting on Data Guard for all websites: <br />
+                <span class="text-success" id="default-setting">
+                    Please go through the guide settings <a id="options" href="/skin/welcome.html" target="_blank">here</a> to use our tool.
+                </span>
             </div>
-            <div class="row default" id="switch_exception">
-                Create exception for <a class="text-primary ml-1" href="/skin/dashboard.html#introduction"
-                    target="_blank" id="exception-question"><i class="far fa-question-circle"></i></a>
+            <div class="row default" id="exception-section">
+                <div>
+                    <p class="inline-block" id="switch-exception">
+                        Create exception for: <a class="text-primary ml-1" href="/skin/dashboard.html#information"
+                            target="_blank" id="exception-question"><i class="far fa-question-circle"></i></a></p>
+                    <div class="mb-1">
+                        <p class="inline-block current-website" id="current-website"> </p>
+                        <div class="ml-2 inline-block custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input" id="ex-for-current-website">
+                            <label class="custom-control-label" for="ex-for-current-website"></label>
+                        </div>
+                    </div>
+                    <div class="mb-1">
+                        <p class="inline-block">&bull;&nbsp; All third parties on current website</p>
+                        <div class="ml-2 inline-block custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input" id="ex-for-third-parties">
+                            <label class="custom-control-label" for="ex-for-third-parties"></label>
+                        </div>
+                    </div>
+                    <div class="mb-1">
+                        <p class="inline-block">&bull;&nbsp; Some third parties on current website</p>
+                        <button id="go-select" type="button" class="ml-4 btn btn-sm btn-outline-primary">Select</button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div>
+                    Request my information from:
+                    <br />
+                    <div class="send-request-row d-flex justify-content-between">
+                        <p class="inline-block current-website"> </p> <button type="button"
+                            class="ml-4 btn btn-sm btn-outline-primary" id="get-for-current-website">Send
+                            Request</button>
+                    </div>
+                    <div class="send-request-row d-flex justify-content-between">
+                        <p class="inline-block">&bull;&nbsp; All third parties on current website</p> <button
+                            type="button" class="ml-4 btn btn-sm btn-outline-primary" id="get-for-third-parties">Send
+                            Request</button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div>
+                    Delete my information from:
+                    <br />
+                    <div class="send-request-row d-flex justify-content-between">
+                        <p class="inline-block current-website"> </p> <button type="button"
+                            class="ml-4 btn btn-sm btn-outline-primary" id="delete-for-current-website">Send
+                            Request</button>
+                    </div>
+                    <div class="send-request-row d-flex justify-content-between">
+                        <p class="inline-block">&bull;&nbsp; All third parties on current website</p> <button
+                            type="button" class="ml-4 btn btn-sm btn-outline-primary" id="delete-for-third-parties">Send
+                            Request</button>
+                    </div>
+                </div>
+            </div>
+
+            <small id="most-recent-history">Last request for getting information was sent: 2020/11/10 10:00</small>
+        </div>
+        <!-- 
+        <div id="select-third-party" hidden="true">
+            <div class="row">
+                <p id="select-content">
+                </p>
+            </div>
+            <div id="save-section">
+
+                <button type="button" class="mt-3 btn btn-md btn-outline-primary" id="select-save"> Save </button>
                 <br />
+                <small class="text-success" id="select-success-msg" hidden="true">Successfully saved!</small>
             </div>
-            <div class="form-check">
-                <input class="form-check-input selection" type="checkbox" value="get" id="get">
-                <label class="form-check-label ml-1" for="get">
-                    &nbsp;Request for my information
-                </label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input selection" type="checkbox" value="delete" id="delete">
-                <label class="form-check-label ml-1" for="delete">
-                    &nbsp;Delete all my information
-                </label>
-            </div>
+
         </div>
-        <div class="mt-4">
-            <button id="sendrequest" type="button" class="btn btn-outline-primary">Send Request</button>
-        </div>
+        -->
     </main role="main">
-    <!-- <script src="../js/main.js"></script> -->
     <script src="moment.min.js"></script>
     <script src="jquery-3.4.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"

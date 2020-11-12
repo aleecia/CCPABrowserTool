@@ -122,14 +122,18 @@ $(document).ready(function () {
         });
     });
 
+    $('#allow-sell').on('click', function () {
+        $('#finish').attr('disabled', false);
+    })
+
+    $('#disallow-sell').on('click', function () {
+        $('#finish').attr('disabled', false);
+    })
+
     $('#finish').on('click', function () {
         setDefaultPreference($('input[name=allow-sell-radio-group]:checked').val());
-        
-        getDefaultPreference()
-            .then(data => {
-                var defaultPreference = data.default;
-                // console.log('default: ' + defaultPreference);
-            });
+        setIsParentMode(false);
+        setParentPassword(null);
         alert("Voila! Your data privacy setting have been saved")
     });
 

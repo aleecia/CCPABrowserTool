@@ -9,7 +9,7 @@ $(document).ready(function () {
             return $(this).attr('href');
         }).get();
         if (!tabID || !validTabIDSet.includes(tabID)) {
-            return '#introduction';
+            return '#information';
         }
         return tabID;
     }
@@ -53,6 +53,37 @@ $(document).ready(function () {
     /**
      * Determine general settings status
      */
+    getIsParentMode()
+        .then(data => {
+            const isParentMode = data.isParentMode;
+            console.log('isParentMode', isParentMode);
+            if (isParentMode == true) {
+                $('#settings-content').hide();
+                $('#wrong-password').hide();
+
+                $('#parent-password-submit').on('click', function () {
+                    const input_pw = $('#parent-password').val();
+                    getParentPassword()
+                        .then(data => {
+                            const pw = data.parentPassword;
+
+                            if (input_pw == pw) {
+                                $('#parent-unlock').hide();
+                                $('#settings-content').show();
+                                generalSetting();
+                            } else {
+                                $('#wrong-password').show();
+                            }
+                        })
+                });
+            } else {
+                $('#parent-unlock').hide();
+                generalSetting();
+            }
+        })
+});
+
+function generalSetting() {
     getDefaultPreference()
         .then(data => {
             var allowSell = false;
@@ -90,4 +121,4 @@ $(document).ready(function () {
                     })
                 });
         });
-});
+};

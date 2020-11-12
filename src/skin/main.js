@@ -16,14 +16,55 @@ $(document).ready(function () {
 
     getDefaultPreference()
         .then(data => {
-            if(!data) {
-                return;
+            if (!data) {
+                // TODO: ADD SOMETHING ELSE
+                defaultPreference = 2;
+                $('#exception-section').prop('hidden', true);
+            } else {
+                defaultPreference = data.default;
             }
-            defaultPreference = data.default;
+            if (defaultPreference == 0) {
+                $('#default-setting').html('Allow selling my information');
+            } else if (defaultPreference == 1) {
+                $('#default-setting').html('Do not sell my information');
+            }
+            var origin;
+
+            chrome.tabs.query({
+                active: true,
+                currentWindow: true
+            }, function (tabs) {
+                var tab = tabs[0];
+                var url = new URL(tab.url);
+                origin = url.origin;
+                $('.current-website').html('&bull;&nbsp; ' + origin);
+
+                getLastRequest(origin)
+                    .then(data => {
+                        console.log('history', data);
+                    })
+                // $('#most-recent-history')
+            });
 
             checkCustomPreference()
                 .then(data => {
                     customPreference = data;
+                    if (customPreference == 1) {
+                        $('#ex-for-current-website').prop("checked", true);
+                        console.log('custom for current website');
+                    } else {
+                        $('#ex-for-current-website').prop("checked", false);
+                        console.log('not custom for current website');
+                    }
+
+                    $('#ex-for-current-website').on('click', function () {
+                        if ($(this).is(':checked')) {
+                            setCustomPreference().catch(error => console.error(error));
+                        } else {
+                            deleteCustomPreference().catch(error => console.error(error));
+                        }
+                    })
+
                     if ((defaultPreference == 0 && customPreference == 0) || (defaultPreference == 1 && customPreference == 1)) {
                         allowSell = true;
                     }
@@ -34,124 +75,66 @@ $(document).ready(function () {
                         var today = moment();
                         age = today.diff(birthday, 'years');
                         if (age < 13) {
-                            $('#switch_exception').html('Children under age 13 are by default enroll do not sell personal information for');
+                            $('#switch-exception').html('Children under age 13 are by default enroll do not sell personal information for');
                         }
 
-                        if (allowSell == true) {
-                            $('#off').show();
-                            $('#off').addClass('active');
-                            $('#on').addClass('inactive');
 
-                        } else {
-                            $('#on').show();
-                            $('#on').addClass('active');
-                            $('#off').addClass('inactive');
-                        }
 
-                        if (customPreference == 1) {
-                            $('#switch_exception').html('Switch back to default preference');
-                            $('#switch_exception').removeClass('default');
-                            $('#switch_exception').addClass('exception');
-                        } else {
-                            chrome.tabs.query({
-                                active: true,
-                                currentWindow: true
-                            }, function (tabs) {
-                                var tab = tabs[0];
-                                var url = new URL(tab.url);
-                                var origin = url.origin;
-                                $('#switch_exception').append("<label class='text-info' id='origin'>" + origin + "</label>");
+                        $('#get-for-current-website').on("click", function () {
+                            chrome.runtime.sendMessage({
+                                firstParty_get: true
                             });
-                        }
+                        });
+                        $('#delete-for-current-website').on("click", function () {
+                            chrome.runtime.sendMessage({
+                                firstParty_delete: true
+                            });
+                        });
+                        $('#get-for-third-parties').on("click", function () {
+                            chrome.runtime.sendMessage({
+                                thirdParty_get: true
+                            });
+                        });
+                        $('#delete-for-third-parties').on("click", function () {
+                            chrome.runtime.sendMessage({
+                                thirdParty_delete: true
+                            });
+                        });
 
-                        $('#switch_exception').click(function () {
-                            if (age < 13) {
-                                return;
-                            }
-                            var activeStatus = $('.status.active');
-                            var inactiveStatus = $('.status.inactive');
-                            activeStatus.hide();
-                            inactiveStatus.show();
-                            activeStatus.removeClass('active');
-                            activeStatus.addClass('inactive');
-                            inactiveStatus.removeClass('inactive');
-                            inactiveStatus.addClass('active');
 
-                            if ($('#switch_exception').hasClass('exception')) {
-                                var origin;
+                        /*
 
-                                chrome.tabs.query({
-                                    active: true,
-                                    currentWindow: true
-                                }, function (tabs) {
-                                    var tab = tabs[0];
-                                    var url = new URL(tab.url);
-                                    origin = url.origin;
+                        $('#go-select').on('click', function () {
+                            chrome.storage.local.get("thirdPartyList", data => {
+                                const thirdPartyListRes = data.thirdPartyList;
+                                console.log(thirdPartyListRes);
+                                for (const [index, thirdParty] of thirdPartyListRes.entries()) {
+                                    $('#select-content').append(thirdParty + '<br />');
 
-                                    $('#switch_exception').html("Create exception for <a class='text-primary ml-1'\
-                            href='/skin/dashboard.html#introduction' target='_blank' id='exception-question'> \
-                            <i class='far fa-question-circle'></i></a><br /> \
-                            <label class='text-info' id='origin'>" + origin + "</label>");
+                                }
+
+                                resetThirdPartyList().catch(error => console.error(error));
+                                
+                            });
+
+                            $('#main-page').prop('hidden', true);
+                            $('#go-back').prop('hidden', false);
+                            $('#select-third-party').prop('hidden', false);
+                        });
+                        */
+
+
+
+                        chrome.runtime.onMessage.addListener((request) => {
+                            if (request.getMessage) {
+                                window.close();
+                                chrome.runtime.sendMessage({
+                                    refresh: true
                                 });
-
-                                deleteCustomPreference().then(
-
-                                    () => {
-                                        $('#switch_exception').removeClass('exception');
-                                        $('#switch_exception').addClass('default');
-                                    }
-
-                                ).catch(error => console.error(error));
-                            } else {
-                                setCustomPreference().then(
-                                    () => {
-                                        $('#switch_exception').removeClass('default');
-                                        $('#switch_exception').addClass('exception');
-                                        $('#switch_exception').html('Switch back to default preference');
-
-                                    }).catch(error => console.error(error));;
                             }
-                        });
-
-                        $('#switch_exception').hover(function () {
-                            if (age < 13) {
-                                return;
-                            }
-                            $('#origin').removeClass('text-info');
-                            $('#exception-question').removeClass('text-primary');
-                            $('#exception-question').addClass('text-light');
-                        }, function () {
-                            if (age < 13) {
-                                return;
-                            }
-                            $('#origin').addClass('text-info');
-                            $('#exception-question').removeClass('text-light');
-                            $('#exception-question').addClass('text-primary');
-                        });
-
-                        $('#sendrequest').on("click", function () {
-                            // get my data
-                            var r1 = "u";
-                            // delete my data
-                            var r2 = "u";
-                            if ($("#get").get(0).checked) {
-                                r1 = "1";
-                            }
-                            if ($("#delete").get(0).checked) {
-                                r2 = "1";
-                            }
-                            chrome.runtime.sendMessage({
-                                r1: r1
-                            });
-                            chrome.runtime.sendMessage({
-                                r2: r2
-                            });
-                            window.close();
-                            chrome.runtime.sendMessage({
-                                'refresh' : true
-                            })
-                        });
+                        })
                     });
+
 
                 });
         });

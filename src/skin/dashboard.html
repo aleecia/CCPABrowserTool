@@ -2,67 +2,73 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <title>Dashboard</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+	<title>Dashboard</title>
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous" />
-    <link type="text/css" media="screen" href="dashboard.css" rel="stylesheet" />
+	<!-- CSS -->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+		integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous" />
+	<link type="text/css" media="screen" href="dashboard.css" rel="stylesheet" />
 
-    <!-- Icons -->
-    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
-        integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+	<!-- Icons -->
+	<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+		integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
 
 </head>
 
 <body>
-    <div class="container-fluid">
-        <div class="row">
-            <nav id="sidebar-tabs" class="col-md-2 col-lg-2 d-md-block bg-light sidebar collapse">
-                <div class="sidebar-sticky">
-                    <img src="images/tartan.png" class="img-responsive w-100 h-5 mb-4" alt="Welcome to our tool!">
-                    <ul class="nav flex-column">
-                        <li class="nav-item"> 
-                          <li class="nav-item">
-                            <a class="nav-link" href="#general">
-                                <i class="fas fa-sliders-h mr-2"></i>
-                                General
-                            </a>
-                        </li>
-                            <a class="nav-link" href="#introduction">
-                                <i class="fas fa-clipboard mr-2"></i>
-                                Introduction
-                            </a>
-                        </li>
-                       
-                        <li class="nav-item">
-                            <a class="nav-link" href="#stats">
-                                <i class="fas fa-chart-line mr-2"></i>
-                                Stats
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#support">
-                                <i class="fas fa-envelope-open-text mr-2"></i>
-                                Support
-                            </a>
-                        </li>
-                    </ul>
+	<div class="container-fluid">
+		<div class="row">
+			<nav id="sidebar-tabs" class="col-md-2 col-lg-2 d-md-block bg-light sidebar collapse">
+				<div class="sidebar-sticky">
+					<img src="images/tartan.png" class="img-responsive w-100 h-5 mb-4" alt="Welcome to our tool!">
+					<ul class="nav flex-column">
+					
+						<li class="nav-item">
+							<a class="nav-link" href="#settings">
+								<i class="fas fa-sliders-h mr-2"></i>
+								Settings
+							</a>
+            </li>	
+            <li class="nav-item">
+							<a class="nav-link" href="#information">
+								<i class="fas fa-clipboard mr-2"></i>
+								Information
+							</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#statistics">
+								<i class="fas fa-chart-line mr-2"></i>
+								Statistics
+							</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#history">
+								<i class="fas fa-history mr-2"></i>
+								History
+							</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#support">
+								<i class="fas fa-envelope-open-text mr-2"></i>
+								Support
+							</a>
+						</li>
+					</ul>
 
-                </div>
-                <div class="fixed-bottom">
-                    <p class="ml-3">Ⓒ CMU Project - Team 1</p>
-                </div>
-            </nav>
+				</div>
+				<div class="fixed-bottom">
+					<p class="ml-3">Ⓒ CMU Project - Team 1</p>
+				</div>
+			</nav>
 
             <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
                 <div id="tab-content">
-                    <div id="introduction" class="tab">
+                    <div id="information" class="tab">
                         <div
                             class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-4 pb-4 mb-5 border-bottom">
-                            <h1 class="h2 text-dark">Introduction</h1>
+                            <h1 class="h2 text-dark">Information</h1>
                         </div>
                         <div>
                             <p class="lead">
@@ -148,11 +154,32 @@
                               </div>
                             </div>
                     </div>
-                    <div id="general" class="tab">
+                    <div id="settings" class="tab">
                         <div
                             class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-4 pb-4 mb-4 border-bottom">
                             <h1 class="h2 text-dark">General Settings</h1>
                         </div>
+                        <div id="parent-unlock">
+                          <p class="lead">
+                            Since this tool is under parent control, please enter the password to continue
+                            change settings.
+                          </p>
+            
+                          <input type="password" id="parent-password" class="form-control w-25 mt-2 mr-4 mb-2"
+                            aria-describedby="password-help" style="display: inline-block">
+                          <button type="button" id="parent-password-submit" class="btn btn-md btn-outline-success"
+                            style="display: inline-block">
+                            &nbsp;&nbsp;Submit&nbsp;&nbsp;
+                          </button>
+                          <br />
+            
+                          <small class="warning-text"> if you forget the password, you can redo the welcome guide
+                            steps by reinstalling
+                            this tool.</small> <br />
+                          <small class="warning-text" id="wrong-password"> Wrong password! Please enter again.</small>
+                          <br />
+                        </div>
+                        <div id="settings-content">
                         <div>
                           <p class="lead">Set Dafault Preference</p>
                           <p >
@@ -179,16 +206,34 @@
                           <p id="exception_list">
                           </p>
                         </div>
+                      </div>
                     </div>
-                    <div id="stats" class="tab">
-                        <div
-                            class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-4 pb-4 mb-5 border-bottom">
-                            <h1 class="h2 text-dark">Stats</h1>
-                        </div>
-                        <div>
-                            <p class="lead">This is stats.</p>
-                        </div>
+                  </div>
+                  <div id="statistics" class="tab">
+                    <div
+                      class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-4 pb-4 mb-5 border-bottom">
+                      <h1 class="h2 text-dark">Statistics</h1>
                     </div>
+                    <div>
+                      <p class="lead">You have no statistics yet. Please browse the web for more statistics insights.</p>
+                    </div>
+                  </div>
+                  <div id="history" class="tab">
+                    <div
+                      class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-4 pb-4 mb-5 border-bottom">
+                      <h1 class="h2 text-dark">History</h1>
+                    </div>
+                    <div id="no-history">
+                      <p class="lead">You have no requests sent yet. Please browse the web and make requests on the pop up window when you click the extension icon <img src="images/icon.png"
+                        width="20" height="20" alt="icon"> on the top right of the browser.</p>
+                    </div>
+                    <div id="display-history">
+                      <p class="lead">These are the websites from which you requested your information:</p>
+                      <p id="request-info-history"></p>
+                      <p class="lead">These are the websites you requested deletion of your information:</p>
+                      <p id="delete-info-history"></p>
+                    </div>
+                  </div>
                     <div id="support" class="tab">
                         <div
                             class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-4 pb-4 mb-5 border-bottom">
