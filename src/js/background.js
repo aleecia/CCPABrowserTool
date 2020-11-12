@@ -4,7 +4,7 @@ var thirdParty_get = "u";
 var thirdParty_delete = "u";
 
 var flag = false;
-
+var ccpa1 = "undefined";
 var originHostName = "undefined";
 
 /**************************************************************************************************
@@ -47,7 +47,9 @@ function setupHeaderModListener() {
     );
 
     chrome.webRequest.onSendHeaders.addListener(details => {
-        console.log(details.requestHeaders);
+        console.log(details);
+        // getThirdPartyList().then().catch();
+        // getFirstPartyList().then().catch();
     },
         { urls: ["<all_urls>"] },
         ['extraHeaders', 'requestHeaders']
@@ -72,7 +74,14 @@ function modifyRequestHeaderHandler(details) {
     return { requestHeaders: details.requestHeaders };
 }
 
-
+/**
+ * Return the hostname of current request url
+ * @param {} requestURL current request url
+ * 1. tab.url stands for the origin url that user wants to visit
+ * 2. originHostName: origin hostname
+ * 3. requestHostName: hostname of each http request url
+ * return the correponding hostname
+ */
 function isThirdPartyURL(requestURL) {
     return new Promise((resolve, reject) => {
         var requestHostName = new URL(parseOriginURL(requestURL)).hostname;
@@ -91,16 +100,93 @@ function isThirdPartyURL(requestURL) {
     })
 }
 
+/**
+ * Get corresponding CCPA rule in different scenarios.
+ * @param {*} hostname hostname or domain of request url.
+ */
 function getCCPARule(hostname) {
     if (hostname != originHostName) {
         // for third party request, get user's default preference first
         getDefaultPreference().then(setAllowAllToSell);
+        // TODO: 
+        // store third party's request url to storage
+        addToThirdPartyList(hostname).then().catch();
         // then construct ccpa rule based on user's default or customized preference
         return isInExceptionListHelper(hostname).then(constructThirdPartyCCPARule);
     } else {
         // for first party, construct ccpa rule based on user's customized preference
+        addToFirstPartyList(hostname).then().catch();
         return isInExceptionListHelper(originHostName).then(constructFirstPartyCCPARule);
     }
+}
+
+/**
+ * Store all third party's hostname to storage
+ * @param  hostname current third party's hostname
+ */
+function addToThirdPartyList(hostname) {
+    return new Promise((resolve, reject) => {
+		chrome.storage.local.get("thirdPartyList", data => {
+            var thirdPartyList = data.thirdPartyList
+            if(thirdPartyList) {
+                thirdPartyList = thirdPartyList.filter(p => p !== hostname)
+                thirdPartyList.push(hostname)
+            } else {
+                thirdPartyList = [hostname]
+            }
+            chrome.storage.local.set({ thirdPartyList }, () => 
+                chrome.runtime.lastError ?
+                reject(Error(chrome.runtime.lastError.message)) :
+                resolve()
+            )
+        })
+	})
+}
+
+
+// function updateThirdPartyList() {
+//     getFirstPartyList().then()
+// }
+
+
+function addToFirstPartyList(hostname) {
+    return new Promise((resolve, reject) => {
+		chrome.storage.sync.get("firstPartyList", data => {
+            var firstPartyList = data.firstPartyList
+            if(firstPartyList) {
+                firstPartyList = firstPartyList.filter(p => p !== hostname)
+                firstPartyList.push(hostname)
+            } else {
+                firstPartyList = [hostname]
+            }
+            chrome.storage.sync.set({ firstPartyList }, () => 
+                chrome.runtime.lastError ?
+                reject(Error(chrome.runtime.lastError.message)) :
+                resolve()
+            )
+        })
+	})
+}
+
+
+
+function getThirdPartyList() {
+    return new Promise((resolve, reject) => {
+		chrome.storage.local.get("thirdPartyList", data => {
+            console.log("3rd");
+            console.log(data);
+            resolve(data);
+        })
+	})
+}
+
+function getFirstPartyList() {
+    return new Promise((resolve, reject) => {
+		chrome.storage.sync.get("firstPartyList", data => {
+            console.log("1st");
+            console.log(data);
+        })
+	})
 }
 
 function isInExceptionListHelper(hostname) {
