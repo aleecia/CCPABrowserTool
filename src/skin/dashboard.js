@@ -105,10 +105,10 @@ function generalSetting() {
                     getExceptionsList()
                         .then(data => {
                             if (allowSell) {
-                                $("#list_explain").append('<p>When your default setting allow to sell your information, exception list contains the websites you do not want them to sell data</p>')
+                                $("#list_explain").append('<p>Your default setting allow websites to sell your information. This exception list contains the websites you do not want them to sell your data</p>')
 
                             } else {
-                                $("#list_explain").append('<p>When your default setting ask not to sell your information, exception list contains the websites you allow to sell your data</p>')
+                                $("#list_explain").append('<p>Your default setting ask not to sell your information. This exception list contains the websites that you allow to sell your data</p>')
 
                             }
 
