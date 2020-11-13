@@ -3,8 +3,8 @@
 $(document).ready(function () {
     var allowSell = false;
     var age;
-    var defaultPreference;
-    var customPreference;
+    var defaultPreference = 2;
+    var customPreference = 0;
 
     /**
      * 1. Get default preference, 1 => do not sell my data; 0 => allow selling my data.
@@ -18,7 +18,6 @@ $(document).ready(function () {
         .then(data => {
             if (!data) {
                 // TODO: ADD SOMETHING ELSE
-                defaultPreference = 2;
                 $('#exception-section').prop('hidden', true);
             } else {
                 defaultPreference = data.default;
@@ -50,6 +49,9 @@ $(document).ready(function () {
 
             checkCustomPreference()
                 .then(data => {
+                    if (!data) {
+                        customPreference = 0;
+                    }
                     customPreference = data;
                     if (customPreference == 1) {
                         $('#ex-for-current-website').prop("checked", true);
@@ -66,10 +68,6 @@ $(document).ready(function () {
                             deleteCustomPreference().catch(error => console.error(error));
                         }
                     })
-
-                    if ((defaultPreference == 0 && customPreference == 0) || (defaultPreference == 1 && customPreference == 1)) {
-                        allowSell = true;
-                    }
 
                     getUserDOB().then(data => {
                         var birthday = moment(data.userDOB);
