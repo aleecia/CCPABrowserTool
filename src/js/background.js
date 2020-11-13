@@ -72,9 +72,9 @@ function setupHeaderModListener() {
                 }, function(tab) {
                     chrome.windows.create({
                         tabId: tab.id,
-                        type: 'popup',
-                        focused: false
-                        // incognito, top, left, ...
+                        type: "panel",
+                        focused: false,
+                        width:400
                     });
                 }
                 
