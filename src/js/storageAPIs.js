@@ -495,16 +495,15 @@ const getExceptionsList = () => {
 
 
 // stores the information for requests sent to first parties
-// if the request is sent automatically then only the url and r3 preference is neccessary
-// if the request is sent by a push and values of r1 and r2 are not unset they may be given as arguments too
+// the values of r1 and r2 must be supplied as arguments
 // usage example:
-//   addRecord("google.com", 0)
+//   addRecord("google.com", 0, 1, 1)
 //   .then(
 //     ... next steps here
 //   )
 //   .catch(error => console.error(error))
 
-const addRecord = (url, thirdParty, y = "u", z = "u") => {
+const addRecord = (url, thirdParty, y, z) => {
 	return new Promise((resolve, reject) => {
 		chrome.storage.local.get('history', data => {
 			if (chrome.runtime.lastError) {
