@@ -2,7 +2,7 @@ var firstParty_get = "u";
 var firstParty_delete = "u";
 var thirdParty_get = "u";
 var thirdParty_delete = "u";
-
+var blockDoNotSellRequest = true;
 var currentTabID = "undefined";
 
 var flag = false;
@@ -230,12 +230,17 @@ function constructThirdPartyCCPARule(data) {
     return new Promise((resolve,reject) => {
         var ccpa;
         var [isInExceptionList] = data;
-        if(!(isInExceptionList ^ flag)) {
-            ccpa = thirdParty_get + thirdParty_delete + "0";
-            console.log("3rd rr0");
+        if(blockDoNotSellRequest) {
+            ccpa = thirdParty_get + thirdParty_delete + "u";
+            console.log("3rd rru");
         } else {
-            ccpa = thirdParty_get + thirdParty_delete + "1";
-            console.log("3rd rr1");
+            if(!(isInExceptionList ^ flag)) {
+                ccpa = thirdParty_get + thirdParty_delete + "0";
+                console.log("3rd rr0");
+            } else {
+                ccpa = thirdParty_get + thirdParty_delete + "1";
+                console.log("3rd rr1");
+            }
         }
         return resolve(ccpa);
     })
@@ -365,6 +370,9 @@ chrome.runtime.onMessage.addListener((request) => {
     }
     if (request.refresh) {
         refreshPage();
+    }
+    if(request.blockFlag) {
+        blockDoNotSellRequest = request.blockFlag;
     }
 });
 
