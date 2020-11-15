@@ -24,8 +24,10 @@ $(document).ready(function () {
             }
             if (defaultPreference == 0) {
                 $('#default-setting').html('Allow selling my information');
+                $('#default-setting-2').html('allow selling my information');
             } else if (defaultPreference == 1) {
                 $('#default-setting').html('Do not sell my information');
+                $('#default-setting-2').html('do not sell my information');
             }
             var origin;
 
