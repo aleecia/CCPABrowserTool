@@ -2,7 +2,7 @@ var firstParty_get = "u";
 var firstParty_delete = "u";
 var thirdParty_get = "u";
 var thirdParty_delete = "u";
-var blockDoNotSellRequest = true;
+var blockDoNotSellRequest = false;
 var currentTabID = "undefined";
 
 var flag = false;
