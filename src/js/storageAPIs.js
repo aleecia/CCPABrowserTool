@@ -124,12 +124,113 @@ const getIsParentMode = () => {
 const resetThirdPartyList = () => {
 	var thirdPartyList = []
 	return new Promise((resolve, reject) =>
-		chrome.storage.local.set({thirdPartyList}, () =>
+		chrome.storage.local.set({
+				thirdPartyList
+			}, () =>
 			chrome.runtime.lastError ?
 			reject(Error(chrome.runtime.lastError.message)) :
 			resolve()
 		)
 	)
+}
+
+// sets stop sending for third parties (only for r3)
+// usage example:
+// setStopSendingForThirdParty()
+// .then(
+//     ...
+// )
+// .catch(error => console.error(error))
+
+const setStopSendingForThirdParty = () => {
+	return new Promise((resolve, reject) => {
+		chrome.tabs.getSelected(null, tab => {
+			var tablink = tab.url.split('/')[2]
+			chrome.storage.local.get('stopSendingForThirdParty', data => {
+				var stopSendingForThirdParty = data.stopSendingForThirdParty;
+				var newPreference = {
+					"domain": tablink,
+					"preference": stopSendingForThirdParty
+				}
+
+				if (stopSendingForThirdParty) {
+					stopSendingForThirdParty = stopSendingForThirdParty.filter(p => p.domain !== tablink)
+					stopSendingForThirdParty.push(newPreference)
+				} else {
+					stopSendingForThirdParty = [newPreference]
+				}
+				chrome.storage.local.set({
+						stopSendingForThirdParty
+					}, () =>
+					chrome.runtime.lastError ?
+					reject(Error(chrome.runtime.lastError.message)) :
+					resolve()
+				)
+			})
+		})
+	})
+}
+
+// checks whether a stop sending for third party signal set for the current opened tab
+// usage example:
+// checkStopSendingForThirdParty()
+// .then(data => { // data would be a boolean val, true -> block, false -> unblock
+//      ...
+// })
+// 
+
+const checkStopSendingForThirdParty = () => {
+	return new Promise((resolve, reject) => {
+		chrome.tabs.getSelected(null, (tab) => {
+			var tablink = tab.url.split('/')[2]
+			chrome.storage.local.get('stopSendingForThirdParty', (data) => {
+				var stopSendingForThirdParty = data.stopSendingForThirdParty
+				if (stopSendingForThirdParty) {
+					var filteredPreference = stopSendingForThirdParty.filter(
+						(p) => p.domain == tablink
+					)
+					if (filteredPreference.length == 0) {
+						resolve(false)
+					} else {
+						resolve(true)
+					}
+				} else {
+					resolve(false)
+				}
+			})
+		})
+	})
+}
+
+// deletes the setting
+// usage example:
+//       deleteStopSendingForThirdParty()
+//       .then(() => {
+//         ... next steps here
+//       })
+//       .catch(error => console.error(error))
+
+const deleteStopSendingForThirdParty = () => {
+	return new Promise((resolve, reject) => {
+		chrome.tabs.getSelected(null, tab => {
+			var tablink = tab.url.split('/')[2]
+			chrome.storage.local.get('stopSendingForThirdParty', data => {
+				var stopSendingForThirdParty = data.stopSendingForThirdParty
+				if (stopSendingForThirdParty) {
+					stopSendingForThirdParty = stopSendingForThirdParty.filter(p => p.domain !== tablink)
+				} else {
+					stopSendingForThirdParty = []
+				}
+				chrome.storage.local.set({
+						stopSendingForThirdParty
+					}, () =>
+					chrome.runtime.lastError ?
+					reject(Error(chrome.runtime.lastError.message)) :
+					resolve()
+				)
+			})
+		})
+	})
 }
 
 // sets the custom (opposite to default) preference for the webpage opened
@@ -539,11 +640,11 @@ const getLastRequest = (url) => {
 			} else {
 				var history = data.history
 				if (history) {
-					history = history.filter(p => (p.domain === url && p.thirdParty == 0 ))
+					history = history.filter(p => (p.domain === url && p.thirdParty == 0))
 					if (history) {
-						resolve(history[history.length-1])
-					} 
-				} 
+						resolve(history[history.length - 1])
+					}
+				}
 				reject({})
 			}
 		})

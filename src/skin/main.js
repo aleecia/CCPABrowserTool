@@ -1,10 +1,10 @@
 'use strict';
 
 $(document).ready(function () {
-    var allowSell = false;
     var age;
     var defaultPreference = 2;
     var customPreference = 0;
+    var blockThirdParty = false;
 
     /**
      * 1. Get default preference, 1 => do not sell my data; 0 => allow selling my data.
@@ -53,8 +53,9 @@ $(document).ready(function () {
                 .then(data => {
                     if (!data) {
                         customPreference = 0;
+                    } else {
+                        customPreference = data;
                     }
-                    customPreference = data;
                     if (customPreference == 1) {
                         $('#ex-for-current-website').prop("checked", true);
                         console.log('custom for current website');
@@ -63,79 +64,112 @@ $(document).ready(function () {
                         console.log('not custom for current website');
                     }
 
-                    $('#ex-for-current-website').on('click', function () {
-                        if ($(this).is(':checked')) {
-                            setCustomPreference().catch(error => console.error(error));
-                        } else {
-                            deleteCustomPreference().catch(error => console.error(error));
-                        }
-                    })
+                    checkStopSendingForThirdParty()
+                        .then(data => {
+                            if (data) {
+                                blockThirdParty = true;
+                                $('#stop-for-third-parties').prop("checked", true);
+                            }
 
-                    getUserDOB().then(data => {
-                        var birthday = moment(data.userDOB);
-                        // console.log('birthday:', birthday)
-                        var today = moment();
-                        age = today.diff(birthday, 'years');
-                        if (age < 13) {
-                            $('#switch-exception').html('Children under age 13 are by default enroll do not sell personal information for');
-                        }
+                            $('#ex-for-current-website').on('click', function () {
+                                if ($(this).is(':checked')) {
+                                    setCustomPreference().catch(error => console.error(error));
+                                } else {
+                                    deleteCustomPreference().catch(error => console.error(error));
+                                }
+                            })
 
+                            $('#stop-for-third-parties').on('click', function () {
+                                if ($(this).is(':checked')) {
+                                    setStopSendingForThirdParty().catch(error => console.error(error));
+                                    chrome.runtime.sendMessage({
+                                        blockFlag: true
+                                    });
+                                } else {
+                                    deleteStopSendingForThirdParty().catch(error => console.error(error));
+                                    chrome.runtime.sendMessage({
+                                        blockFlag: false
+                                    });
+                                }
+                            })
 
-
-                        $('#get-for-current-website').on("click", function () {
-                            chrome.runtime.sendMessage({
-                                firstParty_get: true
-                            });
-                        });
-                        $('#delete-for-current-website').on("click", function () {
-                            chrome.runtime.sendMessage({
-                                firstParty_delete: true
-                            });
-                        });
-                        $('#get-for-third-parties').on("click", function () {
-                            chrome.runtime.sendMessage({
-                                thirdParty_get: true
-                            });
-                        });
-                        $('#delete-for-third-parties').on("click", function () {
-                            chrome.runtime.sendMessage({
-                                thirdParty_delete: true
-                            });
-                        });
-
-
-                        /*
-
-                        $('#go-select').on('click', function () {
-                            chrome.storage.local.get("thirdPartyList", data => {
-                                const thirdPartyListRes = data.thirdPartyList;
-                                console.log(thirdPartyListRes);
-                                for (const [index, thirdParty] of thirdPartyListRes.entries()) {
-                                    $('#select-content').append(thirdParty + '<br />');
-
+                            getUserDOB().then(data => {
+                                var birthday = moment(data.userDOB);
+                                // console.log('birthday:', birthday)
+                                var today = moment();
+                                age = today.diff(birthday, 'years');
+                                if (age < 13) {
+                                    $('#switch-exception').html('Children under age 13 are by default enroll do not sell personal information for');
                                 }
 
-                                resetThirdPartyList().catch(error => console.error(error));
-                                
+                                if ($('#stop-for-third-parties').is(':checked')) {
+                                    chrome.runtime.sendMessage({
+                                        blockFlag: true
+                                    });
+                                } else {
+                                    chrome.runtime.sendMessage({
+                                        blockFlag: false
+                                    });
+                                }
+
+                                $('#get-for-current-website').on("click", function () {
+                                    chrome.runtime.sendMessage({
+                                        firstParty_get: true
+                                    });
+                                });
+                                $('#delete-for-current-website').on("click", function () {
+                                    chrome.runtime.sendMessage({
+                                        firstParty_delete: true
+                                    });
+                                });
+                                $('#get-for-third-parties').on("click", function () {
+                                    chrome.runtime.sendMessage({
+                                        thirdParty_get: true
+                                    });
+                                });
+                                $('#delete-for-third-parties').on("click", function () {
+                                    chrome.runtime.sendMessage({
+                                        thirdParty_delete: true
+                                    });
+                                });
+
+
+                                /*
+        
+                                $('#go-select').on('click', function () {
+                                    chrome.storage.local.get("thirdPartyList", data => {
+                                        const thirdPartyListRes = data.thirdPartyList;
+                                        console.log(thirdPartyListRes);
+                                        for (const [index, thirdParty] of thirdPartyListRes.entries()) {
+                                            $('#select-content').append(thirdParty + '<br />');
+        
+                                        }
+        
+                                        resetThirdPartyList().catch(error => console.error(error));
+                                        
+                                    });
+        
+                                    $('#main-page').prop('hidden', true);
+                                    $('#go-back').prop('hidden', false);
+                                    $('#select-third-party').prop('hidden', false);
+                                });
+                                */
+
+
+
+                                chrome.runtime.onMessage.addListener((request) => {
+                                    if (request.getMessage) {
+                                        window.close();
+                                        chrome.runtime.sendMessage({
+                                            refresh: true
+                                        });
+                                    }
+                                })
                             });
 
-                            $('#main-page').prop('hidden', true);
-                            $('#go-back').prop('hidden', false);
-                            $('#select-third-party').prop('hidden', false);
-                        });
-                        */
-
-
-
-                        chrome.runtime.onMessage.addListener((request) => {
-                            if (request.getMessage) {
-                                window.close();
-                                chrome.runtime.sendMessage({
-                                    refresh: true
-                                });
-                            }
                         })
-                    });
+
+
 
 
                 });
