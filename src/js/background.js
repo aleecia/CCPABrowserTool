@@ -2,10 +2,13 @@ var firstParty_get = "u";
 var firstParty_delete = "u";
 var thirdParty_get = "u";
 var thirdParty_delete = "u";
+var blockDoNotSellRequest = false;
+var currentTabID = "undefined";
 
 var flag = false;
 var ccpa1 = "undefined";
-var originHostName = "undefined";
+var originHostname = "undefined";
+
 
 /**************************************************************************************************
  *                                          Initialization                                        *       
@@ -19,7 +22,9 @@ function initialize() {
 
 initialize();
 
-
+/**
+ * Set the default ccpa rule based on user's default preference, 
+ */
 function setInitialCCPARule() {
     getDefaultPreference().then(data => {
         if (!data) {
@@ -38,6 +43,10 @@ function setInitialCCPARule() {
     });
 }
 
+
+/**
+ * Webrequest lifecycle.
+ */
 function setupHeaderModListener() {
 
     chrome.webRequest.onBeforeSendHeaders.addListener(
@@ -47,201 +56,164 @@ function setupHeaderModListener() {
     );
 
     chrome.webRequest.onSendHeaders.addListener(details => {
-        console.log(details);
-        // getThirdPartyList().then().catch();
-        // getFirstPartyList().then().catch();
-    },
+            // console.log("send request");
+            // console.log(details);
+        },
         { urls: ["<all_urls>"] },
         ['extraHeaders', 'requestHeaders']
     );
 
-/**
- * Response Handler: Check if CCPA header in the response
- */ 
-    chrome.webRequest.onHeadersReceived.addListener(details =>{
-        var header = details.responseHeaders
-        for(var i=0;i<header.length;i++){
-            console.log("response",details)
-            if(header[i].name == "ccpa1"){
-                
-                console.log("ccpa header received")
-                if (details.url=='http://www.ccpabrowsertool.com/'){
-                chrome.tabs.create({
-                    url: chrome.runtime.getURL('./skin/response.html'),
-                    active: false
-                }, function(tab) {
-                    chrome.windows.create({
-                        tabId: tab.id,
-                        type: 'popup',
-                        focused: false
-                        // incognito, top, left, ...
-                    });
-                }
-                
-                );}
-                break
-            }
-        }
-    },
-    { urls: ["<all_urls>"] }
-    ,["responseHeaders"])   
+    chrome.webRequest.onHeadersReceived.addListener(
+        checkReponseHeader,
+        { urls: ["<all_urls>"] },
+        ["responseHeaders"]
+    );
 }
+
+
 
 /***************************************************************************************************
  *                                  Modify HTTP Request Hander                                     *       
  ***************************************************************************************************
  */
 
+function checkReponseHeader(details) {
+    var header = details.responseHeaders
+    for(var i=0;i<header.length;i++){
+        // console.log("response",details)
+        if(header[i].name == "ccpa1"){
+            // console.log("ccpa header received")
+            if (details.url=='http://www.ccpabrowsertool.com/'){
+            chrome.tabs.create({
+                url: chrome.runtime.getURL('./skin/response.html'),
+                active: false
+            }, function(tab) {
+                chrome.windows.create({
+                    tabId: tab.id,
+                    type: "panel",
+                    focused: false,
+                    width:400
+                });
+            }
+            
+            );}
+            break
+        }
+    }
+}
+/**
+ * Monitor and Modify every http request send to both third party and first party
+ * @param details http request details
+ * For each request:
+ * 1. check whether it belongs to the current tab
+ * if it belongs, call handleRequest()
+ * if it doesn't, call discardRequest()
+ * 2. add different ccpa rule to request header
+ * 3. return the modified HTTP request header
+ */
 function modifyRequestHeaderHandler(details) {
     if (details.initiator !== undefined && details.initiator.startsWith("chrome-extension")) {
         return {};
     }
-    isThirdPartyURL(details.url)
-    .then(getCCPARule)
+    isCurrentTabRequest(details)
+    .then(handleRequest, discardRequest)
     .then(ccpaRule => {
         ccpa1 = ccpaRule;
-    });
+        console.log("ccpa rule, ", ccpa1);
+    })
     details.requestHeaders.push({ name: "ccpa1", value: ccpa1 });
     return { requestHeaders: details.requestHeaders };
+}
+
+/**
+ * For each request that belongs to the current tab:
+ * 1. check whether it belongs to third party
+ * 2. construct corresponding ccpa rule
+ * 3. return a promise that contains the ccpa we just constructed
+ * @param {*} requestURL request url that belongs to the current tab
+ */
+function handleRequest(requestURL) {
+    return isThirdPartyURL(requestURL).then(getCCPARule).catch();
+}
+
+/**
+ * For each request that doesn't belong to the current tab:
+ * simply set ccpa rule to "uuu", meaning we won't handle it
+ * return a promise that contains the ccpa we just constructed
+ */
+function discardRequest() {
+    return new Promise((resolve) => {
+        console.log("DISCARD step 2");
+        resolve("uuu");
+    })
+}
+
+/**
+ * Check whether the request belongs to the current tab 
+ * @param {*} request request we monitored
+ */
+function isCurrentTabRequest(request) {
+    return new Promise((resolve, reject) => {
+        var requestTabId = request.tabId;
+        if(requestTabId != currentTabID) {
+            console.log("DISCARD step 1");
+            console.log("request tabID is: ", request.tabId);
+            console.log("current tabid is: ", currentTabID);
+            reject();
+        } else {
+            resolve(request.url);
+        }
+    })
 }
 
 /**
  * Return the hostname of current request url
  * @param {} requestURL current request url
  * 1. tab.url stands for the origin url that user wants to visit
- * 2. originHostName: origin hostname
- * 3. requestHostName: hostname of each http request url
+ * 2. requestHostname: origin hostname
+ * 3. requestHostname: hostname of each http request url
  * return the correponding hostname
  */
 function isThirdPartyURL(requestURL) {
     return new Promise((resolve, reject) => {
-        var requestHostName = new URL(parseOriginURL(requestURL)).hostname;
-        chrome.tabs.getSelected(null, (tab) => {
-            if (/^https:./.test(tab.url) || /^http:./.test(tab.url)) {
-                originHostName = new URL(parseOriginURL(tab.url)).hostname;
-                // if hostname of each http request url 
-                // equals to the origin url that user wants to visit
-                if (requestHostName == originHostName) {
-                    return resolve(originHostName);
-                } else {
-                    return resolve(requestHostName);
+        if (/^https:./.test(requestURL) || /^http:./.test(requestURL)) {
+            var requestHostname = new URL(requestURL).hostname;
+            chrome.tabs.getSelected(null, (tab) => {
+                if (/^https:./.test(tab.url) || /^http:./.test(tab.url)) {
+                    originHostname = new URL(tab.url).hostname;
+                    // if hostname of each http request url 
+                    // equals to the origin url that user wants to visit
+                    if (requestHostname == originHostname) {
+                        return resolve(originHostname);
+                    } else {
+                        return resolve(requestHostname);
+                    }
                 }
-            }
-        })
+            })
+        } else {
+            reject("Invalid request url");
+        }
+    }).catch(error => {
+        console.log(error);
     })
 }
+
+
 
 /**
  * Get corresponding CCPA rule in different scenarios.
  * @param {*} hostname hostname or domain of request url.
  */
 function getCCPARule(hostname) {
-    if (hostname != originHostName) {
+    if (hostname != originHostname) {
         // for third party request, get user's default preference first
         getDefaultPreference().then(setAllowAllToSell);
-        // TODO: 
-        // store third party's request url to storage
-        addToThirdPartyList(hostname).then().catch();
         // then construct ccpa rule based on user's default or customized preference
-        return isInExceptionListHelper(hostname).then(constructThirdPartyCCPARule);
+        return isInExceptionListHelper(hostname).then(constructThirdPartyCCPARule).catch(error => console.log("itself 2"));
     } else {
         // for first party, construct ccpa rule based on user's customized preference
-        addToFirstPartyList(hostname).then().catch();
-        return isInExceptionListHelper(originHostName).then(constructFirstPartyCCPARule);
+        return isInExceptionListHelper(originHostname).then(constructFirstPartyCCPARule).catch(error => console.log("itself 2"));
     }
-}
-
-/**
- * Store all third party's hostname to storage
- * @param  hostname current third party's hostname
- */
-function addToThirdPartyList(hostname) {
-    return new Promise((resolve, reject) => {
-		chrome.storage.local.get("thirdPartyList", data => {
-            var thirdPartyList = data.thirdPartyList
-            if(thirdPartyList) {
-                thirdPartyList = thirdPartyList.filter(p => p !== hostname)
-                thirdPartyList.push(hostname)
-            } else {
-                thirdPartyList = [hostname]
-            }
-            chrome.storage.local.set({ thirdPartyList }, () => 
-                chrome.runtime.lastError ?
-                reject(Error(chrome.runtime.lastError.message)) :
-                resolve()
-            )
-        })
-	})
-}
-
-
-// function updateThirdPartyList() {
-//     getFirstPartyList().then()
-// }
-
-
-function addToFirstPartyList(hostname) {
-    return new Promise((resolve, reject) => {
-		chrome.storage.sync.get("firstPartyList", data => {
-            var firstPartyList = data.firstPartyList
-            if(firstPartyList) {
-                firstPartyList = firstPartyList.filter(p => p !== hostname)
-                firstPartyList.push(hostname)
-            } else {
-                firstPartyList = [hostname]
-            }
-            chrome.storage.sync.set({ firstPartyList }, () => 
-                chrome.runtime.lastError ?
-                reject(Error(chrome.runtime.lastError.message)) :
-                resolve()
-            )
-        })
-	})
-}
-
-
-
-function getThirdPartyList() {
-    return new Promise((resolve, reject) => {
-		chrome.storage.local.get("thirdPartyList", data => {
-            console.log("3rd");
-            console.log(data);
-            resolve(data);
-        })
-	})
-}
-
-function getFirstPartyList() {
-    return new Promise((resolve, reject) => {
-		chrome.storage.sync.get("firstPartyList", data => {
-            console.log("1st");
-            console.log(data);
-        })
-	})
-}
-
-function isInExceptionListHelper(hostname) {
-    return new Promise(resolve => {
-        var inExceptionList;
-        chrome.storage.local.get('customPreferences', (data) => {
-            var customPreferences = data.customPreferences
-            if (customPreferences) {
-                var filteredPreference = customPreferences.filter(
-                    (p) => p.domain == hostname
-                )
-                // the hostname does not in the user's exception list
-                // which means user does not have customized preference for it.
-                if (filteredPreference.length == 0) {
-                    inExceptionList = false
-                } else {
-                    inExceptionList = true
-                }
-            } else {
-                inExceptionList = false
-            }
-            return resolve(inExceptionList);
-        })
-    })
 }
 
 
@@ -254,15 +226,21 @@ function isInExceptionListHelper(hostname) {
  * 2. store every request into storage for analysis purpose.
  * @param isInExceptionList true stands for allowing to sell data; false stands for not allowing.
  */
-function constructThirdPartyCCPARule(isInExceptionList) {
-    return new Promise(resolve => {
+function constructThirdPartyCCPARule(data) {
+    return new Promise((resolve,reject) => {
         var ccpa;
-        if(!(isInExceptionList ^ flag)) {
-            ccpa = thirdParty_get + thirdParty_delete + "0";
-            console.log("3rd rr0");
+        var [isInExceptionList] = data;
+        if(blockDoNotSellRequest) {
+            ccpa = thirdParty_get + thirdParty_delete + "u";
+            console.log("3rd rru");
         } else {
-            ccpa = thirdParty_get + thirdParty_delete + "1";
-            console.log("3rd rr1");
+            if(!(isInExceptionList ^ flag)) {
+                ccpa = thirdParty_get + thirdParty_delete + "0";
+                console.log("3rd rr0");
+            } else {
+                ccpa = thirdParty_get + thirdParty_delete + "1";
+                console.log("3rd rr1");
+            }
         }
         return resolve(ccpa);
     })
@@ -290,6 +268,8 @@ function constructFirstPartyCCPARule(isInExceptionList) {
     })
 }
 
+
+
 /**
  * Set user's default preference of selling information.
  * @param defaultPreference 0 => allow selling my data; 1 => do not sell my data.
@@ -306,25 +286,35 @@ function setAllowAllToSell(defaultPreference) {
     return flag;
 }
 
+function isInExceptionListHelper(hostname) {
+    return new Promise(resolve => {
+        var inExceptionList;
+        chrome.storage.local.get('customPreferences', (data) => {
+            var customPreferences = data.customPreferences
+            if (customPreferences) {
+                var filteredPreference = customPreferences.filter(
+                    (p) => p.domain == hostname
+                )
+                // the hostname does not in the user's exception list
+                // which means user does not have customized preference for it.
+                if (filteredPreference.length == 0) {
+                    inExceptionList = false
+                } else {
+                    inExceptionList = true
+                }
+            } else {
+                inExceptionList = false
+            }
+            return resolve([inExceptionList,hostname]);
+        })
+    })
+}
+
 
 /****************************************************************************************************
  *                                      General Methods                                             *       
  ****************************************************************************************************
  */
-
-/**
- * Return the url that matches specific pattern.
- * Otherwise, return null.
- * @param url given url
- */
-function parseOriginURL(url) {
-    var result = url.match(/^[\w-]+:\/{2,}\[?[\w\.:-]+\]?(?::[0-9]*)?/);
-    if (result) {
-        return result[0];
-    }
-    return null;
-}
-
 
 function refreshPage() {
     chrome.tabs.getSelected(null, function (tab) {
@@ -333,10 +323,8 @@ function refreshPage() {
         }
         var code = 'window.location.reload();';
         chrome.tabs.executeScript(tab.id, { code: code });
-        console.log("refresh");
     });
 }
-
 
 /***************************************************************************************************
  *                                     Message Handler                                             *       
@@ -383,7 +371,21 @@ chrome.runtime.onMessage.addListener((request) => {
     if (request.refresh) {
         refreshPage();
     }
+    if(request.blockFlag) {
+        blockDoNotSellRequest = request.blockFlag;
+    }
 });
+
+/**
+ * Monitor the switch between tabs
+ */
+chrome.tabs.onActiveChanged.addListener(function () {
+    console.log("TAB CHANGED!!!!!!!!");
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tab) {
+        currentTabID = tab[0].id;
+    });
+});
+
 
 /**************************************************************************************************
 *                                   First Time Installation                                       *
