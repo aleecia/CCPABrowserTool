@@ -62,8 +62,6 @@ function setupHeaderModListener() {
     chrome.webRequest.onSendHeaders.addListener(details => {
         // console.log("send request");
         // console.log(details);
-        getAllowSaleCount().then(data => console.log("allow", data)).catch();
-        getDoNotSaleCount().then(data => console.log("NOT", data)).catch();
     },
         { urls: ["<all_urls>"] },
         ['extraHeaders', 'requestHeaders']
