@@ -81,6 +81,16 @@ $(document).ready(function () {
                 generalSetting();
             }
         })
+
+    getAllRecords()
+        .then(data => {
+            if (!data || data.length == 0) {
+                $('#display-history').hide();
+            } else {
+                $('#no-history').hide();
+                console.log('history',data);
+            }
+        })
 });
 
 function generalSetting() {
