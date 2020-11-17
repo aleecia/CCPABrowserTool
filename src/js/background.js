@@ -125,7 +125,7 @@ function modifyRequestHeaderHandler(details) {
         .then(ccpaRule => {
             ccpa1 = ccpaRule;
             // console.log("ccpa rule, ", ccpa1);
-        })
+        }).catch()
 
     details.requestHeaders.push({ name: "ccpa1", value: ccpa1 });
     return { requestHeaders: details.requestHeaders };
@@ -221,7 +221,12 @@ function getCCPARule(hostname) {
                 .then(addThirdPartyRecord).catch();
     } else {
         // for first party, construct ccpa rule based on user's customized preference
-        return isInExceptionListHelper(originHostname).then(constructFirstPartyCCPARule).then(addFirstPartyRecord).catch();
+        return getDefaultPreference(originHostname)
+               .then(setAllowAllToSell)
+               .then(isInExceptionListHelper)
+               .then(constructFirstPartyCCPARule)
+               .then(addFirstPartyRecord).catch();
+        // isInExceptionListHelper(originHostname).then(constructFirstPartyCCPARule).then(addFirstPartyRecord).catch();
     }
 }
 
@@ -239,26 +244,21 @@ function addFirstPartyRecord(data) {
     return new Promise((resolve) => {
         var [ccpa, hostname] = data;
         if(firstParty_delete == "1" || firstParty_delete == "0" || firstParty_get == "1" || firstParty_get == "0") {
-            addRecord(hostname, 1, firstParty_delete, firstParty_get);
-            // console.log("1st add record")
+            addRecord(hostname, 0, firstParty_delete, firstParty_get);
             if(firstParty_sell == "1") {
                 incrementDoNotSaleCount().then().catch();
-                // console.log("1st, DoNotSaleCount")
             } else if(firstParty_sell == "0") {
                 incrementAllowSaleCount().then().catch();
-                // console.log("1st, SaleCount")
             }
         } else {
             if(firstParty_sell == "1") {
                 incrementDoNotSaleCount().then().catch();
-                // console.log("1st, DoNotSaleCount")
             } else if(firstParty_sell == "0") {
                 incrementAllowSaleCount().then().catch();
-                // console.log("1st, SaleCount")
             }
         }
         resolve(ccpa);
-    })
+    }).catch()
 }
 
 function addThirdPartyRecord(data) {
@@ -266,25 +266,20 @@ function addThirdPartyRecord(data) {
         var [ccpa, hostname] = data;
         if(thirdParty_delete == "1" || thirdParty_delete == "0" || thirdParty_get == "1" || thirdParty_get == "0") {
             addRecord(hostname, 1, thirdParty_delete, thirdParty_get);
-            // console.log("3rd add record")
             if(thirdParty_sell == "1") {
                 incrementDoNotSaleCount().then().catch();
-                // console.log("3rd, DoNotSaleCount")
             } else if(thirdParty_sell == "0") {
                 incrementAllowSaleCount().then().catch();
-                // console.log("3rd, SaleCount")
             }
         } else {
             if(thirdParty_sell == "1") {
                 incrementDoNotSaleCount().then().catch();
-                // console.log("3rd, DoNotSaleCount")
             } else if(thirdParty_sell == "0") {
                 incrementAllowSaleCount().then().catch();
-                // console.log("3rd, SaleCount")
             }
         }
         resolve(ccpa);
-    })
+    }).catch()
 }
 
 
@@ -317,7 +312,7 @@ function constructThirdPartyCCPARule(data) {
             }
         }
         return resolve([ccpa, hostname]);
-    })
+    }).catch()
 }
 
 /**
@@ -342,7 +337,7 @@ function constructFirstPartyCCPARule(data) {
             // console.log("1st rr1");
         }
         return resolve([ccpa, hostname]);
-    })
+    }).catch()
 }
 
 
@@ -389,7 +384,7 @@ function isInExceptionListHelper(hostname) {
             }
             return resolve([inExceptionList, hostname]);
         })
-    })
+    }).catch()
 }
 
 
@@ -501,7 +496,7 @@ function getDefaultPreference(hostname) {
                 reject(Error(chrome.runtime.lastError.message)) :
                 resolve([result.defaultPreference, hostname])
         )
-    )
+    ).catch()
 }
 
 function checkStopSendingForThirdParty(hostname) {
@@ -524,7 +519,7 @@ function checkStopSendingForThirdParty(hostname) {
 				}
 			})
 		})
-	})
+	}).catch()
 }
 
 function addRecord(url, thirdParty, y, z) {
@@ -563,7 +558,7 @@ function addRecord(url, thirdParty, y, z) {
                 )
             }
         })
-    })
+    }).catch()
 }
 
 incrementDoNotSaleCount = () => {
@@ -587,7 +582,7 @@ incrementDoNotSaleCount = () => {
                 )
             }
         })
-    })
+    }).catch()
 }
 
 const incrementAllowSaleCount = () => {
@@ -611,5 +606,39 @@ const incrementAllowSaleCount = () => {
                 )
             }
         })
-    })
+    }).catch()
+}
+
+const getAllowSaleCount = () => {
+	return new Promise((resolve, reject) => {
+		chrome.storage.local.get('AllowSaleCount', data => {
+			if (chrome.runtime.lastError) {
+				reject(Error(chrome.runtime.lastError.message))
+			} else {
+				var AllowSaleCount = data.AllowSaleCount
+				if (AllowSaleCount) {
+					resolve(AllowSaleCount.count)
+				} else {
+					resolve(0)
+				}
+			}
+		})
+	})
+}
+
+const getDoNotSaleCount = () => {
+	return new Promise((resolve, reject) => {
+		chrome.storage.local.get('DoNotSaleCount', data => {
+			if (chrome.runtime.lastError) {
+				reject(Error(chrome.runtime.lastError.message))
+			} else {
+				var DoNotSaleCount = data.DoNotSaleCount
+				if (DoNotSaleCount) {
+					resolve(DoNotSaleCount.count)
+				} else {
+					resolve(0)
+				}
+			}
+		})
+	})
 }
