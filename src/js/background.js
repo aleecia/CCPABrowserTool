@@ -35,16 +35,23 @@ function setInitialCCPARule() {
             return;
         } else {
             var defaultPreference = data.default;
-            // if user allows to sell, allowAllToSellFlag should be set as true
+            firstParty_get = "u"
+            firstParty_delete = "u"
+            thirdParty_get = "u"
+            thirdParty_delete = "u"
             if (defaultPreference == 0) {
                 flag = 0;
+                firstParty_sell = "0"
+                thirdParty_sell = "0"
                 ccpa1 = "uu0";
             } else {
                 flag = 1;
+                firstParty_sell = "1"
+                thirdParty_sell = "1"
                 ccpa1 = "uu1";
             }
         }
-    });
+    }).catch();
 }
 
 
@@ -124,7 +131,7 @@ function modifyRequestHeaderHandler(details) {
         .then(handleRequest, discardRequest)
         .then(ccpaRule => {
             ccpa1 = ccpaRule;
-            // console.log("ccpa rule, ", ccpa1);
+            console.log("ccpa rule, ", ccpa1);
         }).catch()
 
     details.requestHeaders.push({ name: "ccpa1", value: ccpa1 });
@@ -149,6 +156,7 @@ function handleRequest(requestURL) {
  */
 function discardRequest() {
     return new Promise((resolve) => {
+        console.log("DISCARD STEP 2!!!!")
         resolve("uuu");
     })
 }
@@ -161,6 +169,9 @@ function isCurrentTabRequest(request) {
     return new Promise((resolve, reject) => {
         var requestTabId = request.tabId;
         if (requestTabId != currentTabID) {
+            console.log("DISCARD STEP 1!!!!")
+            console.log("requestTabId, ", requestTabId)
+            console.log("currentTabID, ", currentTabID)
             reject();
         } else {
             resolve(request.url);
@@ -455,12 +466,21 @@ chrome.runtime.onMessage.addListener((request) => {
     }
 });
 
+function resetPreference() {
+    firstParty_get = "u";
+    firstParty_delete = "u";
+    thirdParty_get = "u";
+    thirdParty_delete = "u";
+}
+
 /**
  * Monitor the switch between tabs
  */
 chrome.tabs.onActiveChanged.addListener(function () {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tab) {
+        console.log("TAB CHANGED!!!!")
         currentTabID = tab[0].id;
+        setInitialCCPARule();
     });
 });
 
