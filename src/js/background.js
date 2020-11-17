@@ -1,15 +1,15 @@
-var firstParty_get = "u";
-var firstParty_delete = "u";
-var thirdParty_get = "u";
-var thirdParty_delete = "u";
-var thirdParty_sell = "u";
-var firstParty_sell = "u";
+var firstParty_get;
+var firstParty_delete;
+var thirdParty_get;
+var thirdParty_delete;
+var thirdParty_sell;
+var firstParty_sell;
 
-var blockDoNotSellRequest = false;
-var currentTabID = "undefined";
+var blockDoNotSellRequest;
+var flag;
 
-var flag = false;
 var ccpa1 = "undefined";
+var currentTabID = "undefined";
 var originHostname = "undefined";
 
 
@@ -19,8 +19,9 @@ var originHostname = "undefined";
  */
 
 function initialize() {
+    initCCPARule()
+    initDefaultPreference()
     setupHeaderModListener();
-    setInitialCCPARule();
 }
 
 initialize();
@@ -28,30 +29,35 @@ initialize();
 /**
  * Set the default ccpa rule based on user's default preference, 
  */
-function setInitialCCPARule() {
+function initDefaultPreference() {
     getDefaultPreference("").then(comb => {
         var [data, hostname] = comb
         if (!data) {
             return;
         } else {
             var defaultPreference = data.default;
-            firstParty_get = "u"
-            firstParty_delete = "u"
-            thirdParty_get = "u"
-            thirdParty_delete = "u"
             if (defaultPreference == 0) {
                 flag = 0;
-                firstParty_sell = "0"
-                thirdParty_sell = "0"
+                thirdParty_sell = "0";
+                firstParty_sell = "0";
                 ccpa1 = "uu0";
             } else {
                 flag = 1;
-                firstParty_sell = "1"
-                thirdParty_sell = "1"
+                thirdParty_sell = "1";
+                firstParty_sell = "1";
                 ccpa1 = "uu1";
             }
         }
-    }).catch();
+    })
+}
+
+function initCCPARule() {
+    firstParty_get = "u";
+    firstParty_delete = "u";
+    thirdParty_get = "u";
+    thirdParty_delete = "u";
+    blockDoNotSellRequest = false;
+    flag = false;
 }
 
 
@@ -59,7 +65,7 @@ function setInitialCCPARule() {
  * Webrequest lifecycle.
  */
 function setupHeaderModListener() {
-
+    console.log("3. ")
     chrome.webRequest.onBeforeSendHeaders.addListener(
         modifyRequestHeaderHandler,
         { urls: ["<all_urls>"] },
@@ -106,7 +112,6 @@ function checkReponseHeader(details) {
                         width: 400
                     });
                 }
-
                 );
             }
             break
@@ -156,7 +161,6 @@ function handleRequest(requestURL) {
  */
 function discardRequest() {
     return new Promise((resolve) => {
-        console.log("DISCARD STEP 2!!!!")
         resolve("uuu");
     })
 }
@@ -169,9 +173,6 @@ function isCurrentTabRequest(request) {
     return new Promise((resolve, reject) => {
         var requestTabId = request.tabId;
         if (requestTabId != currentTabID) {
-            console.log("DISCARD STEP 1!!!!")
-            console.log("requestTabId, ", requestTabId)
-            console.log("currentTabID, ", currentTabID)
             reject();
         } else {
             resolve(request.url);
@@ -237,7 +238,6 @@ function getCCPARule(hostname) {
                .then(isInExceptionListHelper)
                .then(constructFirstPartyCCPARule)
                .then(addFirstPartyRecord).catch();
-        // isInExceptionListHelper(originHostname).then(constructFirstPartyCCPARule).then(addFirstPartyRecord).catch();
     }
 }
 
@@ -466,12 +466,16 @@ chrome.runtime.onMessage.addListener((request) => {
     }
 });
 
-function resetPreference() {
-    firstParty_get = "u";
-    firstParty_delete = "u";
-    thirdParty_get = "u";
-    thirdParty_delete = "u";
-}
+// function resetPreference() {
+//     firstParty_get = "u";
+//     firstParty_delete = "u";
+//     thirdParty_get = "u";
+//     thirdParty_delete = "u";
+//     firstParty_sell = "u";
+//     thirdParty_sell = "u";
+//     blockDoNotSellRequest = false;
+//     flag = false;
+// }
 
 /**
  * Monitor the switch between tabs
@@ -480,7 +484,8 @@ chrome.tabs.onActiveChanged.addListener(function () {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tab) {
         console.log("TAB CHANGED!!!!")
         currentTabID = tab[0].id;
-        setInitialCCPARule();
+        initCCPARule();
+        initDefaultPreference();
     });
 });
 
