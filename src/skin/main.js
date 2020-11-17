@@ -58,10 +58,8 @@ $(document).ready(function () {
                     }
                     if (customPreference == 1) {
                         $('#ex-for-current-website').prop("checked", true);
-                        console.log('custom for current website');
                     } else {
                         $('#ex-for-current-website').prop("checked", false);
-                        console.log('not custom for current website');
                     }
 
                     checkStopSendingForThirdParty()
@@ -69,6 +67,8 @@ $(document).ready(function () {
                             if (data) {
                                 blockThirdParty = true;
                                 $('#stop-for-third-parties').prop("checked", true);
+                            } else {
+                                $('#stop-for-third-parties').prop("checked", false);
                             }
 
                             $('#ex-for-current-website').on('click', function () {
@@ -82,14 +82,8 @@ $(document).ready(function () {
                             $('#stop-for-third-parties').on('click', function () {
                                 if ($(this).is(':checked')) {
                                     setStopSendingForThirdParty().catch(error => console.error(error));
-                                    chrome.runtime.sendMessage({
-                                        blockFlag: true
-                                    });
                                 } else {
                                     deleteStopSendingForThirdParty().catch(error => console.error(error));
-                                    chrome.runtime.sendMessage({
-                                        blockFlag: false
-                                    });
                                 }
                             })
 
@@ -100,16 +94,6 @@ $(document).ready(function () {
                                 age = today.diff(birthday, 'years');
                                 if (age < 13) {
                                     $('#switch-exception').html('Children under age 13 are by default enroll do not sell personal information for');
-                                }
-
-                                if ($('#stop-for-third-parties').is(':checked')) {
-                                    chrome.runtime.sendMessage({
-                                        blockFlag: true
-                                    });
-                                } else {
-                                    chrome.runtime.sendMessage({
-                                        blockFlag: false
-                                    });
                                 }
 
                                 $('#get-for-current-website').on("click", function () {
