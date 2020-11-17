@@ -2,6 +2,9 @@ var firstParty_get = "u";
 var firstParty_delete = "u";
 var thirdParty_get = "u";
 var thirdParty_delete = "u";
+var thirdParty_sell = "u";
+var firstParty_sell = "u";
+
 var blockDoNotSellRequest = false;
 var currentTabID = "undefined";
 
@@ -26,7 +29,8 @@ initialize();
  * Set the default ccpa rule based on user's default preference, 
  */
 function setInitialCCPARule() {
-    getDefaultPreference().then(data => {
+    getDefaultPreference("").then(comb => {
+        var [data, hostname] = comb
         if (!data) {
             return;
         } else {
@@ -56,9 +60,9 @@ function setupHeaderModListener() {
     );
 
     chrome.webRequest.onSendHeaders.addListener(details => {
-            // console.log("send request");
-            // console.log(details);
-        },
+        // console.log("send request");
+        // console.log(details);
+    },
         { urls: ["<all_urls>"] },
         ['extraHeaders', 'requestHeaders']
     );
@@ -79,24 +83,25 @@ function setupHeaderModListener() {
 
 function checkReponseHeader(details) {
     var header = details.responseHeaders
-    for(var i=0;i<header.length;i++){
+    for (var i = 0; i < header.length; i++) {
         // console.log("response",details)
-        if(header[i].name == "ccpa1"){
+        if (header[i].name == "ccpa1") {
             // console.log("ccpa header received")
-            if (details.url=='http://www.ccpabrowsertool.com/'){
-            chrome.tabs.create({
-                url: chrome.runtime.getURL('./skin/response.html'),
-                active: false
-            }, function(tab) {
-                chrome.windows.create({
-                    tabId: tab.id,
-                    type: "panel",
-                    focused: false,
-                    width:400
-                });
+            if (details.url == 'http://www.ccpabrowsertool.com/') {
+                chrome.tabs.create({
+                    url: chrome.runtime.getURL('./skin/response.html'),
+                    active: false
+                }, function (tab) {
+                    chrome.windows.create({
+                        tabId: tab.id,
+                        type: "panel",
+                        focused: false,
+                        width: 400
+                    });
+                }
+
+                );
             }
-            
-            );}
             break
         }
     }
@@ -116,11 +121,12 @@ function modifyRequestHeaderHandler(details) {
         return {};
     }
     isCurrentTabRequest(details)
-    .then(handleRequest, discardRequest)
-    .then(ccpaRule => {
-        ccpa1 = ccpaRule;
-        console.log("ccpa rule, ", ccpa1);
-    })
+        .then(handleRequest, discardRequest)
+        .then(ccpaRule => {
+            ccpa1 = ccpaRule;
+            // console.log("ccpa rule, ", ccpa1);
+        })
+
     details.requestHeaders.push({ name: "ccpa1", value: ccpa1 });
     return { requestHeaders: details.requestHeaders };
 }
@@ -143,7 +149,6 @@ function handleRequest(requestURL) {
  */
 function discardRequest() {
     return new Promise((resolve) => {
-        console.log("DISCARD step 2");
         resolve("uuu");
     })
 }
@@ -155,10 +160,7 @@ function discardRequest() {
 function isCurrentTabRequest(request) {
     return new Promise((resolve, reject) => {
         var requestTabId = request.tabId;
-        if(requestTabId != currentTabID) {
-            console.log("DISCARD step 1");
-            console.log("request tabID is: ", request.tabId);
-            console.log("current tabid is: ", currentTabID);
+        if (requestTabId != currentTabID) {
             reject();
         } else {
             resolve(request.url);
@@ -206,14 +208,83 @@ function isThirdPartyURL(requestURL) {
  */
 function getCCPARule(hostname) {
     if (hostname != originHostname) {
-        // for third party request, get user's default preference first
-        getDefaultPreference().then(setAllowAllToSell);
+        // for third party request, check whether user has stopped sending requests
+        // checkStopSendingForThirdParty().then(setBlockThirdPartyFlag).catch();
+        // for third party request, get user's default preference
         // then construct ccpa rule based on user's default or customized preference
-        return isInExceptionListHelper(hostname).then(constructThirdPartyCCPARule).catch(error => console.log("itself 2"));
+        return getDefaultPreference(hostname)
+                .then(setAllowAllToSell)
+                .then(checkStopSendingForThirdParty)
+                .then(setBlockThirdPartyFlag)
+                .then(isInExceptionListHelper)
+                .then(constructThirdPartyCCPARule)
+                .then(addThirdPartyRecord).catch();
     } else {
         // for first party, construct ccpa rule based on user's customized preference
-        return isInExceptionListHelper(originHostname).then(constructFirstPartyCCPARule).catch(error => console.log("itself 2"));
+        return isInExceptionListHelper(originHostname).then(constructFirstPartyCCPARule).then(addFirstPartyRecord).catch();
     }
+}
+
+
+function setBlockThirdPartyFlag(data) {
+    return new Promise((resolve) => {
+        var [flag, hostname] = data;
+        blockDoNotSellRequest = flag;
+        resolve(hostname);
+    }).catch()
+}
+
+
+function addFirstPartyRecord(data) {
+    return new Promise((resolve) => {
+        var [ccpa, hostname] = data;
+        if(firstParty_delete == "1" || firstParty_delete == "0" || firstParty_get == "1" || firstParty_get == "0") {
+            addRecord(hostname, 1, firstParty_delete, firstParty_get);
+            // console.log("1st add record")
+            if(firstParty_sell == "1") {
+                incrementDoNotSaleCount().then().catch();
+                // console.log("1st, DoNotSaleCount")
+            } else if(firstParty_sell == "0") {
+                incrementAllowSaleCount().then().catch();
+                // console.log("1st, SaleCount")
+            }
+        } else {
+            if(firstParty_sell == "1") {
+                incrementDoNotSaleCount().then().catch();
+                // console.log("1st, DoNotSaleCount")
+            } else if(firstParty_sell == "0") {
+                incrementAllowSaleCount().then().catch();
+                // console.log("1st, SaleCount")
+            }
+        }
+        resolve(ccpa);
+    })
+}
+
+function addThirdPartyRecord(data) {
+    return new Promise((resolve) => {
+        var [ccpa, hostname] = data;
+        if(thirdParty_delete == "1" || thirdParty_delete == "0" || thirdParty_get == "1" || thirdParty_get == "0") {
+            addRecord(hostname, 1, thirdParty_delete, thirdParty_get);
+            // console.log("3rd add record")
+            if(thirdParty_sell == "1") {
+                incrementDoNotSaleCount().then().catch();
+                // console.log("3rd, DoNotSaleCount")
+            } else if(thirdParty_sell == "0") {
+                incrementAllowSaleCount().then().catch();
+                // console.log("3rd, SaleCount")
+            }
+        } else {
+            if(thirdParty_sell == "1") {
+                incrementDoNotSaleCount().then().catch();
+                // console.log("3rd, DoNotSaleCount")
+            } else if(thirdParty_sell == "0") {
+                incrementAllowSaleCount().then().catch();
+                // console.log("3rd, SaleCount")
+            }
+        }
+        resolve(ccpa);
+    })
 }
 
 
@@ -227,22 +298,25 @@ function getCCPARule(hostname) {
  * @param isInExceptionList true stands for allowing to sell data; false stands for not allowing.
  */
 function constructThirdPartyCCPARule(data) {
-    return new Promise((resolve,reject) => {
+    return new Promise((resolve, reject) => {
         var ccpa;
-        var [isInExceptionList] = data;
-        if(blockDoNotSellRequest) {
-            ccpa = thirdParty_get + thirdParty_delete + "u";
-            console.log("3rd rru");
+        var [isInExceptionList, hostname] = data;
+        if (blockDoNotSellRequest) {
+            thirdParty_sell = "u";
+            ccpa = thirdParty_get + thirdParty_delete + thirdParty_sell;
+            // console.log("3rd rru");
         } else {
-            if(!(isInExceptionList ^ flag)) {
-                ccpa = thirdParty_get + thirdParty_delete + "0";
-                console.log("3rd rr0");
+            if (!(isInExceptionList ^ flag)) {
+                thirdParty_sell = "0";
+                ccpa = thirdParty_get + thirdParty_delete + thirdParty_sell;
+                // console.log("3rd rr0");
             } else {
-                ccpa = thirdParty_get + thirdParty_delete + "1";
-                console.log("3rd rr1");
+                thirdParty_sell = "1";
+                ccpa = thirdParty_get + thirdParty_delete + thirdParty_sell;
+                // console.log("3rd rr1");
             }
         }
-        return resolve(ccpa);
+        return resolve([ccpa, hostname]);
     })
 }
 
@@ -254,17 +328,20 @@ function constructThirdPartyCCPARule(data) {
  * 2. store every request into storage for analysis purpose.
  * @param isInExceptionList true stands for allowing to sell data; false stands for not allowing.
  */
-function constructFirstPartyCCPARule(isInExceptionList) {
-    return new Promise(resolve => {
+function constructFirstPartyCCPARule(data) {
+    return new Promise((resolve, reject) => {
+        var [isInExceptionList, hostname] = data;
         var ccpa;
-        if(!(isInExceptionList ^ flag)) {
-            ccpa = firstParty_get + firstParty_delete + "0";
-            console.log("1st rr0");
+        if (!(isInExceptionList ^ flag)) {
+            firstParty_sell = "0";
+            ccpa = firstParty_get + firstParty_delete + firstParty_sell;
+            // console.log("1st rr0");
         } else {
-            ccpa = firstParty_get + firstParty_delete + "1";
-            console.log("1st rr1");
+            firstParty_sell = "1";
+            ccpa = firstParty_get + firstParty_delete + firstParty_sell;
+            // console.log("1st rr1");
         }
-        return resolve(ccpa);
+        return resolve([ccpa, hostname]);
     })
 }
 
@@ -274,17 +351,22 @@ function constructFirstPartyCCPARule(isInExceptionList) {
  * Set user's default preference of selling information.
  * @param defaultPreference 0 => allow selling my data; 1 => do not sell my data.
  */
-function setAllowAllToSell(defaultPreference) {
-    if (!defaultPreference) {
-        return;
-    }
-    if (defaultPreference.default == 0) {
-        flag = 0
-    } else {
-        flag = 1;
-    }
-    return flag;
+function setAllowAllToSell(data) {
+    return new Promise((resolve, reject) => {
+        var [defaultPreference, hostname] = data;
+        if (!defaultPreference) {
+            reject(hostname);
+        }
+        if (defaultPreference.default == 0) {
+            flag = 0
+        } else {
+            flag = 1;
+        }
+        resolve(hostname);
+    }).catch()
 }
+
+
 
 function isInExceptionListHelper(hostname) {
     return new Promise(resolve => {
@@ -305,7 +387,7 @@ function isInExceptionListHelper(hostname) {
             } else {
                 inExceptionList = false
             }
-            return resolve([inExceptionList,hostname]);
+            return resolve([inExceptionList, hostname]);
         })
     })
 }
@@ -322,7 +404,12 @@ function refreshPage() {
             return;
         }
         var code = 'window.location.reload();';
-        chrome.tabs.executeScript(tab.id, { code: code });
+        chrome.tabs.executeScript(tab.id, {
+            code: code
+          }, _=>{
+            let e = chrome.runtime.lastError;
+            if(e !== undefined){}
+          });
     });
 }
 
@@ -338,7 +425,7 @@ chrome.runtime.onMessage.addListener((request) => {
         thirdParty_get = "u";
         thirdParty_delete = "u";
         chrome.runtime.sendMessage({
-            getMessage : true
+            getMessage: true
         })
     }
     if (request.firstParty_delete) {
@@ -347,7 +434,7 @@ chrome.runtime.onMessage.addListener((request) => {
         thirdParty_get = "u";
         thirdParty_delete = "u";
         chrome.runtime.sendMessage({
-            getMessage : true
+            getMessage: true
         })
     }
     if (request.thirdParty_get) {
@@ -356,7 +443,7 @@ chrome.runtime.onMessage.addListener((request) => {
         thirdParty_get = "1";
         thirdParty_delete = "u";
         chrome.runtime.sendMessage({
-            getMessage : true
+            getMessage: true
         })
     }
     if (request.thirdParty_delete) {
@@ -365,14 +452,11 @@ chrome.runtime.onMessage.addListener((request) => {
         thirdParty_get = "u";
         thirdParty_delete = "1";
         chrome.runtime.sendMessage({
-            getMessage : true
+            getMessage: true
         })
     }
     if (request.refresh) {
         refreshPage();
-    }
-    if(request.blockFlag) {
-        blockDoNotSellRequest = request.blockFlag;
     }
 });
 
@@ -380,7 +464,6 @@ chrome.runtime.onMessage.addListener((request) => {
  * Monitor the switch between tabs
  */
 chrome.tabs.onActiveChanged.addListener(function () {
-    console.log("TAB CHANGED!!!!!!!!");
     chrome.tabs.query({ active: true, currentWindow: true }, function (tab) {
         currentTabID = tab[0].id;
     });
@@ -411,12 +494,122 @@ chrome.runtime.onInstalled.addListener(function (details) {
  ****************************************************************************************************
  */
 
-function getDefaultPreference() {
+function getDefaultPreference(hostname) {
     return new Promise((resolve, reject) =>
         chrome.storage.local.get('defaultPreference', (result) =>
             chrome.runtime.lastError ?
                 reject(Error(chrome.runtime.lastError.message)) :
-                resolve(result.defaultPreference)
+                resolve([result.defaultPreference, hostname])
         )
     )
+}
+
+function checkStopSendingForThirdParty(hostname) {
+	return new Promise((resolve, reject) => {
+		chrome.tabs.getSelected(null, (tab) => {
+			var tablink = tab.url.split('/')[2]
+			chrome.storage.local.get('stopSendingForThirdParty', (data) => {
+				var stopSendingForThirdParty = data.stopSendingForThirdParty
+				if (stopSendingForThirdParty) {
+					var filteredPreference = stopSendingForThirdParty.filter(
+						(p) => p.domain == tablink
+					)
+					if (filteredPreference.length == 0) {
+						resolve([false, hostname])
+					} else {
+						resolve([true,hostname])
+					}
+				} else {
+					resolve([false, hostname])
+				}
+			})
+		})
+	})
+}
+
+function addRecord(url, thirdParty, y, z) {
+    return new Promise((resolve, reject) => {
+        chrome.storage.local.get('history', data => {
+            if (chrome.runtime.lastError) {
+                reject(Error(chrome.runtime.lastError.message))
+            } else {
+                var history = data.history
+                var now = new Date()
+                var newRequest = {
+                    "domain": url,
+                    "r1": z,
+                    "r2": y,
+                    "thirdParty": thirdParty,
+                    "date": {
+                        "day": now.getDate(),
+                        "month": now.getMonth() + 1,
+                        "year": now.getFullYear(),
+                        "time": {
+                            "seconds": now.getSeconds(),
+                            "minutes": now.getMinutes(),
+                            "hour": now.getHours()
+                        }
+                    }
+                }
+                if (history) {
+                    history.push(newRequest)
+                } else {
+                    history = [newRequest]
+                }
+                chrome.storage.local.set({ history }, () =>
+                    chrome.runtime.lastError ?
+                        reject(Error(chrome.runtime.lastError.message)) :
+                        resolve()
+                )
+            }
+        })
+    })
+}
+
+incrementDoNotSaleCount = () => {
+    return new Promise((resolve, reject) => {
+        chrome.storage.local.get('DoNotSaleCount', data => {
+            if (chrome.runtime.lastError) {
+                reject(Error(chrome.runtime.lastError.message))
+            } else {
+                var DoNotSaleCount = data.DoNotSaleCount;
+                if (DoNotSaleCount) {
+                    DoNotSaleCount.count = DoNotSaleCount.count + 1
+                } else {
+                    DoNotSaleCount = {
+                        'count': 1
+                    }
+                }
+                chrome.storage.local.set({ DoNotSaleCount }, () =>
+                    chrome.runtime.lastError ?
+                        reject(Error(chrome.runtime.lastError.message)) :
+                        resolve()
+                )
+            }
+        })
+    })
+}
+
+const incrementAllowSaleCount = () => {
+    return new Promise((resolve, reject) => {
+        chrome.storage.local.get('AllowSaleCount', data => {
+            if (chrome.runtime.lastError) {
+                reject(Error(chrome.runtime.lastError.message))
+            } else {
+                var AllowSaleCount = data.AllowSaleCount;
+                if (AllowSaleCount) {
+                    AllowSaleCount.count = AllowSaleCount.count + 1
+                } else {
+                    AllowSaleCount = {
+                        'count': 1
+                    }
+                }
+                chrome.storage.local.set({ AllowSaleCount }, () =>
+                    chrome.runtime.lastError ?
+                        reject(Error(chrome.runtime.lastError.message)) :
+                        resolve()
+                )
+            }
+        })
+    })
 }
