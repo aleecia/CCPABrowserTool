@@ -40,12 +40,16 @@ $(document).ready(function () {
                 origin = url.origin;
                 $('.current-website').html('&bull;&nbsp; ' + origin);
 
-                /*
-                getLastRequest(origin)
+                getLastRequest(url.hostname)
                     .then(data => {
-                        console.log('history', data);
+                        if (data) {
+                            const requestType = data.r1 == 1? "getting information" : "deleting information";
+                            const time = new Date(parseInt(data.date.time, 10));
+                            $('#most-recent-history').html("Last request for " + requestType + " was sent: " + time.toLocaleDateString("en-US") + " " + time.toLocaleTimeString("en-US"))
+                        } else {
+                            $('#most-recent-history').html("No get or delete information requests have been sent for current website!");
+                        }
                     })
-                    */
                 // $('#most-recent-history')
             });
 

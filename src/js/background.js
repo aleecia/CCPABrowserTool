@@ -564,15 +564,18 @@ function addRecord(url, thirdParty, y, z) {
                         "day": now.getDate(),
                         "month": now.getMonth() + 1,
                         "year": now.getFullYear(),
-                        "time": {
-                            "seconds": now.getSeconds(),
-                            "minutes": now.getMinutes(),
-                            "hour": now.getHours()
-                        }
+                        "time": now.getTime().toString(),
+                        "hour": now.getHours(),
+                        "minute": now.getMinutes(),
                     }
                 }
                 if (history) {
-                    history.push(newRequest)
+                    // Dedup
+                    const duplications = history.filter(p => (p.domain == newRequest.domain && p.r1 == newRequest.r1 && p.r2 == newRequest.r2 &&
+						p.date.year == newRequest.date.year && p.date.month == newRequest.date.month && p.date.day == newRequest.date.day &&
+						p.date.hour == newRequest.date.hour && p.date.minute == newRequest.date.minute))
+					if (duplications.length == 0)
+						history.push(newRequest)
                 } else {
                     history = [newRequest]
                 }

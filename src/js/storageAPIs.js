@@ -528,11 +528,17 @@ const addRecord = (url, thirdParty, y, z) => {
 					}
 				}
 				if (history) {
-					history.push(newRequest)
+					const duplications = history.filter(p => (p.domain == newRequest.domain && p.r1 == newRequest.r1 && p.r2 == newRequest.r2 &&
+						p.date.year == newRequest.date.year && p.date.month == newRequest.date.month && p.date.day == newRequest.date.day &&
+						p.date.time.hour == newRequest.date.time.hour && p.date.time.minutes == newRequest.date.time.minutes))
+					if (duplications.length == 0)
+						history.push(newRequest)
 				} else {
 					history = [newRequest]
 				}
-				chrome.storage.local.set({history}, () =>
+				chrome.storage.local.set({
+						history
+					}, () =>
 					chrome.runtime.lastError ?
 					reject(Error(chrome.runtime.lastError.message)) :
 					resolve()
@@ -562,10 +568,12 @@ const incrementDoNotSaleCount = () => {
 					DoNotSaleCount.count = DoNotSaleCount.count + 1
 				} else {
 					DoNotSaleCount = {
-						'count' : 1
+						'count': 1
 					}
 				}
-				chrome.storage.local.set({DoNotSaleCount}, () => 
+				chrome.storage.local.set({
+						DoNotSaleCount
+					}, () =>
 					chrome.runtime.lastError ?
 					reject(Error(chrome.runtime.lastError.message)) :
 					resolve()
@@ -619,10 +627,12 @@ const incrementAllowSaleCount = () => {
 					AllowSaleCount.count = AllowSaleCount.count + 1
 				} else {
 					AllowSaleCount = {
-						'count' : 1
+						'count': 1
 					}
 				}
-				chrome.storage.local.set({AllowSaleCount}, () => 
+				chrome.storage.local.set({
+						AllowSaleCount
+					}, () =>
 					chrome.runtime.lastError ?
 					reject(Error(chrome.runtime.lastError.message)) :
 					resolve()
