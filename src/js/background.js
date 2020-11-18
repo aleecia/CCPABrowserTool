@@ -80,23 +80,24 @@ function setupHeaderModListener() {
 function checkReponseHeader(details) {
     var header = details.responseHeaders
     for(var i=0;i<header.length;i++){
-        // console.log("response",details)
         if(header[i].name == "ccpa1"){
-            // console.log("ccpa header received")
-            if (details.url=='http://www.ccpabrowsertool.com/'){
-            chrome.tabs.create({
-                url: chrome.runtime.getURL('./skin/response.html'),
-                active: false
-            }, function(tab) {
+            chrome.tabs.getSelected(tab=>{
+                console.log("response ccpa:"+header[i].value)
+                console.log(details.url+tab.url)
+                if (details.url==tab.url){
+                chrome.tabs.create({
+                    url: chrome.runtime.getURL('./skin/response.html'),
+                    active: false
+                }, function(tab) {
                 chrome.windows.create({
                     tabId: tab.id,
                     type: "panel",
-                    focused: false,
-                    width:400
+                    focused: false
                 });
-            }
-            
-            );}
+                }
+                );
+                }
+            })
             break
         }
     }
