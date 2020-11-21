@@ -335,16 +335,16 @@ function constructThirdPartyCCPARule(data) {
         if (blockDoNotSellRequest) {
             thirdParty_sell = "u";
             ccpa = thirdParty_get + thirdParty_delete + thirdParty_sell;
-            console.log("3rd rru, ", hostname);
+            console.log("3rd rru, ");
         } else {
             if (!(isInExceptionList ^ flag)) {
                 thirdParty_sell = "0";
                 ccpa = thirdParty_get + thirdParty_delete + thirdParty_sell;
-                console.log("3rd rr0, ", hostname);
+                console.log("3rd rr0, ");
             } else {
                 thirdParty_sell = "1";
                 ccpa = thirdParty_get + thirdParty_delete + thirdParty_sell;
-                console.log("3rd rr1, ", hostname);
+                console.log("3rd rr1, ");
             }
         }
         return resolve([ccpa, hostname]);
@@ -371,11 +371,11 @@ function constructFirstPartyCCPARule(data) {
         if (!(isInExceptionList ^ flag)) {
             firstParty_sell = "0";
             ccpa = firstParty_get + firstParty_delete + firstParty_sell;
-            console.log("1st rr0, ", hostname);
+            console.log("1st rr0, ");
         } else {
             firstParty_sell = "1";
             ccpa = firstParty_get + firstParty_delete + firstParty_sell;
-            console.log("1st rr1, ", hostname);
+            console.log("1st rr1, ");
         }
         return resolve([ccpa, hostname]);
     }).catch(error => {
