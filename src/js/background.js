@@ -48,7 +48,7 @@ function initDefaultPreference() {
                 ccpa1 = "uu1";
             }
         }
-    })
+    }).catch()
 }
 
 function initCCPARule() {
@@ -65,7 +65,6 @@ function initCCPARule() {
  * Webrequest lifecycle.
  */
 function setupHeaderModListener() {
-    console.log("3. ")
     chrome.webRequest.onBeforeSendHeaders.addListener(
         modifyRequestHeaderHandler,
         { urls: ["<all_urls>"] },
@@ -137,7 +136,10 @@ function modifyRequestHeaderHandler(details) {
         .then(ccpaRule => {
             ccpa1 = ccpaRule;
             console.log("ccpa rule, ", ccpa1);
-        }).catch()
+        })
+        .catch(error => {
+            console.log(error);
+        })
 
     details.requestHeaders.push({ name: "ccpa1", value: ccpa1 });
     return { requestHeaders: details.requestHeaders };
@@ -151,7 +153,9 @@ function modifyRequestHeaderHandler(details) {
  * @param {*} requestURL request url that belongs to the current tab
  */
 function handleRequest(requestURL) {
-    return isThirdPartyURL(requestURL).then(getCCPARule).catch();
+    return isThirdPartyURL(requestURL).then(getCCPARule).catch(error => {
+        console.log(error);
+    });
 }
 
 /**
@@ -177,6 +181,8 @@ function isCurrentTabRequest(request) {
         } else {
             resolve(request.url);
         }
+    }).catch(error => {
+        console.log(error);
     })
 }
 
@@ -243,16 +249,24 @@ function getCCPARule(hostname) {
 
 
 function setBlockThirdPartyFlag(data) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
+        if(!data) {
+            reject();
+        }
         var [flag, hostname] = data;
         blockDoNotSellRequest = flag;
         resolve(hostname);
-    }).catch()
+    }).catch(error => {
+        console.log(error);
+    })
 }
 
 
 function addFirstPartyRecord(data) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
+        if(!data) {
+            reject();
+        }
         var [ccpa, hostname] = data;
         if(firstParty_delete == "1" || firstParty_delete == "0" || firstParty_get == "1" || firstParty_get == "0") {
             addRecord(hostname, 0, firstParty_delete, firstParty_get);
@@ -269,11 +283,17 @@ function addFirstPartyRecord(data) {
             }
         }
         resolve(ccpa);
-    }).catch()
+    }).catch(error => {
+        console.log(error);
+    })
 }
 
+
 function addThirdPartyRecord(data) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
+        if(!data) {
+            reject();
+        }
         var [ccpa, hostname] = data;
         if(thirdParty_delete == "1" || thirdParty_delete == "0" || thirdParty_get == "1" || thirdParty_get == "0") {
             addRecord(hostname, 1, thirdParty_delete, thirdParty_get);
@@ -290,7 +310,9 @@ function addThirdPartyRecord(data) {
             }
         }
         resolve(ccpa);
-    }).catch()
+    }).catch(error => {
+        console.log(error);
+    })
 }
 
 
@@ -305,25 +327,30 @@ function addThirdPartyRecord(data) {
  */
 function constructThirdPartyCCPARule(data) {
     return new Promise((resolve, reject) => {
+        if(!data) {
+            reject();
+        }
         var ccpa;
         var [isInExceptionList, hostname] = data;
         if (blockDoNotSellRequest) {
             thirdParty_sell = "u";
             ccpa = thirdParty_get + thirdParty_delete + thirdParty_sell;
-            // console.log("3rd rru");
+            console.log("3rd rru, ", hostname);
         } else {
             if (!(isInExceptionList ^ flag)) {
                 thirdParty_sell = "0";
                 ccpa = thirdParty_get + thirdParty_delete + thirdParty_sell;
-                // console.log("3rd rr0");
+                console.log("3rd rr0, ", hostname);
             } else {
                 thirdParty_sell = "1";
                 ccpa = thirdParty_get + thirdParty_delete + thirdParty_sell;
-                // console.log("3rd rr1");
+                console.log("3rd rr1, ", hostname);
             }
         }
         return resolve([ccpa, hostname]);
-    }).catch()
+    }).catch(error => {
+        console.log(error);
+    })
 }
 
 /**
@@ -336,19 +363,24 @@ function constructThirdPartyCCPARule(data) {
  */
 function constructFirstPartyCCPARule(data) {
     return new Promise((resolve, reject) => {
+        if(!data) {
+            reject();
+        }
         var [isInExceptionList, hostname] = data;
         var ccpa;
         if (!(isInExceptionList ^ flag)) {
             firstParty_sell = "0";
             ccpa = firstParty_get + firstParty_delete + firstParty_sell;
-            // console.log("1st rr0");
+            console.log("1st rr0, ", hostname);
         } else {
             firstParty_sell = "1";
             ccpa = firstParty_get + firstParty_delete + firstParty_sell;
-            // console.log("1st rr1");
+            console.log("1st rr1, ", hostname);
         }
         return resolve([ccpa, hostname]);
-    }).catch()
+    }).catch(error => {
+        console.log(error);
+    })
 }
 
 
@@ -369,15 +401,20 @@ function setAllowAllToSell(data) {
             flag = 1;
         }
         resolve(hostname);
-    }).catch()
+    }).catch(error => {
+        console.log(error);
+    })
 }
 
 
 
 function isInExceptionListHelper(hostname) {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
         var inExceptionList;
         chrome.storage.local.get('customPreferences', (data) => {
+            if(!data) {
+                reject();
+            }
             var customPreferences = data.customPreferences
             if (customPreferences) {
                 var filteredPreference = customPreferences.filter(
@@ -395,7 +432,9 @@ function isInExceptionListHelper(hostname) {
             }
             return resolve([inExceptionList, hostname]);
         })
-    }).catch()
+    }).catch(error => {
+        console.log(error);
+    })
 }
 
 
@@ -466,26 +505,17 @@ chrome.runtime.onMessage.addListener((request) => {
     }
 });
 
-// function resetPreference() {
-//     firstParty_get = "u";
-//     firstParty_delete = "u";
-//     thirdParty_get = "u";
-//     thirdParty_delete = "u";
-//     firstParty_sell = "u";
-//     thirdParty_sell = "u";
-//     blockDoNotSellRequest = false;
-//     flag = false;
-// }
-
 /**
  * Monitor the switch between tabs
  */
 chrome.tabs.onActiveChanged.addListener(function () {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tab) {
-        console.log("TAB CHANGED!!!!")
-        currentTabID = tab[0].id;
-        initCCPARule();
-        initDefaultPreference();
+        if(tab) {
+            console.log("TAB CHANGED!!!!")
+            currentTabID = tab[0].id;
+            initCCPARule();
+            initDefaultPreference();
+        }
     });
 });
 
@@ -508,6 +538,17 @@ chrome.runtime.onInstalled.addListener(function (details) {
     }
 });
 
+chrome.windows.onCreated.addListener(() => {
+    console.log("Created!!!!!!!");
+    initialize();
+})
+
+chrome.windows.onRemoved.addListener(() => {
+    console.log("Closed!!!!!!!");
+    chrome.webRequest.onBeforeSendHeaders.removeListener(modifyRequestHeaderHandler);
+    chrome.webRequest.onHeadersReceived.removeListener(checkReponseHeader);
+})
+
 
 /****************************************************************************************************
  *                                        copy from storageAPIs.js                                  *
@@ -521,7 +562,9 @@ function getDefaultPreference(hostname) {
                 reject(Error(chrome.runtime.lastError.message)) :
                 resolve([result.defaultPreference, hostname])
         )
-    ).catch()
+    ).catch(error => {
+        console.log(error);
+    })
 }
 
 function checkStopSendingForThirdParty(hostname) {
@@ -544,7 +587,9 @@ function checkStopSendingForThirdParty(hostname) {
 				}
 			})
 		})
-	}).catch()
+	}).catch(error => {
+        console.log(error);
+    })
 }
 
 function addRecord(url, thirdParty, y, z) {
@@ -586,7 +631,9 @@ function addRecord(url, thirdParty, y, z) {
                 )
             }
         })
-    }).catch()
+    }).catch(error => {
+        console.log(error);
+    })
 }
 
 incrementDoNotSaleCount = () => {
@@ -610,7 +657,9 @@ incrementDoNotSaleCount = () => {
                 )
             }
         })
-    }).catch()
+    }).catch(error => {
+        console.log(error);
+    })
 }
 
 const incrementAllowSaleCount = () => {
@@ -634,7 +683,9 @@ const incrementAllowSaleCount = () => {
                 )
             }
         })
-    }).catch()
+    }).catch(error => {
+        console.log(error);
+    })
 }
 
 const getAllowSaleCount = () => {
@@ -651,7 +702,9 @@ const getAllowSaleCount = () => {
 				}
 			}
 		})
-	})
+	}).catch(error => {
+        console.log(error);
+    })
 }
 
 const getDoNotSaleCount = () => {
@@ -668,5 +721,7 @@ const getDoNotSaleCount = () => {
 				}
 			}
 		})
-	})
+	}).catch(error => {
+        console.log(error);
+    })
 }
