@@ -112,10 +112,8 @@ function setupHeaderModListener() {
         ["blocking", "requestHeaders"]
     );
 
-    chrome.webRequest.onSendHeaders.addListener(details => {
-        // console.log("send request");
-        // console.log(details);
-    },
+    chrome.webRequest.onSendHeaders.addListener(
+        checkRequestHeader,
         { urls: ["<all_urls>"] },
         ['extraHeaders', 'requestHeaders']
     );
@@ -133,6 +131,35 @@ function setupHeaderModListener() {
  *                                  Modify HTTP Request Hander                                     *       
  ***************************************************************************************************
  */
+
+function checkRequestHeader(details) {
+    var header = details.requestHeaders
+    console.log(header)
+    for(var i=0;i<header.length;i++){
+        if(header[i].name == "ccpa1"){
+            chrome.tabs.getSelected(tab=>{
+                console.log("response ccpa:"+header[i].value)
+                console.log(details.url+tab.url)
+                if (details.url==tab.url){
+                chrome.tabs.create({
+                    url: chrome.runtime.getURL('./skin/request.html'),
+                    active: false
+                }, function(tab) {
+                chrome.windows.create({
+                    tabId: tab.id,
+                    type: "panel",
+                    focused: false,
+                    width:400,
+                    height:100
+                });
+                }
+                );
+                }
+            })
+            break
+        }
+    }
+}
 
 function checkReponseHeader(details) {
     var header = details.responseHeaders
