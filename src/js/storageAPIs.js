@@ -124,12 +124,113 @@ const getIsParentMode = () => {
 const resetThirdPartyList = () => {
 	var thirdPartyList = []
 	return new Promise((resolve, reject) =>
-		chrome.storage.local.set({thirdPartyList}, () =>
+		chrome.storage.local.set({
+				thirdPartyList
+			}, () =>
 			chrome.runtime.lastError ?
 			reject(Error(chrome.runtime.lastError.message)) :
 			resolve()
 		)
 	)
+}
+
+// sets stop sending for third parties (only for r3)
+// usage example:
+// setStopSendingForThirdParty()
+// .then(
+//     ...
+// )
+// .catch(error => console.error(error))
+
+const setStopSendingForThirdParty = () => {
+	return new Promise((resolve, reject) => {
+		chrome.tabs.getSelected(null, tab => {
+			var tablink = tab.url.split('/')[2]
+			chrome.storage.local.get('stopSendingForThirdParty', data => {
+				var stopSendingForThirdParty = data.stopSendingForThirdParty;
+				var newPreference = {
+					"domain": tablink,
+					"preference": stopSendingForThirdParty
+				}
+
+				if (stopSendingForThirdParty) {
+					stopSendingForThirdParty = stopSendingForThirdParty.filter(p => p.domain !== tablink)
+					stopSendingForThirdParty.push(newPreference)
+				} else {
+					stopSendingForThirdParty = [newPreference]
+				}
+				chrome.storage.local.set({
+						stopSendingForThirdParty
+					}, () =>
+					chrome.runtime.lastError ?
+					reject(Error(chrome.runtime.lastError.message)) :
+					resolve()
+				)
+			})
+		})
+	})
+}
+
+// checks whether a stop sending for third party signal set for the current opened tab
+// usage example:
+// checkStopSendingForThirdParty()
+// .then(data => { // data would be a boolean val, true -> block, false -> unblock
+//      ...
+// })
+// 
+
+const checkStopSendingForThirdParty = () => {
+	return new Promise((resolve, reject) => {
+		chrome.tabs.getSelected(null, (tab) => {
+			var tablink = tab.url.split('/')[2]
+			chrome.storage.local.get('stopSendingForThirdParty', (data) => {
+				var stopSendingForThirdParty = data.stopSendingForThirdParty
+				if (stopSendingForThirdParty) {
+					var filteredPreference = stopSendingForThirdParty.filter(
+						(p) => p.domain == tablink
+					)
+					if (filteredPreference.length == 0) {
+						resolve(false)
+					} else {
+						resolve(true)
+					}
+				} else {
+					resolve(false)
+				}
+			})
+		})
+	})
+}
+
+// deletes the setting
+// usage example:
+//       deleteStopSendingForThirdParty()
+//       .then(() => {
+//         ... next steps here
+//       })
+//       .catch(error => console.error(error))
+
+const deleteStopSendingForThirdParty = () => {
+	return new Promise((resolve, reject) => {
+		chrome.tabs.getSelected(null, tab => {
+			var tablink = tab.url.split('/')[2]
+			chrome.storage.local.get('stopSendingForThirdParty', data => {
+				var stopSendingForThirdParty = data.stopSendingForThirdParty
+				if (stopSendingForThirdParty) {
+					stopSendingForThirdParty = stopSendingForThirdParty.filter(p => p.domain !== tablink)
+				} else {
+					stopSendingForThirdParty = []
+				}
+				chrome.storage.local.set({
+						stopSendingForThirdParty
+					}, () =>
+					chrome.runtime.lastError ?
+					reject(Error(chrome.runtime.lastError.message)) :
+					resolve()
+				)
+			})
+		})
+	})
 }
 
 // sets the custom (opposite to default) preference for the webpage opened
@@ -394,16 +495,15 @@ const getExceptionsList = () => {
 
 
 // stores the information for requests sent to first parties
-// if the request is sent automatically then only the url and r3 preference is neccessary
-// if the request is sent by a push and values of r1 and r2 are not unset they may be given as arguments too
+// the values of r1 and r2 must be supplied as arguments
 // usage example:
-//   addRecord("google.com", 0, 1)
+//   addRecord("google.com", 0, 1, 1)
 //   .then(
 //     ... next steps here
 //   )
 //   .catch(error => console.error(error))
 
-const addRecord = (url, thirdParty, x, y = "u", z = "u") => {
+const addRecord = (url, thirdParty, y, z) => {
 	return new Promise((resolve, reject) => {
 		chrome.storage.local.get('history', data => {
 			if (chrome.runtime.lastError) {
@@ -415,7 +515,6 @@ const addRecord = (url, thirdParty, x, y = "u", z = "u") => {
 					"domain": url,
 					"r1": z,
 					"r2": y,
-					"r3": x,
 					"thirdParty": thirdParty,
 					"date": {
 						"day": now.getDate(),
@@ -429,7 +528,11 @@ const addRecord = (url, thirdParty, x, y = "u", z = "u") => {
 					}
 				}
 				if (history) {
-					history.push(newRequest)
+					const duplications = history.filter(p => (p.domain == newRequest.domain && p.r1 == newRequest.r1 && p.r2 == newRequest.r2 &&
+						p.date.year == newRequest.date.year && p.date.month == newRequest.date.month && p.date.day == newRequest.date.day &&
+						p.date.time.hour == newRequest.date.time.hour && p.date.time.minutes == newRequest.date.time.minutes))
+					if (duplications.length == 0)
+						history.push(newRequest)
 				} else {
 					history = [newRequest]
 				}
@@ -444,6 +547,126 @@ const addRecord = (url, thirdParty, x, y = "u", z = "u") => {
 		})
 	})
 }
+
+
+// increments the number of do not sale my data requests sent by the user
+// usage example:
+// 	incrementDoNotSaleCount()
+// 	.then(
+// 		... next steps here
+// 	)
+// 	.catch(error => console.log(error))
+
+const incrementDoNotSaleCount = () => {
+	return new Promise((resolve, reject) => {
+		chrome.storage.local.get('DoNotSaleCount', data => {
+			if (chrome.runtime.lastError) {
+				reject(Error(chrome.runtime.lastError.message))
+			} else {
+				var DoNotSaleCount = data.DoNotSaleCount;
+				if (DoNotSaleCount) {
+					DoNotSaleCount.count = DoNotSaleCount.count + 1
+				} else {
+					DoNotSaleCount = {
+						'count': 1
+					}
+				}
+				chrome.storage.local.set({
+						DoNotSaleCount
+					}, () =>
+					chrome.runtime.lastError ?
+					reject(Error(chrome.runtime.lastError.message)) :
+					resolve()
+				)
+			}
+		})
+	})
+}
+
+// retrieves the number of do not sale my data requests sent by the user
+// usage example:
+// 	getDoNotSaleCount()
+// 	.then(count =>
+// 		... next steps here
+// 	)
+// 	.catch(error => console.log(error))
+
+const getDoNotSaleCount = () => {
+	return new Promise((resolve, reject) => {
+		chrome.storage.local.get('DoNotSaleCount', data => {
+			if (chrome.runtime.lastError) {
+				reject(Error(chrome.runtime.lastError.message))
+			} else {
+				var DoNotSaleCount = data.DoNotSaleCount
+				if (DoNotSaleCount) {
+					resolve(DoNotSaleCount.count)
+				} else {
+					resolve(0)
+				}
+			}
+		})
+	})
+}
+
+// increments the number of do not sale my data requests sent by the user
+// usage example:
+// 	incrementAllowSaleCount()
+// 	.then(
+// 		... next steps here
+// 	)
+// 	.catch(error => console.log(error))
+
+const incrementAllowSaleCount = () => {
+	return new Promise((resolve, reject) => {
+		chrome.storage.local.get('AllowSaleCount', data => {
+			if (chrome.runtime.lastError) {
+				reject(Error(chrome.runtime.lastError.message))
+			} else {
+				var AllowSaleCount = data.AllowSaleCount;
+				if (AllowSaleCount) {
+					AllowSaleCount.count = AllowSaleCount.count + 1
+				} else {
+					AllowSaleCount = {
+						'count': 1
+					}
+				}
+				chrome.storage.local.set({
+						AllowSaleCount
+					}, () =>
+					chrome.runtime.lastError ?
+					reject(Error(chrome.runtime.lastError.message)) :
+					resolve()
+				)
+			}
+		})
+	})
+}
+
+// retrieves the number of do not sale my data requests sent by the user
+// usage example:
+// 	getAllowSaleCount()
+// 	.then(count =>
+// 		... next steps here
+// 	)
+// 	.catch(error => console.log(error))
+
+const getAllowSaleCount = () => {
+	return new Promise((resolve, reject) => {
+		chrome.storage.local.get('AllowSaleCount', data => {
+			if (chrome.runtime.lastError) {
+				reject(Error(chrome.runtime.lastError.message))
+			} else {
+				var AllowSaleCount = data.AllowSaleCount
+				if (AllowSaleCount) {
+					resolve(AllowSaleCount.count)
+				} else {
+					resolve(0)
+				}
+			}
+		})
+	})
+}
+
 
 // retrieves all records of all requests sent
 // usage example:
@@ -539,11 +762,11 @@ const getLastRequest = (url) => {
 			} else {
 				var history = data.history
 				if (history) {
-					history = history.filter(p => (p.domain === url && p.thirdParty == 0 ))
+					history = history.filter(p => (p.domain === url && p.thirdParty == 0))
 					if (history) {
-						resolve(history[history.length-1])
-					} 
-				} 
+						resolve(history[history.length - 1])
+					}
+				}
 				reject({})
 			}
 		})

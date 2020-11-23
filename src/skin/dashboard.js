@@ -81,6 +81,47 @@ $(document).ready(function () {
                 generalSetting();
             }
         })
+
+    getAllRecords()
+        .then(data => {
+            if (!data || data.length == 0) {
+                $('#display-history').hide();
+            } else {
+                $('#no-history').hide();
+                const history = Array.from(data);
+                if (history.filter(p => p.r1 == 1).length > 0) {
+                    for (const [index, detail] of history.filter(p => p.r1 == 1).entries()) {
+                        const time = new Date(parseInt(detail.date.time, 10));
+                        $('#request-info-history').append("<tr><td style='width: 400px'>" + detail.domain + "</td><td>" + time.toLocaleDateString("en-US") + " " + time.toLocaleTimeString("en-US") + "</td></tr>");
+                    }
+                } else {
+                    $('#request-info-history').hide();
+                    $('#request-header').hide();
+                }
+                if (history.filter(p => p.r2 == 1).length > 0) {
+                    for (const [index, detail] of history.filter(p => p.r2 == 1).entries()) {
+                        const time = new Date(parseInt(detail.date.time, 10));
+                        $('#delete-info-history').append("<tr><td style='width: 400px'>" + detail.domain + "</td><td>" + time.toLocaleDateString("en-US") + " " + time.toLocaleTimeString("en-US") + "</td></tr>");
+                    }
+                    //console.log('history', history);
+                } else {
+                    $('#delete-info-history').hide();
+                    $('#delete-header').hide();
+                }
+            }
+        })
+
+    getDoNotSaleCount()
+        .then(doNotSaleCount => {
+            getAllowSaleCount()
+                .then(allowSaleCount => {
+                    if (doNotSaleCount != 0 || allowSaleCount != 0) {
+                        $('#no-statistics').hide();
+                        $('#statistics-content').append("We have sent out " + doNotSaleCount + " times 'do not sell my information' requests for you! <br/>");
+                        $('#statistics-content').append("We have sent out " + allowSaleCount + " times 'allow selling my information' requests for you!");
+                    }
+                }) 
+        })
 });
 
 function generalSetting() {
