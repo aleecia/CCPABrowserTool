@@ -65,8 +65,10 @@ $(document).ready(function () {
                     const input_pw = $('#parent-password').val();
                     getParentPassword()
                         .then(data => {
-                            const pw = data.parentPassword;
-
+                            console.log(data)
+                            const password = data.parentPassword.password;
+                            const key = data.parentPassword.key;
+                            const pw = sjcl.decrypt(key,password)
                             if (input_pw == pw) {
                                 $('#parent-unlock').hide();
                                 $('#settings-content').show();

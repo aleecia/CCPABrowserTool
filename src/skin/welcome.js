@@ -139,8 +139,12 @@ $(document).ready(function () {
 
     $('#parent-finish').on('click', function () {
         setDefaultPreference($('input[name=parent-allow-sell-radio-group]:checked').val());
-        
-        setParentPassword($('#input-password').val());
+        var password = $('#input-password').val()
+        var random_word = sjcl.random.randomWords(4,0)
+        var encrypt = sjcl.encrypt(random_word,password)
+       
+        const parentpassword = {key:random_word,password:encrypt}
+        setParentPassword(parentpassword);
         setIsParentMode(true);
         alert("Voila! Your data privacy setting have been saved")
         /* TEST CONSOLE

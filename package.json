@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "CCPA Browser Tool",
   "main": "index.js",
-  "dependencies": {},
+  "dependencies": {
+    "sjcl": "^1.0.8"
+  },
   "devDependencies": {
     "jasmine": "^3.6.3",
     "sinon-chrome": "^3.0.1"
