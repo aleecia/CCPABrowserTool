@@ -183,7 +183,7 @@
                 &nbsp;&nbsp;Submit&nbsp;&nbsp;
               </button>
               <br />
-
+              <small> Your parent session will last for 15 minutes, during which you don't need to enter the password again.</small> <br/>
               <small class="warning-text"> if you forget the password, you can redo the welcome guide
                 steps by reinstalling
                 this tool.</small> <br />
@@ -191,57 +191,61 @@
               <br />
             </div>
             <div id="settings-content">
-              <p class="lead">Set Default Preference</p>
-              <p>
-                Let's set your default preference for all the websites you will visit. <br />
-                You can also ask the website to send back or delete your information on the extension popup window.
-                <br />
-
-              </p>
-              <div class="form-check form-check-inline mt-2">
-                <input class="form-check-input radio" type="radio" name="allow-sell-radio-group" id="allow-sell"
-                  value="0">
-                <label class="form-check-label" for="allow-sell">Allow selling my information</label>
-              </div>
-              <div class="form-check form-check-inline mt-2">
-                <input class="form-check-input radio" type="radio" name="allow-sell-radio-group" id="disallow-sell"
-                  value="1" checked>
-                <label class="form-check-label" for="disallow-sell">Do not sell my information</label>
-              </div>
-              <div class="form-check form-check-inline mt-2">
-                <button id="save" type="submit" class="btn btn-primary mb-2">save new preference & reset exception
-                  list</button>
-              </div>
-              <p class="text-danger"> Please note that on changing the current setting, the exception list will reset
-              </p>
-            </div>
-            <div class="mt-4">
-              <p class="lead">
-                Exception list
-              </p>
-              <p id="list_explain"></p>
               <div>
-                <p>You can also input the website you want to add to the exception list here</p>
-                <div class="input-group input-group-sm mb-3">
-                  <input type="text" class="form-control" id="input_url">
-                  <div class="input-group-append">
-                    <button class="btn btn-outline-primary" type="button" id="submiturl">Add</button>
+                <p class="lead">Set Default Preference</p>
+                <p>
+                  Let's set your default preference for all the websites you will visit. <br />
+                  You can also ask the website to send back or delete your information on the extension popup window.
+                  <br />
+
+                </p>
+                <div class="form-check form-check-inline mt-2">
+                  <input class="form-check-input radio" type="radio" name="allow-sell-radio-group" id="allow-sell"
+                    value="0">
+                  <label class="form-check-label" for="allow-sell">Allow selling my information</label>
+                </div>
+                <div class="form-check form-check-inline mt-2">
+                  <input class="form-check-input radio" type="radio" name="allow-sell-radio-group" id="disallow-sell"
+                    value="1" checked>
+                  <label class="form-check-label" for="disallow-sell">Do not sell my information</label>
+                </div>
+                <div class="form-check form-check-inline mt-2">
+                  <button id="save" type="submit" class="btn btn-primary mb-2">save new preference & reset exception
+                    list</button>
+                </div>
+                <p class="text-danger"> Please note that on changing the current setting, the exception list will reset
+                </p>
+              </div>
+              <div class="mt-4">
+                <p class="lead">
+                  Exception list
+                </p>
+                <p id="list_explain"></p>
+                <div>
+                  <p>You can also input the website you want to add to the exception list here</p>
+                  <div class="input-group input-group-sm mb-3">
+                    <input type="text" class="form-control" id="input_url">
+                    <div class="input-group-append">
+                      <button class="btn btn-outline-primary" type="button" id="submiturl">Add</button>
+                    </div>
                   </div>
                 </div>
+                <small id="invalid-url" class="text-danger" hidden>Invalid URL. Please input the full URL that starts
+                  with
+                  'https://' or 'http://'.</small>
+                <p id="exception_list"></p>
               </div>
-              <small id="invalid-url" class="text-danger" hidden>Invalid URL. Please input the full URL that starts with
-                'https://' or 'http://'.</small>
-              <p id="exception_list"></p>
-            </div>
-            <div class="mt-4 mr-5">
-              <p class="lead">
-                Data Broker
-              </p>
-              <p>“Data broker” means a business that doesn't have direct relationship with you but collect
-                your information.Imagine a website you never visit before collecting your information and exchange
-                for profit.<strong>You can ask them stop selling your data through the
-                  <a href="https://oag.ca.gov/data-brokers" target="_blank">Data broker Registry Page</a></strong> <br>
-              </p>
+              <div class="mt-4 mr-5">
+                <p class="lead">
+                  Data Broker
+                </p>
+                <p>“Data broker” means a business that doesn't have direct relationship with you but collect
+                  your information.Imagine a website you never visit before collecting your information and exchange
+                  for profit.<strong>You can ask them stop selling your data through the
+                    <a href="https://oag.ca.gov/data-brokers" target="_blank">Data broker Registry Page</a></strong>
+                  <br>
+                </p>
+              </div>
             </div>
           </div>
           <div id="statistics" class="tab">
@@ -359,7 +363,8 @@
                         <p><strong>A.</strong>It may vary based on different companies' decisions. Basically, they may:
                           <b>(1)</b>Send your request
                           respond to your registered email address. <b>(2)</b> Send a notification to your website
-                          dashboard page</p>
+                          dashboard page
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -429,6 +434,7 @@
       </main>
     </div>
   </div>
+  <script src="moment.min.js"></script>
   <script src="jquery-3.4.1.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
     integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">

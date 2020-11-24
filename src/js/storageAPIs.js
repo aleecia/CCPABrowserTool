@@ -114,6 +114,46 @@ const getIsParentMode = () => {
 	)
 }
 
+// Grant a session of 15 minutes for parents access after entering the password
+// usage example :
+// setParentAccessExpireTime(date.getTime())
+// .then(
+//     ...
+// )
+// .catch(error => console.error(error))
+const setParentAccessExpireTime = (parentAccessExpireTime) => {
+	var parentAccessExpireTime = {
+		parentAccessExpireTime: parentAccessExpireTime,
+	}
+	return new Promise((resolve, reject) =>
+		chrome.storage.local.set(
+			parentAccessExpireTime, () =>
+			chrome.runtime.lastError ?
+			reject(Error(chrome.runtime.lastError.message)) :
+			resolve()
+		)
+	)
+}
+
+// retrieves the granted timestamp before which parents don't need to enter pw again 
+// usage example:
+// getParentAccessExpireTime()
+// .then( result => {
+//     var parentAccessExpireTime = result.parentAccessExpireTime
+//     ...
+// })
+// .catch(error => console.error(error))
+
+const getParentAccessExpireTime = () => {
+	return new Promise((resolve, reject) =>
+		chrome.storage.local.get('parentAccessExpireTime', (result) => {
+			chrome.runtime.lastError ?
+				reject(Error(chrome.runtime.lastError.message)) :
+				resolve(result)
+		})
+	)
+}
+
 // Reset third party list
 // usage example :
 // resetThirdPartyList()
@@ -767,7 +807,7 @@ const getLastRequest = (url) => {
 						resolve(history[history.length - 1])
 					}
 				}
-				reject({})
+				resolve(null)
 			}
 		})
 	})

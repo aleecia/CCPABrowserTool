@@ -56,28 +56,40 @@ $(document).ready(function () {
     getIsParentMode()
         .then(data => {
             const isParentMode = data.isParentMode;
-            console.log('isParentMode', isParentMode);
             if (isParentMode == true) {
-                $('#settings-content').hide();
-                $('#wrong-password').hide();
+                getParentAccessExpireTime()
+                    .then(data => {
+                        const currentTimestamp = new Date().getTime();
+                        if (data.parentAccessExpireTime != undefined && data.parentAccessExpireTime != null && data.parentAccessExpireTime != 0 && currentTimestamp < data.parentAccessExpireTime) {
+                            $('#parent-unlock').hide();
+                            generalSetting();
+                        } else {
+                            $('#settings-content').hide();
+                            $('#wrong-password').hide();
+                            $('#parent-password-submit').on('click', function () {
+                                const input_pw = $('#parent-password').val();
+                                getParentPassword()
+                                    .then(data => {
+                                        console.log(data)
+                                        const password = data.parentPassword.password;
+                                        const key = data.parentPassword.key;
+                                        const pw = sjcl.decrypt(key, password)
+                                        if (input_pw == pw) {
+                                            const currentTime = new Date();
+                                            const expireTime = moment(currentTime).add(15, 'm').toDate();
+                                            setParentAccessExpireTime(expireTime.getTime());
+                                            $('#parent-unlock').hide();
+                                            $('#settings-content').show();
+                                            generalSetting();
+                                        } else {
+                                            $('#wrong-password').show();
+                                        }
+                                    })
+                            });
+                        }
 
-                $('#parent-password-submit').on('click', function () {
-                    const input_pw = $('#parent-password').val();
-                    getParentPassword()
-                        .then(data => {
-                            console.log(data)
-                            const password = data.parentPassword.password;
-                            const key = data.parentPassword.key;
-                            const pw = sjcl.decrypt(key,password)
-                            if (input_pw == pw) {
-                                $('#parent-unlock').hide();
-                                $('#settings-content').show();
-                                generalSetting();
-                            } else {
-                                $('#wrong-password').show();
-                            }
-                        })
-                });
+                    })
+
             } else {
                 $('#parent-unlock').hide();
                 generalSetting();
@@ -122,7 +134,7 @@ $(document).ready(function () {
                         $('#statistics-content').append("We have sent out " + doNotSaleCount + " times 'do not sell my information' requests for you! <br/>");
                         $('#statistics-content').append("We have sent out " + allowSaleCount + " times 'allow selling my information' requests for you!");
                     }
-                }) 
+                })
         })
 });
 

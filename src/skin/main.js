@@ -1,11 +1,6 @@
 'use strict';
 
 $(document).ready(function () {
-    var age;
-    var defaultPreference = 2;
-    var customPreference = 0;
-    var blockThirdParty = false;
-
     /**
      * 1. Get default preference, 1 => do not sell my data; 0 => allow selling my data.
      * 2. Check if the custom flag has been set, 1 => custom set (opposite to default), 0 => no custom set for this site
@@ -14,6 +9,55 @@ $(document).ready(function () {
      * 5. Handle onClick callbacks.
      */
 
+    getIsParentMode()
+        .then(data => {
+            if (data != undefined && data != null && data.isParentMode == true) {
+                getParentAccessExpireTime()
+                    .then(data => {
+                        const currentTimestamp = new Date().getTime();
+                        if (data.parentAccessExpireTime != undefined && data.parentAccessExpireTime != null && data.parentAccessExpireTime != 0 && currentTimestamp < data.parentAccessExpireTime) {
+                            showMain();
+                        } else {
+                            $('#main-page').hide();
+                            $('body').css('min-height', '260px');
+                            $('#parent-unlock').show();
+                            $('#wrong-password').hide();
+
+                            $('#parent-password-submit').on('click', function () {
+                                const input_pw = $('#parent-password').val();
+                                getParentPassword()
+                                    .then(data => {
+                                        const password = data.parentPassword.password;
+                                        const key = data.parentPassword.key;
+                                        const pw = sjcl.decrypt(key, password)
+                                        if (input_pw == pw) {
+                                            const currentTime = new Date();
+                                            const expireTime = moment(currentTime).add(15, 'm').toDate();
+                                            setParentAccessExpireTime(expireTime.getTime());
+                                            showMain();
+                                        } else {
+                                            $('#wrong-password').show();
+                                        }
+                                    })
+
+                            });
+                        }
+
+                    });
+            } else {
+                showMain();
+            }
+        })
+});
+
+function showMain() {
+    var age;
+    var defaultPreference = 2;
+    var customPreference = 0;
+
+    $('#parent-unlock').hide();
+    $('#main-page').show();
+    $('body').css('min-height', '380px');
     getDefaultPreference()
         .then(data => {
             if (!data) {
@@ -36,23 +80,25 @@ $(document).ready(function () {
                 currentWindow: true
             }, function (tabs) {
                 if (tabs != undefined && tabs != null) {
-                var tab = tabs[0];
-                var url = new URL(tab.url);
-                origin = url.origin;
-                $('.current-website').html('&bull;&nbsp; ' + origin);
+                    console.log("1");
+                    var tab = tabs[0];
+                    var url = new URL(tab.url);
+                    origin = url.origin;
+                    $('.current-website').html('&bull;&nbsp; ' + origin);
 
-                getLastRequest(url.hostname)
-                    .then(data => {
-                        if (data) {
-                            const requestType = data.r1 == 1? "getting information" : "deleting information";
-                            const time = new Date(parseInt(data.date.time, 10));
-                            $('#most-recent-history').html("Last request for " + requestType + " was sent: " + time.toLocaleDateString("en-US") + " " + time.toLocaleTimeString("en-US"))
-                        } else {
-                            $('#most-recent-history').html("No get or delete information requests have been sent for current website!");
-                        }
-                    })
-                    .catch(err => console.log(err));
-                // $('#most-recent-history')
+                    if (url != undefined && url != null) {
+                        getLastRequest(url.hostname)
+                            .then(data => {
+                                if (data != undefined && data != null) {
+                                    const requestType = data.r1 == 1 ? "getting information" : "deleting information";
+                                    const time = new Date(parseInt(data.date.time, 10));
+                                    $('#most-recent-history').html("Last request for " + requestType + " was sent: " + time.toLocaleDateString("en-US") + " " + time.toLocaleTimeString("en-US"))
+                                } else {
+                                    $('#most-recent-history').html("No get or delete information requests have been sent for current website!");
+                                }
+                            })
+                            .catch(err => console.log(err));
+                    }
                 }
             });
 
@@ -99,8 +145,9 @@ $(document).ready(function () {
                                 // console.log('birthday:', birthday)
                                 var today = moment();
                                 age = today.diff(birthday, 'years');
-                                if (age < 13) {
+                                if (0 < age < 13) {
                                     $('#switch-exception').html('Children under age 13 are by default enroll do not sell personal information for');
+                                    $('#create-ex-switch').hide();
                                 }
 
                                 $('#get-for-current-website').on("click", function () {
@@ -158,6 +205,6 @@ $(document).ready(function () {
                         })
                         .catch(err => console.log(err));
                 })
-                .catch(err => console.log(err));;
-        }).catch(err => console.log(err));;;
-});
+                .catch(err => console.log(err));
+        }).catch(err => console.log(err));
+}
