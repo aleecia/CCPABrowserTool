@@ -35,6 +35,7 @@ $(document).ready(function () {
                 active: true,
                 currentWindow: true
             }, function (tabs) {
+                if (tabs != undefined && tabs != null) {
                 var tab = tabs[0];
                 var url = new URL(tab.url);
                 origin = url.origin;
@@ -50,7 +51,9 @@ $(document).ready(function () {
                             $('#most-recent-history').html("No get or delete information requests have been sent for current website!");
                         }
                     })
+                    .catch(err => console.log(err));
                 // $('#most-recent-history')
+                }
             });
 
             checkCustomPreference()
@@ -120,8 +123,6 @@ $(document).ready(function () {
                                         thirdParty_delete: true
                                     });
                                 });
-
-
                                 /*
         
                                 $('#go-select').on('click', function () {
@@ -154,12 +155,9 @@ $(document).ready(function () {
                                     }
                                 })
                             });
-
                         })
-
-
-
-
-                });
-        });
+                        .catch(err => console.log(err));
+                })
+                .catch(err => console.log(err));;
+        }).catch(err => console.log(err));;;
 });
