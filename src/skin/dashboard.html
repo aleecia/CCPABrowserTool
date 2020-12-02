@@ -218,7 +218,7 @@
               </div>
               <div class="mt-4">
                 <p class="lead">
-                  Exception list
+                  Exception list <button class="ml-4 mr-2 btn btn-sm btn-outline-primary" type="button" data-toggle="modal" data-target="#exportModal" id="export">Export</button> <button class="btn btn-sm btn-outline-primary" type="button" data-toggle="modal" data-target="#importModal" id="import">Import</button>
                 </p>
                 <p id="list_explain"></p>
                 <div>
@@ -234,6 +234,46 @@
                   with
                   'https://' or 'http://'.</small>
                 <p id="exception_list"></p>
+              </div>
+              <div class="modal fade" id="exportModal" tabindex="-1" role="dialog" aria-labelledby="exportModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">Exception List Export</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <textarea id="export-exception-list" rows="8" cols="60" readonly></textarea>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Close</button>
+                      <button type="button" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="top" title="Copy to clipboard" id="copy-exception-list">Copy text</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="importModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">Exception List Import</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <p>You can paste the exception list copied via "Export" button, or bulk enter the urls on your own. <br/>
+                        You can seperate the urls with spaces, new line, or semicolon. </p>
+                      <textarea id="input-exception-list" rows="8" cols="60"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      <button type="button" class="btn btn-primary" id="save-exception-list">Save changes</button>
+                    </div>
+                  </div>
+                </div>
               </div>
               <div class="mt-4 mr-5">
                 <p class="lead">

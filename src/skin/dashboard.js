@@ -171,6 +171,7 @@ function generalSetting() {
                             for (const [index, domain] of sortedDomain.entries()) {
                                 $('#exception_list').append('<p class="mb-2"><a class="remove_from_list" id=' + index + '><i class="fas fa-trash-alt mr-2"></i></a>' +
                                     domain + '</p>');
+                                $('#export-exception-list').append(domain + '\n');
                             }
 
                             $("#submiturl").on("click", function () {
@@ -193,13 +194,51 @@ function generalSetting() {
                             })
 
                             $('a[class="remove_from_list"]').on('click', function () {
-
                                 var index = $(this).attr("id")
                                 var domain = sortedDomain[index]
                                 removeURLfromCustomList(domain)
                                     .then(() => {
                                         location.reload()
                                     })
+                            })
+
+                            $("[rel='tooltip']").tooltip();
+
+                            $('#copy-exception-list').on('click', function () {
+                                /*
+                                var text = document.getElementById("export-exception-list").innerHTML;
+                                console.log('text', text);
+                                var copyText = document.createElement("textarea");
+                                copyText.setAttribute("type", "hidden");
+                                copyText.value = text;
+                                */
+                                var copyText = document.getElementById("export-exception-list");
+                                copyText.select();
+                                copyText.setSelectionRange(0, 99999);
+                                document.execCommand("copy");
+
+                                $('#copy-exception-list').attr("title", "Copied!");
+                                $('#copy-exception-list').attr("data-placement", "top");
+                            })
+
+                            $('#copy-exception-list').on('mouseleave', function () {
+                                $('#copy-exception-list').attr("title", "Copy to clipboard");
+                                $('#copy-exception-list').attr("data-placement", "top");
+                            })
+
+                            $('#save-exception-list').on('click', function () {
+                                console.log('import', $('#input-exception-list').val());
+                                var inputList = $('#input-exception-list').val();
+                                var urlArr = inputList.split(/[ ;\n]+/);
+                                bulkAddURLtoCustomList(urlArr).then(invalidURLs => {
+                                    if (invalidURLs.length > 0) {
+                                        alert("Add successfully! Some invalid URLs you entered didn't get added: \n" + invalidURLs);
+                                        location.reload();
+                                    } else {
+                                        alert('Add all URLs successfully!');
+                                        location.reload();
+                                    }
+                                });                       
                             })
 
                         });

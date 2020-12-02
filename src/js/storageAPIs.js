@@ -366,6 +366,74 @@ const addURLtoCustomList = (url) => {
 	})
 }
 
+// adds the url list to the exception list
+// usage:
+// 	bulkAddURLtoCustomList(["www.youtube.com", "www.google.com"])
+// 	.then(
+// 		 ... next steps here
+// 	)
+// 	.catch(error => console.log(error))
+
+const bulkAddURLtoCustomList = (urlList) => {
+	return new Promise((resolve, reject) => {
+		getDefaultPreference()
+			.then(defaultPreference => {
+				var defaultPreference = defaultPreference.default;
+				var customPreference = 1;
+				if (defaultPreference) {
+					customPreference = 0;
+				}
+
+				var invalidURLs = []
+
+				var validURLRegex = /^(?:(?:https?|ftp):\/\/)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/\S*)?$/;
+				chrome.storage.local.get('customPreferences', data => {
+					var customPreferences = data.customPreferences
+					if (customPreferences) {
+						for (const [index, url] of urlList.entries()) {
+							if (url.trim().length > 0 && validURLRegex.test(url)) {
+								var newPreference = {
+									"domain": url,
+									"preference": customPreference
+								}
+								customPreferences = customPreferences.filter(p => p.domain !== url)
+								customPreferences.push(newPreference)
+							} else if (url.trim().length > 0) {
+								invalidURLs.push(url);
+							}
+						}
+
+					} else {
+						var newCustomPreferences = []
+						for (const [index, url] of urlList.entries()) {
+							if (url.trim().length > 0 && validURLRegex.test(url)) {
+								var newPreference = {
+									"domain": url,
+									"preference": customPreference
+								}
+								newCustomPreferences.push(newPreference)
+							} else if (url.trim().length > 0) {
+								invalidURLs.push(url);
+							}
+						}
+						customPreferences = newCustomPreferences;
+					}
+					chrome.storage.local.set({
+							customPreferences
+						}, () =>
+						chrome.runtime.lastError ?
+						reject(Error(chrome.runtime.lastError.message)) :
+						resolve(invalidURLs)
+					)
+				})
+
+			})
+			.catch(error => {
+				reject(Error(error))
+			})
+	})
+}
+
 // removes the url (provided as argument) from the exception list
 // usage:
 // 	removeURLfromCustomList("www.youtube.com")
