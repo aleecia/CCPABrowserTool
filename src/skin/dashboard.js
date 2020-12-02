@@ -238,9 +238,16 @@ function generalSetting() {
                                         alert('Add all URLs successfully!');
                                         location.reload();
                                     }
-                                });                       
+                                });
                             })
 
+                            $('#input_url').keypress(function (e) {
+                                var key = e.which;
+                                if (key == 13) {
+                                    $('#submiturl').click();
+                                    return false;
+                                }
+                            });
                         });
                     $("#save").on('click', function () {
                         var sell = document.querySelector('input[name="allow-sell-radio-group"]:checked').value;
