@@ -1,9 +1,17 @@
 
 
-describe('parseOriginURL', function () {
-    var url = "https://www.google.com";
-    it('Parse origin url', function () {
-        expect(parseOriginURL(url)).toEqual("https://www.google.com");
+describe('setInitialCCPARule', function () {
+    beforeEach(() => {
+        returnMock = {
+            then: jasmine.createSpy()
+        };
+        setInitialCCPARule = {
+            getDefaultPreference: jasmine.createSpy().and.returnValue(returnMock)
+        }
+        setInitialCCPARule.getDefaultPreference();
+    })
+    it('initial CCPA rule successfully', function () {
+        expect(setInitialCCPARule.getDefaultPreference).toHaveBeenCalled();
     })
 })
 
@@ -21,7 +29,7 @@ describe('refreshPage', function () {
         spyOn(_refreshPage.chrome.tabs, 'getSelected').and.callThrough();
         _refreshPage.chrome.tabs.getSelected();
     })
-    it('Refresh page', function () {
+    it('Refresh page successfully', function () {
         expect(_refreshPage.chrome.tabs.getSelected).toHaveBeenCalled();
     })
 })
@@ -45,6 +53,7 @@ describe('constructFirstPartyCCPARule', function () {
     })
 })
 
+
 describe('constructThirdPartyCCPARule', function () {
     beforeEach(() => {
         returnMock = {
@@ -66,17 +75,19 @@ describe('constructThirdPartyCCPARule', function () {
 
 
 describe('setAllowAllToSell', function () {
-    var defaultPreference_NotAllow = {
-        "default": 1
+    var data_Not_Allow = {
+        "default": 1,
+        "hostname": "www.google.com"
     }
-    var defaultPreference_Allow = {
-        "default": 0
+    var data_Allow = {
+        "default": 0,
+        "hostname": "www.google.com"
     }
-    it('Set allow all to sell flag', function () {
-        expect(setAllowAllToSell(defaultPreference_NotAllow)).toEqual(false);
+    it('Set Not allow all to sell flag successfully', function () {
+        expect(setAllowAllToSell(data_Not_Allow)).toEqual(jasmine.anything());
     })
-    it('Set allow all to sell flag', function () {
-        expect(setAllowAllToSell(defaultPreference_Allow)).toEqual(true);
+    it('Set allow all to sell flag successfully', function () {
+        expect(setAllowAllToSell(data_Allow)).toEqual(jasmine.anything());
     })
 })
 
@@ -91,7 +102,7 @@ describe('isInExceptionListHelper', function () {
             }
         }
     })
-    it('Is in exception list', function () {
+    it('isInExceptionList returns corret promise', function () {
         var hostname = "www.google.com";
         var getSpy = spyOn(chrome.storage.local, 'get');
         isInExceptionListHelper(hostname);
@@ -109,7 +120,7 @@ describe('isThirdPartyURL', function () {
             }
         }
     })
-    it('Is third party url', function () {
+    it('isThirdPartyURL returns corret promise', function () {
         var url = "https://www.google.com";
         var getSpy = spyOn(chrome.tabs, 'getSelected').and.callThrough();
         isThirdPartyURL(url);
@@ -118,17 +129,87 @@ describe('isThirdPartyURL', function () {
 })
 
 
-describe('setInitialCCPARule', function () {
+describe('discardRequest', function () {
+    it('discard request returns corret promise', function () {
+        expect(discardRequest()).toEqual(jasmine.anything());
+    })
+})
+
+describe('isCurrentTabRequest', function () {
+    var request = {
+        tabId : 111,
+        url : ""
+    }
+    it('isCurrentTabRequest function returns corret promise', function () {
+        expect(isCurrentTabRequest(request)).toEqual(jasmine.anything());
+    })
+})
+
+
+describe('getCCPARule', function () {
+    var hostname = ""
+    it('getCCPARule function returns corret promise', function () {
+        expect(getCCPARule(hostname)).toEqual(jasmine.anything());
+    })
+})
+
+
+describe('setBlockThirdPartyFlag', function () {
+    var data = ""
+    it('set the BlockThirdParty Flag successfully', function () {
+        expect(setBlockThirdPartyFlag(data)).toEqual(jasmine.anything());
+    })
+})
+
+
+
+describe('addFirstPartyRecord', function () {
     beforeEach(() => {
         returnMock = {
             then: jasmine.createSpy()
         };
-        setInitialCCPARule = {
-            getDefaultPreference: jasmine.createSpy().and.returnValue(returnMock)
+        addFirstPartyRecord = {
+            addRecord: jasmine.createSpy().and.returnValue(returnMock),
+            incrementDoNotSaleCount: jasmine.createSpy().and.returnValue(returnMock),
+            incrementAllowSaleCount: jasmine.createSpy().and.returnValue(returnMock),
         }
-        setInitialCCPARule.getDefaultPreference();
+        addFirstPartyRecord.addRecord("", 0, firstParty_delete, firstParty_get);
+        addFirstPartyRecord.incrementDoNotSaleCount()
+        addFirstPartyRecord.incrementAllowSaleCount()
     })
-    it('setInitialCCPARule', function () {
-        expect(setInitialCCPARule.getDefaultPreference).toHaveBeenCalled();
+    it('added record for first party successfully', function () {
+        expect(addFirstPartyRecord.addRecord).toHaveBeenCalled();
+    })
+    it('increment Do Not Sale count successfully', function () {
+        expect(addFirstPartyRecord.incrementDoNotSaleCount).toHaveBeenCalled();
+    })
+    it('increment Allow Sale count successfully', function () {
+        expect(addFirstPartyRecord.incrementAllowSaleCount).toHaveBeenCalled();
+    })
+})
+
+
+describe('addThirdPartyRecord', function () {
+    beforeEach(() => {
+        returnMock = {
+            then: jasmine.createSpy()
+        };
+        addThirdPartyRecord = {
+            addRecord: jasmine.createSpy().and.returnValue(returnMock),
+            incrementDoNotSaleCount: jasmine.createSpy().and.returnValue(returnMock),
+            incrementAllowSaleCount: jasmine.createSpy().and.returnValue(returnMock),
+        }
+        addThirdPartyRecord.addRecord("", 0, "1", "0");
+        addThirdPartyRecord.incrementDoNotSaleCount()
+        addThirdPartyRecord.incrementAllowSaleCount()
+    })
+    it('added record for first party successfully', function () {
+        expect(addThirdPartyRecord.addRecord).toHaveBeenCalled();
+    })
+    it('increment Do Not Sale count successfully', function () {
+        expect(addThirdPartyRecord.incrementDoNotSaleCount).toHaveBeenCalled();
+    })
+    it('increment Allow Sale count successfully', function () {
+        expect(addThirdPartyRecord.incrementAllowSaleCount).toHaveBeenCalled();
     })
 })

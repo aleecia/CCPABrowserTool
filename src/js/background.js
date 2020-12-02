@@ -132,15 +132,18 @@ function setupHeaderModListener() {
  ***************************************************************************************************
  */
 
+function checkRequestSent(header){
+    return ((header.charAt(0)!=="u")||(header.charAt(1)!=="u"))
+}
 function checkRequestHeader(details) {
     var header = details.requestHeaders
-    console.log(header)
     for(var i=0;i<header.length;i++){
         if(header[i].name == "ccpa1"){
             chrome.tabs.getSelected(tab=>{
-                console.log("response ccpa:"+header[i].value)
-                console.log(details.url+tab.url)
-                if (details.url==tab.url){
+                var requestsent = checkRequestSent(header[i].value)
+                console.log("request ccpa:"+header[i].value)
+                console.log((details.url==tab.url)&&(requestsent))
+                if ((details.url==tab.url)&&(requestsent)){
                 chrome.tabs.create({
                     url: chrome.runtime.getURL('./skin/request.html'),
                     active: false
@@ -168,7 +171,8 @@ function checkReponseHeader(details) {
             chrome.tabs.getSelected(tab=>{
                 console.log("response ccpa:"+header[i].value)
                 console.log(details.url+tab.url)
-                if (details.url==tab.url){
+                var requestsent = checkRequestSent(header[i].value)
+                if ((details.url==tab.url)&&(requestsent)){
                 chrome.tabs.create({
                     url: chrome.runtime.getURL('./skin/response.html'),
                     active: false
@@ -644,6 +648,7 @@ chrome.windows.onRemoved.addListener(() => {
     console.log("Closed!!!!!!!");
     chrome.webRequest.onBeforeSendHeaders.removeListener(modifyRequestHeaderHandler);
     chrome.webRequest.onHeadersReceived.removeListener(checkReponseHeader);
+    chrome.webRequest.onHeadersReceived.removeListener(checkRequestHeader);
 })
 
 

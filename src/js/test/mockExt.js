@@ -13,12 +13,31 @@ window.chrome = {
       addListener: (listener) => chrome._listeners.push(listener)
     }
   },
-  webRequest: {
-    onBeforeSendHeaders : {
+  windows : {
+    onCreated : {
       addListener : function() {}
     },
-    onSendHeaders: {
+    onRemoved : {
       addListener : function() {}
+    }
+  }, 
+  webRequest : {
+    onBeforeSendHeaders : {
+      addListener : function() {},
+      removeListener : function() {}
+    },
+    onSendHeaders : {
+      addListener : function() {},
+      removeListener : function() {}
+    },
+    onHeadersReceived : {
+      addListener : function() {},
+      removeListener : function() {}
+    }
+  },
+  tabs : {
+    onActiveChanged : {
+      addListener : function() {},
     }
   },
   storage: {
