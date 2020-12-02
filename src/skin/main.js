@@ -142,12 +142,14 @@ function showMain() {
 
                             getUserDOB().then(data => {
                                 var birthday = moment(data.userDOB);
-                                // console.log('birthday:', birthday)
                                 var today = moment();
                                 age = today.diff(birthday, 'years');
-                                if (0 < age < 13) {
+                                if (age < 13 && age > 0) {
                                     $('#switch-exception').html('Children under age 13 are by default enroll do not sell personal information for');
                                     $('#create-ex-switch').hide();
+                                } else {
+                                    $('#switch-exception').html('Create exception for: <a class="text-primary ml-1" href="/skin/dashboard.html#information" target="_blank" id="exception-question"><i class="far fa-question-circle"></i></a>');
+                                    $('#create-ex-switch').show();
                                 }
 
                                 $('#get-for-current-website').on("click", function () {
