@@ -23,7 +23,7 @@ $(document).ready(function () {
             ccpaheader = ccpaheader.concat("u")
         }
         SendtoDatabrokers(ccpaheader,emailadd)
-        alert("Your request have been sent to data brokers in the data broker list")
+        
     });
 
     function SendtoDatabrokers(ccpaheader,email){
@@ -35,9 +35,18 @@ $(document).ready(function () {
                 var lines = data.split("\n")
                 lines.splice(0,1)
                 lines.forEach(item=>{
-                    $.ajax({method:"GET",url:item,data:{email: email},headers:{"ccpa1":ccpaheader}})
+                    $.ajax({
+                        method:"GET",
+                        url:item,
+                        data:{email: email},
+                        headers:{"ccpa1":ccpaheader},
+                        error:function(xhr, status, error){
+                            return
+                        },
+                    })
                 })
             }
         })
+        alert("Your request have been sent to data brokers in the data broker list")
     }
 });

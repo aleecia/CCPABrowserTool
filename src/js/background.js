@@ -135,29 +135,42 @@ function setupHeaderModListener() {
 function checkRequestSent(header){
     return ((header.charAt(0)!=="u")||(header.charAt(1)!=="u"))
 }
+
 function checkRequestHeader(details) {
     var header = details.requestHeaders
     for(var i=0;i<header.length;i++){
         if(header[i].name == "ccpa1"){
             chrome.tabs.getSelected(tab=>{
                 var requestsent = checkRequestSent(header[i].value)
-                console.log("request ccpa:"+header[i].value)
-                console.log((details.url==tab.url)&&(requestsent))
-                if ((details.url==tab.url)&&(requestsent)){
-                chrome.tabs.create({
-                    url: chrome.runtime.getURL('./skin/request.html'),
-                    active: false
-                }, function(tab) {
-                chrome.windows.create({
-                    tabId: tab.id,
-                    type: "panel",
-                    focused: false,
-                    width:400,
-                    height:100
-                });
+                chrome.windows.getAll(wins=>{
+                    var opened = false
+                    wins.forEach(win=>{
+                        console.log("windows:",win.type)
+                        if(win.type=="popup"){
+                            opened = true
+                        }
+                    })
+                    var requestsite = new URL(details.url).hostname
+                    var firstparty = new URL(tab.url).hostname
+                    console.log(details.url)
+                    console.log((requestsite==firstparty)&&(requestsent)&& (!opened))
+                    if ((requestsite==firstparty)&&(requestsent)&& (!opened)){
+                    chrome.tabs.create({
+                        url: chrome.runtime.getURL('./skin/request.html'),
+                        active: false
+                    }, function(tab) {
+                    chrome.windows.create({
+                        tabId: tab.id,
+                        type: "panel",
+                        focused: false,
+                        width:400,
+                        height:100
+                    });
+                    }
+                    );
                 }
-                );
-                }
+            }   
+            )
             })
             break
         }
@@ -169,24 +182,36 @@ function checkReponseHeader(details) {
     for(var i=0;i<header.length;i++){
         if(header[i].name == "ccpa1"){
             chrome.tabs.getSelected(tab=>{
-                console.log("response ccpa:"+header[i].value)
-                console.log(details.url+tab.url)
                 var requestsent = checkRequestSent(header[i].value)
-                if ((details.url==tab.url)&&(requestsent)){
-                chrome.tabs.create({
-                    url: chrome.runtime.getURL('./skin/response.html'),
-                    active: false
-                }, function(tab) {
-                chrome.windows.create({
-                    tabId: tab.id,
-                    type: "panel",
-                    focused: false,
-                    width:400,
-                    height:100
-                });
+                chrome.windows.getAll(wins=>{
+                    var opened = false
+                    wins.forEach(win=>{
+                        console.log("windows:",win.type)
+                        if(win.type=="popup"){
+                            opened = true
+                        }
+                    })
+                    var requestsite = new URL(details.url).hostname
+                    var firstparty = new URL(tab.url).hostname
+                    console.log(details.url)
+                    console.log((requestsite==firstparty)&&(requestsent)&& (!opened))
+                    if ((requestsite==firstparty)&&(requestsent)&& (!opened)){
+                    chrome.tabs.create({
+                        url: chrome.runtime.getURL('./skin/response.html'),
+                        active: false
+                    }, function(tab) {
+                    chrome.windows.create({
+                        tabId: tab.id,
+                        type: "panel",
+                        focused: false,
+                        width:400,
+                        height:100
+                    });
+                    }
+                    );
                 }
-                );
-                }
+            }   
+            )
             })
             break
         }
@@ -636,7 +661,7 @@ chrome.runtime.onInstalled.addListener(function (details) {
 /**
  * Triggered as long as the browser is opened
  */
-chrome.windows.onCreated.addListener(() => {
+chrome.windows.onCreated.addListener({windowTypes: ['normal']},() => {
     console.log("Created!!!!!!!");
     initialize();
 })
@@ -644,7 +669,7 @@ chrome.windows.onCreated.addListener(() => {
 /**
  * Triggered as long as the browser is closed
  */
-chrome.windows.onRemoved.addListener(() => {
+chrome.windows.onRemoved.addListener({windowTypes: ['normal']},() => {
     console.log("Closed!!!!!!!");
     chrome.webRequest.onBeforeSendHeaders.removeListener(modifyRequestHeaderHandler);
     chrome.webRequest.onHeadersReceived.removeListener(checkReponseHeader);
