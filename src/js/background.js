@@ -46,6 +46,14 @@ var currentTabID = "undefined";
  * hostname of URL that user is visiting
  */
 var originHostname = "undefined";
+/**
+ * boolean, detect if user send request click event happened 
+ */
+var sendRequest = false;
+/**
+ * boolean, state if a response popup windows is ative
+ */
+var handleResponse = false;
 
 
 /**************************************************************************************************
@@ -113,7 +121,7 @@ function setupHeaderModListener() {
     );
 
     chrome.webRequest.onSendHeaders.addListener(
-        checkRequestHeader,
+        checkRequestSent,
         { urls: ["<all_urls>"] },
         ['extraHeaders', 'requestHeaders']
     );
@@ -132,49 +140,25 @@ function setupHeaderModListener() {
  ***************************************************************************************************
  */
 
-function checkRequestSent(header){
-    return ((header.charAt(0)!=="u")||(header.charAt(1)!=="u"))
-}
 
-function checkRequestHeader(details) {
-    var header = details.requestHeaders
-    for(var i=0;i<header.length;i++){
-        if(header[i].name == "ccpa1"){
-            chrome.tabs.getSelected(tab=>{
-                var requestsent = checkRequestSent(header[i].value)
-                chrome.windows.getAll(wins=>{
-                    var opened = false
-                    wins.forEach(win=>{
-                        console.log("windows:",win.type)
-                        if(win.type=="popup"){
-                            opened = true
-                        }
-                    })
-                    var requestsite = new URL(details.url).hostname
-                    var firstparty = new URL(tab.url).hostname
-                    console.log(details.url)
-                    console.log((requestsite==firstparty)&&(requestsent)&& (!opened))
-                    if ((requestsite==firstparty)&&(requestsent)&& (!opened)){
-                    chrome.tabs.create({
-                        url: chrome.runtime.getURL('./skin/request.html'),
-                        active: false
-                    }, function(tab) {
-                    chrome.windows.create({
-                        tabId: tab.id,
-                        type: "panel",
-                        focused: false,
-                        width:400,
-                        height:100
-                    });
-                    }
-                    );
-                }
-            }   
-            )
-            })
-            break
+function checkRequestSent(details) {
+   
+    if (sendRequest) {
+        chrome.tabs.create({
+            url: chrome.runtime.getURL('./skin/request.html'),
+            active: false
+        }, function (tab) {
+            chrome.windows.create({
+                tabId: tab.id,
+                type: "panel",
+                focused: false,
+                width: 400,
+                height: 100
+            });
         }
+        );
     }
+    sendRequest = false
 }
 
 function checkReponseHeader(details) {
@@ -182,20 +166,16 @@ function checkReponseHeader(details) {
     for(var i=0;i<header.length;i++){
         if(header[i].name == "ccpa1"){
             chrome.tabs.getSelected(tab=>{
-                var requestsent = checkRequestSent(header[i].value)
-                chrome.windows.getAll(wins=>{
-                    var opened = false
+                var requestsent = ((header[i].value.charAt(0)!=="-")||(header[i].value.charAt(1)!=="-"))
+                    chrome.windows.getAll(wins=>{
                     wins.forEach(win=>{
-                        console.log("windows:",win.type)
                         if(win.type=="popup"){
-                            opened = true
+                            handleResponse = true
                         }
-                    })
+                    })})
                     var requestsite = new URL(details.url).hostname
                     var firstparty = new URL(tab.url).hostname
-                    console.log(details.url)
-                    console.log((requestsite==firstparty)&&(requestsent)&& (!opened))
-                    if ((requestsite==firstparty)&&(requestsent)&& (!opened)){
+                    if ((requestsite==firstparty)&&(requestsent)&& (!handleResponse)){
                     chrome.tabs.create({
                         url: chrome.runtime.getURL('./skin/response.html'),
                         active: false
@@ -212,7 +192,6 @@ function checkReponseHeader(details) {
                 }
             }   
             )
-            })
             break
         }
     }
@@ -588,6 +567,7 @@ chrome.runtime.onMessage.addListener((request) => {
         firstParty_delete = "u";
         thirdParty_get = "u";
         thirdParty_delete = "u";
+        sendRequest=true;
         chrome.runtime.sendMessage({
             getMessage: true
         })
@@ -597,6 +577,7 @@ chrome.runtime.onMessage.addListener((request) => {
         firstParty_delete = "1";
         thirdParty_get = "u";
         thirdParty_delete = "u";
+        sendRequest=true;
         chrome.runtime.sendMessage({
             getMessage: true
         })
@@ -606,6 +587,7 @@ chrome.runtime.onMessage.addListener((request) => {
         firstParty_delete = "u";
         thirdParty_get = "1";
         thirdParty_delete = "u";
+        sendRequest=true;
         chrome.runtime.sendMessage({
             getMessage: true
         })
@@ -615,6 +597,7 @@ chrome.runtime.onMessage.addListener((request) => {
         firstParty_delete = "u";
         thirdParty_get = "u";
         thirdParty_delete = "1";
+        sendRequest=true;
         chrome.runtime.sendMessage({
             getMessage: true
         })
@@ -630,7 +613,7 @@ chrome.runtime.onMessage.addListener((request) => {
  */
 chrome.tabs.onActiveChanged.addListener(function () {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tab) {
-        if (tab) {
+        if (tab && currentTabID!=tab[0].id) {
             console.log("TAB CHANGED!!!!")
             currentTabID = tab[0].id;
             initCCPARule();
@@ -673,7 +656,7 @@ chrome.windows.onRemoved.addListener({windowTypes: ['normal']},() => {
     console.log("Closed!!!!!!!");
     chrome.webRequest.onBeforeSendHeaders.removeListener(modifyRequestHeaderHandler);
     chrome.webRequest.onHeadersReceived.removeListener(checkReponseHeader);
-    chrome.webRequest.onHeadersReceived.removeListener(checkRequestHeader);
+    chrome.webRequest.onHeadersReceived.removeListener(checkRequestSent);
 })
 
 
